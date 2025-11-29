@@ -1,95 +1,93 @@
+import ScreenWrapper from "@/src/components/ScreenWrapper";
+import { Button } from "@/src/components/ui/Button";
+import Input from "@/src/components/ui/Input";
 import { supabase } from "@/src/server/supabase";
-import { Button, Input } from '@rneui/themed';
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Pressable, StyleSheet, Text, View } from "react-native";
+import { Alert, Pressable, Text, View } from "react-native";
 
 export default function LoginPage() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [loading, setLoading] = useState(false);
-    const router = useRouter()
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const router = useRouter();
 
+  async function handleLogin() {
+    const newErrors: typeof errors = {};
 
-    async function handleLogin() {
-        setLoading(true)
-        const {error } = await supabase.auth.signInWithPassword({
-            email,
-            password
-        })
+    if (!email.trim()) newErrors.email = "Email is required";
+    if (!password) newErrors.password = "Password is required";
 
-        if( error) Alert.alert('Error', error.message)
-        setLoading(false)
+    setErrors(newErrors);
 
+    if (Object.keys(newErrors).length > 0) return;
+
+    setLoading(true);
+
+    try {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: email.trim(),
+        password,
+      });
+
+      if (error) throw error;
+      setEmail("")
+      setPassword("")
+
+      router.push("/create-weekly-plane"); 
+    } catch (err: any) {
+      Alert.alert("Login Error", err.message); 
+    } finally {
+      setLoading(false);
     }
+  }
 
+  return (
+    <ScreenWrapper>
+     <View className="flex-1 mt-20">
+        <Text className="text-[30px] font-bold text-black mb-10 text-center">
+          Welcome Back
+        </Text>
 
-    async function handleRegister() {
-        setLoading(true)
-        const {data: {session},error } = await supabase.auth.signUp({
-            email,
-            password
-        })
+        <Input
+          label="Email"
+          placeholder="Enter your email"
+          value={email}
+          setValue={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        {errors.email && <Text className="text-red-500 text-sm mt-1">{errors.email}</Text>}
 
-        if( error) Alert.alert('Error', error.message)
-        if(!session) Alert.alert('Success', 'Check your inbox for email verification')
-        setLoading(false)
+        <Input
+          label="Password"
+          placeholder="Enter your password"
+          value={password}
+          setValue={setPassword}
+          secureTextEntry
+        />
+        {errors.password && <Text className="text-red-500 text-sm mt-1">{errors.password}</Text>}
 
-    }
+        <Pressable onPress={() => router.push("/(auth)/forgot-password")}>
+          <Text className="text-right font-medium text-black/60 text-md mt-2">
+            Forgot Password?
+          </Text>
+        </Pressable>
 
-     return (
-         <View style={styles.container}>
-            <View style={[styles.verticallySpaced, styles.mt20]}>
-              <Input 
-               label="Email"
-                placeholder="Enter your email"
-                autoCapitalize="none"
-                onChangeText={(text) => setEmail(text)}
-                value=  {email}
-                leftIcon={{ type: 'font-awesome', name: 'envelope' }}
-              />
-            </View>
-             <View style={[styles.verticallySpaced]}>
-              <Input 
-               label="Password"
-                placeholder="Enter your Password"
-                autoCapitalize="none"
-                onChangeText={(text) => setPassword(text)}
-                 value={password}
-                leftIcon={{ type: 'font-awesome', name: 'lock' }}
-              />
-            </View>
+        <View className="mt-6 space-y-4">
+          <Button onPress={handleLogin} disabled={loading} variant="primary">
+            {loading ? "Logging in..." : "Login"}
+          </Button>
 
-
-            <View style={[styles.verticallySpaced, styles.mt20]}>
-                <Button title="Login" disabled={loading} onPress={()=> handleLogin()}/>
-             <View>
-            <Pressable onPress={() => router.push('/(auth)/register')}>
-                <Text>
-                    {"Don't have an account yet? "}
-                    <Text style={{ color: '#1976D2', fontWeight: '600' }}>Register</Text>
-                </Text>
-            </Pressable>
-            </View>                       
-            </View>
- 
-         </View>
-     )
+          <Pressable onPress={() => router.push("/(auth)/register")}>
+            <Text className="text-center font-medium text-black/60 text-lg py-6">
+              Don't have an account yet?{" "}
+              <Text className="text-primary font-bold">Register</Text>
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    </ScreenWrapper>
+  );
 }
-
-
-const styles = StyleSheet.create({
-   container: {
-      marginTop: 40,
-      padding: 12,
-   },
-   verticallySpaced: {
-     padding: 4,
-     paddingBottom: 4,
-     alignSelf: 'stretch'
-   },
-   mt20: {
-    marginTop: 20,
-   }
-
-}) 
