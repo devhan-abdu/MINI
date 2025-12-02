@@ -35,7 +35,7 @@ export default function LoginPage() {
       setEmail("")
       setPassword("")
 
-      router.push("/create-weekly-plane"); 
+      router.push("/(app)"); 
     } catch (err: any) {
       Alert.alert("Login Error", err.message); 
     } finally {
