@@ -48,9 +48,9 @@ function RootLayoutNav() {
   return (
     <Stack screenOptions={{ headerShown: false }}>
       {session ? (
-        <Stack.Screen name="(auth)" />
+        <Stack.Screen name="(app)" />
       ) : (
-        <Stack.Screen name="(app)/index" />
+        <Stack.Screen name="(app)" />
       )}
     </Stack>
   );

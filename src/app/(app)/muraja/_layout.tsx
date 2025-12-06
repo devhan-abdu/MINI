@@ -9,7 +9,6 @@ export default function MurajaLayout() {
         <>
         <Tabs
          screenOptions={{
-            // headerShown: false,
             tabBarStyle: {
                 height: 64,
                 borderTopWidth: 1,
@@ -38,7 +37,7 @@ export default function MurajaLayout() {
                name="weekly-plane"
                options={{
                 title:"plan",
-                // headerShown: false,
+                headerShown: false,
                 tabBarIcon:({focused}) => (
                      <Ionicons
                       name={focused ? "calendar" : "calendar-outline"}
@@ -49,19 +48,6 @@ export default function MurajaLayout() {
                }}
             />
 
-            <Tabs.Screen
-          name="history" 
-          options={{
-            title: "History",
-            tabBarIcon: ({ focused }) => (
-              <Ionicons
-                name={focused ? "time" : "time-outline"}
-                size={20}
-                 color={focused ? "#0b6623" : "#666"}
-              />
-            ),
-          }}
-        />
 
             <Tabs.Screen
              name="review"
@@ -77,6 +63,20 @@ export default function MurajaLayout() {
 
              }}
             />
+
+            <Tabs.Screen
+          name="history" 
+          options={{
+            title: "History",
+            tabBarIcon: ({ focused }) => (
+              <Ionicons
+                name={focused ? "time" : "time-outline"}
+                size={20}
+                 color={focused ? "#0b6623" : "#666"}
+              />
+            ),
+          }}
+        />
 
         </Tabs>
         </>

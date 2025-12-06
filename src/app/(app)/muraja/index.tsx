@@ -3,21 +3,20 @@ import { Button } from "@/src/components/ui/Button";
 import UpcomingSessionCard from "@/src/components/UpcomingSessionCard";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Pressable, ScrollView, Text, View } from "react-native";
+import { Pressable, Text, View } from "react-native";
 
 export default function MurajaIndex() {
   const router = useRouter()
   return (
     <ScreenWrapper>
-      <ScrollView showsVerticalScrollIndicator={false} className="flex-1">
-        <View className="bg-green-100 rounded-xl p-4 mb-6 shadow-lg border border-green-100">
-          <Text className="text-sm ">
+        <View className="bg-green-100 rounded-xl p-4 mb-8 shadow-lg border border-green-100 flex-col gap-3">
+          <Text className="text-base font-medium ">
             This Week's Muraja'a Plan
           </Text>
-          <Text className="text-2xl font-bold mt-1">
+          <Text className="text-2xl font-bold ">
             JUZ 28 - 30
           </Text>
-          <View className="flex-row items-center gap-6 mt-3">
+          <View className="flex-row items-center gap-6 ">
             <View className="flex-row items-center gap-2">
               <Ionicons name="calendar-outline" size={18} color="#666" />
               <Text className="text-sm ">5 days/week</Text>
@@ -89,12 +88,11 @@ export default function MurajaIndex() {
 
         
          <Button
-                  className="mb-20"
+                  className="mb-8 mt-auto"
                   onPress={()=> router.push("/(app)/create-plane")}
                 >
                   Add New Plan
                 </Button>
-      </ScrollView>
     </ScreenWrapper>
   );
 }

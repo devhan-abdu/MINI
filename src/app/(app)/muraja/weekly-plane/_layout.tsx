@@ -11,16 +11,6 @@ export default function WeeklyPlaneLayout() {
             }}
             
             />
-
-            {/*  any way to get the stack header bc it is dynamic  */}
-             <Stack.Screen 
-            name="[id]"
-            options={{
-                headerTitle: "Plane Log",
-                headerShown: false
-            }}
-            
-            />
-        </Stack>
+                    </Stack>
     )
 }
