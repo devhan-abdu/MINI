@@ -11,6 +11,7 @@ import { Controller, useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
   IWeeklyMurajaDay,
+  WeeklyMurajaFormType,
   WeeklyMurajaSchema,
   WeeklyMurajaType,
 } from "@/src/types";
@@ -37,17 +38,17 @@ export default function CreateWeeklyPlan() {
 
   const {
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     control,
+    getValues,
   } = useForm({
     resolver: yupResolver(WeeklyMurajaSchema),
     defaultValues: {
-      user_id: undefined,
       week_start_date: "",
-      planned_pages: undefined,
-      start_surah: undefined,
-      start_page: undefined,
-      estimated_time_min: undefined,
+      planned_pages: 20,
+      start_surah: 1,
+      start_page: 1,
+      estimated_time_min: 20,
       selectedDays: [],
       place: "",
       note: "",
@@ -58,38 +59,53 @@ export default function CreateWeeklyPlan() {
     control,
     name: "start_surah",
   });
-  const onSubmit = async (data: WeeklyMurajaType) => {
+  const weekStart = useWatch({ control, name: "week_start_date" });
+
+  const onSubmit = async (data: WeeklyMurajaFormType) => {
     try {
+      const formValues = getValues();
+
+      const { selectedDays, ...rest } = data;
       const planData = await addWeeklyPlan({
-        ...data,
-        user_id: Number(user?.id),
+        ...rest,
+        user_id: user!.id,
       });
 
       const weekly_plan_id = planData[0].id;
 
-      const selectedDaysRaw = useWatch({ control, name: "selectedDays" });
-      const selectedDays = (selectedDaysRaw as (number | undefined)[]).filter(
-        (d): d is number => d !== undefined
-      );
-      const weekStart = useWatch({ control, name: "week_start_date" });
-      const startPage = useWatch({ control, name: "start_page" });
-      const plannedPages = useWatch({ control, name: "planned_pages" });
+      const selectedDayss = (
+        formValues.selectedDays as (number | undefined)[]
+      ).filter((d): d is number => d !== undefined);
 
       const plannedDays: IWeeklyMurajaDay[] = getPlannedDates(
         weekStart,
-        selectedDays,
-        plannedPages,
-        startPage
+        selectedDayss,
+        formValues.planned_pages,
+        formValues.start_page
       ).map((day) => ({
         ...day,
         weekly_plan_id,
       }));
 
       await addWeeklyPlanDays(plannedDays);
+      Alert.alert("Success", "Weekly plan created successfully!", [
+        {
+          text: "OK",
+          onPress: () => router.back(),
+        },
+      ]);
     } catch (error) {
-      Alert.alert("Failed to add weekly plan");
+      Alert.alert("Error", `Failed to create weekly plan`);
     }
   };
+
+  const formattedWeekStart = weekStart
+    ? new Date(weekStart).toLocaleDateString("en-US", {
+        weekday: "short",
+        month: "short",
+        day: "numeric",
+      })
+    : "";
 
   return (
     <>
@@ -112,13 +128,34 @@ export default function CreateWeeklyPlan() {
             name="week_start_date"
             render={({ field: { value, onChange } }) => (
               <>
-                <Pressable onPress={() => setShowDatePicker(true)}>
-                  <Text>
-                    {value
-                      ? new Date(value).toLocaleDateString()
-                      : "Select start date"}
-                  </Text>
+                <Pressable
+                  onPress={() => setShowDatePicker(true)}
+                  className="border border-gray-300 rounded-xl px-4 py-3.5 bg-white flex-row items-center justify-between active:bg-gray-50"
+                >
+                  <View className="flex-row items-center gap-3">
+                    <View className="w-10 h-10 rounded-lg bg-primary-50 items-center justify-center">
+                      <Ionicons
+                        name="calendar-outline"
+                        size={20}
+                        color="#276359"
+                      />
+                    </View>
+                    <View>
+                      <Text
+                        className={`text-base ${
+                          formattedWeekStart ? "text-gray-900" : "text-gray-400"
+                        }`}
+                      >
+                        {formattedWeekStart || "Select date"}
+                      </Text>
+                      <Text className="text-sm text-gray-500">
+                        Choose when to start
+                      </Text>
+                    </View>
+                  </View>
+                  <Ionicons name="chevron-forward" size={20} color="#9CA3AF" />
                 </Pressable>
+
                 {showDatePicker && (
                   <DateTimePicker
                     value={value ? new Date(value) : new Date()}
@@ -160,10 +197,10 @@ export default function CreateWeeklyPlan() {
                       key={day.offset}
                       onPress={handlePress}
                       className={`
-                      flex-1 min-w-[72px] h-12 rounded-sm border bg-white
+                      flex-1 min-w-[64px] h-10 rounded-full border bg-white
                       ${
                         isSelected
-                          ? "border-green-100 bg-green-100 text-green-900"
+                          ? "border-green-100 bg-green-300 text-green-900"
                           : "border-gray-200 bg-white text-black"
                       }
                       items-center justify-center
@@ -187,31 +224,23 @@ export default function CreateWeeklyPlan() {
                     </Pressable>
                   );
                 })}
-                //{" "}
               </View>
             )}
           />
         </View>
 
         <View className="mb-6">
-          <Text className="text-lg font-medium mb-3">Daily Reading Goal</Text>
           <View className="">
             <Controller
               control={control}
               name="planned_pages"
               render={({ field: { value, onChange } }) => (
                 <Input
-                  placeholder="number of page ."
+                  label="Daily Reading Goal (in Page)"
+                  placeholder="number of page "
                   value={String(value)}
                   setValue={(v) => onChange(Number(v))}
                   keyboardType="numeric"
-                  leftIcon={
-                    <Ionicons
-                      name="document-text-outline"
-                      size={20}
-                      color="#6B7280"
-                    />
-                  }
                   containerClassName="mb-2"
                 />
               )}
@@ -279,15 +308,9 @@ export default function CreateWeeklyPlan() {
             render={({ field: { value, onChange } }) => (
               <Input
                 label="Place"
-                placeholder="e.g. 30"
+                placeholder="Dorm"
                 value={value ?? ""}
                 setValue={onChange}
-                keyboardType="numeric"
-                //   icon for the place
-                // leftIcon={
-                //   <Ionicons name="time-outline" size={20} color="#6B7280" />
-                // }
-                // rightIcon={<Text className="text-gray-500">min/day</Text>}
                 containerClassName="mb-2"
               />
             )}
@@ -303,7 +326,7 @@ export default function CreateWeeklyPlan() {
                 <TextInput
                   className="border border-gray-400 rounded-md min-h-32 px-4 "
                   onChangeText={onChange}
-                  value={value}
+                  value={value ?? ""}
                   placeholder="Add Any refelection or comment"
                   multiline={true}
                   numberOfLines={5}
@@ -323,11 +346,39 @@ export default function CreateWeeklyPlan() {
               <Text className="text-gray-700 font-medium">Cancel</Text>
             </Button>
 
-            <Button className="flex-1" onPress={handleSubmit(onSubmit)}>
+            <Button
+              className="flex-1"
+              onPress={() => {
+                // Check for errors first
+                if (Object.keys(errors).length > 0) {
+                  // Create error message from all fields
+                  let errorMessage = "Please fix the following errors:\n\n";
+
+                  // Loop through all errors
+                  Object.entries(errors).forEach(([fieldName, error]) => {
+                    // Format field name for better display
+                    const formattedFieldName = fieldName
+                      .replace(/_/g, " ")
+                      .replace(/\b\w/g, (l) => l.toUpperCase());
+
+                    errorMessage += `• ${formattedFieldName}: ${
+                      error?.message || "Invalid value"
+                    }\n`;
+                  });
+
+                  Alert.alert("Form Validation Error", errorMessage);
+                  return;
+                }
+
+                // If no errors, submit the form
+                handleSubmit(onSubmit)();
+              }}
+              disabled={isSubmitting}
+            >
               <View className="flex-row items-center justify-center gap-2">
                 <Ionicons name="add-circle-outline" size={20} color="#fff" />
                 <Text className="text-white font-semibold text-base">
-                  Create Plan
+                  {isSubmitting ? "Creating ..." : "Create Plan"}
                 </Text>
               </View>
             </Button>
