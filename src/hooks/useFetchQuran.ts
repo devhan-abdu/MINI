@@ -1,38 +1,52 @@
 import { useState, useEffect } from "react";
+import { ISurah } from "../types";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export const useFetchQuran = () => {
-    const [items, setItems] = useState([])
-    const [error, setError] = useState("")
-    const [loading, setLoading] = useState(false)
+const STORAGE_KEY = "cached_surah_data";
+
+export const useLoadSurahData = () => {
+  const [items, setItems] = useState<ISurah[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        setError("");
 
 
-    useEffect(()=> {
+        const cached = await AsyncStorage.getItem(STORAGE_KEY);
 
-    const fetchQuran = async () => {
-         try {
-            setLoading(true)
-           const response = await fetch("https://api.quranhub.com/v1/surah/?revelationOrder=false", {
-  method: "GET"
-})
-      const data = await response.json()
+        if (cached) {
+          const parsed = JSON.parse(cached);
+          setItems(parsed);        
+          setLoading(false);       
+          return;  
+        }
 
-      if(data.code === 200 && data.data) {
-        setItems(data.data)
-      } else {
-        setError("failed to fetch data")
+        const response = await fetch(
+          "https://api.quranhub.com/v1/surah/?revelationOrder=false"
+        );
+
+        const data = await response.json();
+
+        if (data.code === 200 && data.data) {
+          setItems(data.data);
+
+          await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data.data));
+        } else {
+          setError("Failed to fetch surah data");
+        }
+      } catch (err) {
+        setError(String(err) || "Something went wrong");
+      } finally {
+        setLoading(false);
       }
-      setItems(data.data)
+    };
 
-         } catch (error) {
-              setError(String(error) || "Something went wrong")
-         }finally {
-             setLoading(false)
-         }
-    }
+    loadData();
+  }, []);
 
-    fetchQuran();
-    }, [])
-
-
-    return { items , loading , error}
-}
+  return { items, loading, error };
+};
