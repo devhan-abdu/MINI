@@ -1,6 +1,15 @@
+import { ISurah } from "../types";
+
 export function cn(...classes: (string | undefined | null | false)[]) {
     return classes.filter(Boolean).join(' ');
 }
+
+
+const juzStartPages = [
+  1, 22, 42, 62, 82, 102, 122, 142, 162, 182,
+  202, 222, 242, 262, 282, 302, 322, 342, 362, 382,
+  402, 422, 442, 462, 482, 502, 522, 542, 562, 582, 604
+];
 
 const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
 
@@ -31,3 +40,24 @@ export function getPlannedDates(
 
   return result;
 }
+
+export function getWeeklyPlanData(startPage: number , plannedPages: number, selectedDaysLength: number, surah: ISurah[]) {
+  const endPage = startPage + plannedPages * selectedDaysLength - 1
+  const startSurah = getSurahByPage(startPage, surah)
+  const endSurah = getSurahByPage(endPage, surah)
+  const startJuz = getJuzByPage(startPage)
+  const endJuz = getJuzByPage(endPage)
+
+  return {  startSurah,endPage, endSurah, startJuz, endJuz}
+}
+
+export function getJuzByPage(page: number) {
+  for (let i = juzStartPages.length - 1; i >= 0; i--) {
+    if (page >= juzStartPages[i]) return i + 1;
+  }
+}
+
+export function getSurahByPage(page: number, surah: ISurah[]) {
+     return surah.find(s => page >=s.startingPage && page <= s.endingPage)?.englishName
+}
+
