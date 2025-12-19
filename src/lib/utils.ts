@@ -5,6 +5,16 @@ export function cn(...classes: (string | undefined | null | false)[]) {
 }
 
 
+export const fullDayNames: Record<string, string> = {
+    Sun: "Sunday",
+    Mon: "Monday",
+    Tue: "Tuesday",
+    Wed: "Wednesday",
+    Thu: "Thursday",
+    Fri: "Friday",
+    Sat: "Saturday",
+};
+  
 const juzStartPages = [
   1, 22, 42, 62, 82, 102, 122, 142, 162, 182,
   202, 222, 242, 262, 282, 302, 322, 342, 362, 382,
