@@ -1,45 +1,51 @@
 import { useEffect, useState } from "react"
-import { IWeeklyMurajaDay, TodayPlanType } from "../types"
+import {TodayPlanType } from "../types"
 import { getWeeklyPlanDays, getWeeklyPlanLog } from "../services"
+import { useLoadSurahData } from "./useFetchQuran"
+import { getSurahByPage } from "../lib/utils"
+import type {IWeeklyMurajaDay} from "../types"
 
 export const useWeeklyDays = (userId: string | null, weeklyPlanId: number | null) => {
-  const [todayPlan, setTodayPlan] = useState<TodayPlanType | null>(null)
-  const [upcomingSessions, setUpcomingSessions] = useState<IWeeklyMurajaDay[]>([])
+  const [plans , setPlans]= useState<TodayPlanType[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState("")
+  const {items:surah } = useLoadSurahData()
 
   const today = new Date().toISOString().slice(0, 10)
 
+  const preparePlan = async (plan: IWeeklyMurajaDay | null): Promise<TodayPlanType | null> => {
+    if (!plan || !plan.id) return null
+    const log = await getWeeklyPlanLog(userId, plan.id)
+    const startSurah = getSurahByPage(plan?.planned_start_page, surah)
+    const endSurah = getSurahByPage(plan.planned_end_page, surah)
+    
+    return {
+      ...plan,
+      startSurah: startSurah!,
+      endSurah: endSurah!,
+      status: log?.status ?? "pending",
+      log_id: log?.id ?? null
+    }
+  }
+
   useEffect(() => {
-    if (!userId || !weeklyPlanId) return
+    if (!userId || !weeklyPlanId || !surah) return
 
     const fetchData = async () => {
       try {
         setLoading(true)
+        setError("")
 
-        const plans = await getWeeklyPlanDays(userId, weeklyPlanId)
+        const rowPlans = await getWeeklyPlanDays(userId, weeklyPlanId)
 
-        if (!plans || plans.length === 0) {
-          setTodayPlan(null)
-          setUpcomingSessions([])
+        if (!rowPlans || rowPlans.length === 0) {
+          setPlans([])
           return
         }
 
-        const planForToday = plans.find(p => p.date === today)
-
-        if (planForToday && planForToday.id) {
-          const log = await getWeeklyPlanLog(userId, planForToday.id)
-          setTodayPlan({
-            ...planForToday,
-            status: log?.status ?? "pending",
-            log_id: log?.id ?? null
-          })
-        } else {
-          setTodayPlan(null)
-        }
-
-        const upcoming = plans.filter(p => p.date > today)
-        setUpcomingSessions(upcoming)
+        const preparedPlans = await Promise.all(rowPlans.map(p => preparePlan(p)))
+        const validPlans  = preparedPlans.filter((p): p is TodayPlanType => p !== null)
+        setPlans(validPlans)
 
       } catch (err: any) {
         setError(err.message || "Failed to load weekly plan")
@@ -49,7 +55,10 @@ export const useWeeklyDays = (userId: string | null, weeklyPlanId: number | null
     }
 
     fetchData()
-  }, [userId, weeklyPlanId])
+  }, [userId, weeklyPlanId, surah])
 
-  return { todayPlan, upcomingSessions, loading, error }
+  const todayPlan = plans.find(p => p.date === today) ?? null
+  const upcomingSessions = plans.filter(p => p.date > today)
+
+  return {plans, todayPlan, upcomingSessions, loading, error }
 }
