@@ -8,8 +8,16 @@ export interface IWeeklyMurajaDay {
     day_of_week: string,
     planned_start_page: number,
     planned_end_page: number,
-    planned_pages: number
-} 
+    planned_pages: number,
+}
+export type TodayPlanType = IWeeklyMurajaDay & {
+  status: IDayLog["status"];
+  log_id: number | null;
+  startSurah: string;
+  endSurah: string;
+
+};
+
 
 
 
@@ -64,8 +72,14 @@ export const WeeklyMurajaSchema = Yup.object({
 });
 
 export type WeeklyMurajaFormType = InferType<typeof WeeklyMurajaSchema>;
-export type WeeklyMurajaType = Omit<WeeklyMurajaFormType, "selectedDays"> & {
+export type WeeklyMurajaType = Omit<WeeklyMurajaFormType, "selectedDays" | "start_surah"> & {
   user_id: string;
+  end_surah: string,
+  end_page: number,
+  start_juz: number,
+  end_juz: number,
+  total_days: number,
+  start_surah: string,
 };
 
 export interface ISurah {
@@ -78,3 +92,28 @@ export interface ISurah {
   numberOfAyahs: string,
   revelationOrder: number,
 }
+
+export interface IDayLog {
+  id: number;
+  weekly_plan_day_id: number,
+  date: string;
+  completed_pages: number,
+  actual_time_min: number;
+  status: "pending" | "completed" | "partial" | "missed";
+  note: string;
+  place: string;
+  start_surah: string;
+  start_page: number;
+}
+export interface IDayLogAdd 
+{
+  dayId: number,
+  userId: string,
+  status: string,
+  date: string,
+  note: string,
+  place: string,
+  min: number,
+  pages: number
+}
+
