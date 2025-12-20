@@ -1,4 +1,5 @@
 import { View } from "react-native";
+import ScreenWrapper from "./ScreenWrapper";
 
 export const WeeklyMurajaSkeleton = () => {
   return (
@@ -99,3 +100,56 @@ export const UpcomingSkeleton = () => {
     </View>
   );
 };
+
+
+
+export const LogPageSkeleton = () => {
+  return (
+    <ScreenWrapper>
+      <View className="mb-8">
+        <View className="w-48 h-8 bg-gray-300 rounded-lg mb-4" />
+
+        <View className="flex-row items-center justify-between px-2 border-t border-gray-200 pt-4">
+          <View className="w-24 h-4 bg-gray-300 rounded-md" />
+          <View className="h-6 w-px bg-gray-300" />
+          <View className="w-16 h-4 bg-gray-300 rounded-md" />
+          <View className="h-6 w-px bg-gray-300" />
+          <View className="w-20 h-4 bg-gray-300 rounded-md" />
+        </View>
+      </View>
+
+      <View className="w-24 h-6 bg-gray-300 rounded-md mb-4" />
+
+      <View className="flex-row bg-gray-100 rounded-xl p-1">
+        <View className="flex-1 h-10 bg-gray-300 rounded-lg mx-1" />
+        <View className="flex-1 h-10 bg-gray-300 rounded-lg mx-1" />
+        <View className="flex-1 h-10 bg-gray-300 rounded-lg mx-1" />
+      </View>
+
+      <View className="mt-8 mb-12 gap-6">
+        <View className="gap-2">
+          <View className="w-32 h-4 bg-gray-300 rounded-md" />
+          <View className="w-full h-11 bg-gray-300 rounded-lg" />
+        </View>
+
+        <View className="gap-2">
+          <View className="w-40 h-4 bg-gray-300 rounded-md" />
+          <View className="w-full h-11 bg-gray-300 rounded-lg" />
+        </View>
+
+        <View className="gap-2">
+          <View className="w-24 h-4 bg-gray-300 rounded-md" />
+          <View className="w-full h-11 bg-gray-300 rounded-lg" />
+        </View>
+
+        <View className="gap-2">
+          <View className="w-20 h-4 bg-gray-300 rounded-md" />
+          <View className="w-full h-24 bg-gray-300 rounded-lg" />
+        </View>
+      </View>
+
+      <View className="h-12 w-full bg-gray-300 rounded-xl mb-8" />
+    </ScreenWrapper>
+  );
+};
+
