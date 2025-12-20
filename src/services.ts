@@ -1,5 +1,5 @@
 import { supabase } from "./lib/supabase";
-import { IDayLog, IWeeklyMurajaDay, WeeklyMurajaType } from "./types";
+import { IDayLog, IDayLogAdd, IWeeklyMurajaDay, WeeklyMurajaType } from "./types";
 
 
 export async function addWeeklyPlan(weeklyMuraja: WeeklyMurajaType) {
@@ -23,16 +23,30 @@ export async function addWeeklyPlanDays(days: IWeeklyMurajaDay[])  {
     return data
 }
 
-export async function addDailyLog(logData: {dayId: number, userId: string , status: string, date: string}) {
-    const {dayId, userId, status, date } = logData
+export async function addDailyLog(logData: Partial<IDayLogAdd>) {
+    const { dayId, userId, status, date, note, pages, min, place } = logData
+     
+    if (!userId || !dayId || !date || !status) {
+    throw new Error("Missing required fields")
+  }
     const { data, error } = await supabase
         .from("daily_muraja_logs")
-        .insert({
-            weekly_plan_day_id: dayId,
+        .upsert({
             user_id: userId,
+            weekly_plan_day_id: dayId,
             status,
-            date
-        })
+            date,
+            note,
+            place,
+            actual_time_min: min,
+            completed_pages: pages,
+        },
+      {
+        onConflict: "user_id,weekly_plan_day_id,date",
+      }    
+    )
+        
+    .select()
     if (error) throw new Error(error.message)
     return data
 
