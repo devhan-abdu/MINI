@@ -21,33 +21,53 @@ const juzStartPages = [
   402, 422, 442, 462, 482, 502, 522, 542, 562, 582, 604
 ];
 
-const dayNames = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+const dayNames = [
+  "Sunday",
+  "Monday", 
+  "Tuesday",
+  "Wednesday",
+  "Thursday",
+  "Friday",
+  "Saturday"
+];
 
 export function getPlannedDates(
   weekStartDate: string,
-  selectedDays: number[],
+  selectedOffsets: number[],
   plannedPages: number,
   startPage: number
 ) {
-  const result: { date: string; day_of_week: string; planned_start_page: number; planned_end_page: number; planned_pages: number; }[] = [];
-  const start = new Date(weekStartDate);
-  let currentPage = startPage;
-
-  selectedDays.forEach((offset) => {
-    const d = new Date(start);
-    d.setDate(start.getDate() + offset);
-
-    result.push({
-      date: d.toISOString().slice(0, 10),
-      day_of_week: dayNames[d.getDay()],
-      planned_start_page: currentPage,
-      planned_end_page: currentPage + plannedPages - 1,
-      planned_pages: plannedPages,
-    });
-
-    currentPage += plannedPages;
+  const startDate = new Date(weekStartDate);
+  const startDayIdx = (startDate.getDay() + 6) % 7;
+  
+  const dateObjects = selectedOffsets.map((offset) => {
+    let daysToAdd = offset - startDayIdx;
+    if (daysToAdd < 0) daysToAdd += 7;
+    
+    const actualDate = new Date(startDate);
+    actualDate.setDate(startDate.getDate() + daysToAdd);
+    
+    return {
+      date: actualDate,
+      dateString: actualDate.toISOString().slice(0, 10),
+    };
   });
-
+  
+  dateObjects.sort((a, b) => a.date.getTime() - b.date.getTime());
+  
+  const result = dateObjects.map((obj, index) => {
+    const planned_start_page = startPage + (index * plannedPages);
+    const planned_end_page = planned_start_page + plannedPages - 1;
+    
+    return {
+      date: obj.dateString,
+      day_of_week: dayNames[obj.date.getDay()],
+      planned_start_page,
+      planned_end_page,
+      planned_pages: plannedPages,
+    };
+  });
+  
   return result;
 }
 
