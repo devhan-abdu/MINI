@@ -80,6 +80,7 @@ export type WeeklyMurajaType = Omit<WeeklyMurajaFormType, "selectedDays" | "star
   end_juz: number,
   total_days: number,
   start_surah: string,
+  week_end_date: string,
 };
 
 export interface ISurah {
@@ -116,4 +117,24 @@ export interface IDayLogAdd
   min: number,
   pages: number
 }
+
+export interface IDayLogSummary {
+  id: number;
+  completed_pages: number;
+  actual_time_min: number;
+  status: "pending" | "completed" | "partial" | "missed";
+  note: string;
+  place: string;
+}
+
+export interface IWeeklyLog {
+  id: number;
+  date: string;
+  day_of_week: string;
+  planned_start_page: number;
+  planned_end_page: number;
+  planned_pages: number;
+  daily_muraja_logs: IDayLogSummary[];
+}
+
 
