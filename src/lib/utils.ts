@@ -1,3 +1,4 @@
+import { max } from "date-fns";
 import { ISurah } from "../types";
 
 export function cn(...classes: (string | undefined | null | false)[]) {
@@ -91,3 +92,14 @@ export function getSurahByPage(page: number, surah: ISurah[]) {
      return surah.find(s => page >=s.startingPage && page <= s.endingPage)?.englishName
 }
 
+
+export function formatWeekRange(start?: string | undefined, end?: string): string {
+  if(!start || !end) return ""
+  const s = new Date(start)
+  const e = new Date(end)
+
+  const monthFmt = new Intl.DateTimeFormat("en-us", { month: "short" })
+  const dayFmt = new Intl.DateTimeFormat("en-us", { day: "numeric" })
+  
+  return `${monthFmt.format(s)} ${dayFmt.format(s)} – ${monthFmt.format(e)} ${dayFmt.format(e)}`
+}

@@ -153,3 +153,26 @@ export const LogPageSkeleton = () => {
   );
 };
 
+export const ReviewSkeleton = () => (
+  <ScreenWrapper>
+    <View className="mb-6 gap-2">
+      <View className="h-10 w-48 bg-gray-200 rounded-lg animate-pulse" />
+      <View className="h-4 w-32 bg-gray-100 rounded animate-pulse" />
+    </View>
+
+    <View className="flex-row justify-between mb-8">
+      {[1, 2, 3].map((i) => (
+        <View key={i} className="h-24 w-[31%] bg-gray-100 rounded-xl animate-pulse" />
+      ))}
+    </View>
+
+    <View className="h-6 w-full bg-gray-100 rounded-full mb-8 animate-pulse" />
+
+    <View className="flex-row justify-between mb-8">
+      {[1, 2, 3, 4, 5, 6, 7].map((i) => (
+        <View key={i} className="h-12 w-10 bg-gray-100 rounded-full animate-pulse" />
+      ))}
+    </View>
+  </ScreenWrapper>
+);
+

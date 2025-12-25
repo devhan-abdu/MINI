@@ -1,10 +1,10 @@
 import { supabase } from "./lib/supabase";
-import { IDayLog, IDayLogAdd, IWeeklyMurajaDay, WeeklyMurajaType } from "./types";
+import { IDayLog, IDayLogAdd, IWeeklyPlan, IWeeklyMurajaDay, WeeklyMurajaType } from "./types";
 
 
 export async function addWeeklyPlan(weeklyMuraja: WeeklyMurajaType) {
     const { data, error } = await supabase.from("weekly_muraja_plan")
-    .insert([ {...weeklyMuraja}]).select();
+    .insert([ {...weeklyMuraja}]).select().single()
 
     if(error) {
         throw new Error(error.message)
@@ -90,74 +90,77 @@ export async function getDailyLog(userId: string | null, dayId: number | null): 
         .eq("user_id",userId)
         .eq("weekly_plan_day_id", dayId)
         .limit(1)
-        .single()
+      
     
     
-    if (error) {
+  if (error) {  
         throw new Error(error.message)
     }
 
-     return data ?? null;
+     return data[0] ?? null;
     
 }
 
-export async function getWeekLogs(weeklyPlanId: number) {
-    if (!weeklyPlanId) return []
-    
-    const { data, error } = await supabase
-        .from("weekly_plan_days")
-       .select(`
+
+export async function getWeeklyReviewData(userId: string | null , planId?: number) {
+  if (!userId) return null
+
+  // const today = new Date().toISOString().slice(0, 10)
+
+  // const { error: updateError } = await supabase
+  //   .from("weekly_muraja_plan")
+  //   .update({ status: "completed" })
+  //   .eq("user_id", userId)
+  //   .eq("status", "active")
+  //   .lt("week_end_date", today)
+
+  // if (updateError) {
+  //   throw new Error(updateError.message)
+
+
+  // }
+
+  let query = supabase
+   .from("weekly_muraja_plan")
+  .select(`
+    id,
+    user_id,
+    week_start_date,
+    week_end_date,
+    estimated_time_min,
+    weekly_plan_days (
       id,
       date,
       day_of_week,
-      planned_start_page,
-      planned_end_page,
       planned_pages,
       daily_muraja_logs (
         id,
         completed_pages,
         actual_time_min,
+        date,
         status,
         note,
         place
       )
-    `)
-        .eq("weekly_plan_id", weeklyPlanId)
-        .order("date", { ascending: true })
-    
-      if (error) {
-          throw new Error(error.message)
-          
-          return data ?? []
-  }
-    
-}
-export async function syncAndGetLatestCompletedWeek(userId: string) {
-  if (!userId) return null
-
-  const today = new Date().toISOString().slice(0, 10)
-
-  const { error: updateError } = await supabase
-    .from("weekly_muraja_plan")
-    .update({ status: "completed" })
+    )
+  `)
     .eq("user_id", userId)
-    .eq("status", "active")
-    .lt("week_end_date", today)
+  
 
-  if (updateError) {
-    throw new Error(updateError.message)
+  if (planId) {
+    query = query.eq("id", planId)
+  } else {
+    query = query
+      .eq("status", "completed")
+      .order("week_end_date", { ascending: false }) 
+      .limit(1)
+    
   }
 
-  const { data, error: fetchError } = await supabase
-    .from("weekly_muraja_plan")
-    .select("*")
-    .eq("user_id", userId)
-    .eq("status", "completed")
-    .order("week_end_date", { ascending: false })
-    .limit(1)
-    .single()
+  const { data, error } = await query.single()
+  
 
-  if (fetchError) {
+  if (error) {
     return null 
   }
 
