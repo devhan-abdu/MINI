@@ -4,9 +4,9 @@ import { useSession } from "@/src/hooks/useSession";
 import { useWeeklyDays } from "@/src/hooks/useWeeklyDays";
 import { useWeeklyPlan } from "@/src/hooks/useWeeklyPlan";
 import { useRouter } from "expo-router";
-import { Text, View } from "react-native";
-import { fullDayNames } from "@/src/lib/utils";
+import { Text } from "react-native";
 import { TodaySkeleton } from "@/src/components/skeletons";
+import Progress from "@/src/components/Progress";
 
 export default function WeeklyPlan() {
   const router = useRouter();
@@ -21,6 +21,7 @@ export default function WeeklyPlan() {
 
   const today = new Date().toISOString().slice(0, 10);
   const pastPlans = plans.filter((p) => p.date < today && p.date !== today);
+
   const completedPlanCount = plans.filter(
     (p) => p.status === "completed"
   ).length;
@@ -31,21 +32,7 @@ export default function WeeklyPlan() {
 
   return (
     <ScreenWrapper>
-      <View className="bg-white p-4 rounded-lg border border-gray-200 flex-col gap-4 mb-12">
-        <Text className="text-semibold text-lg">This Week's Progress</Text>
-        <View className={`overflow-hidden rounded-full h-4 bg-gray-400 w-full`}>
-          <View
-            className="h-full rounded-full"
-            style={{
-              width: `${progressPercentage}%`,
-              backgroundColor: "#276359",
-            }}
-          ></View>
-        </View>
-        <Text>
-          {completedPlanCount} of {plans.length} Days Completed
-        </Text>
-      </View>
+      <Progress completionRate={progressPercentage} />
       {loading ? (
         <>
           {[1, 2, 3, 4, 5].map((i) => (
@@ -59,7 +46,7 @@ export default function WeeklyPlan() {
               <Text className="text-2xl font-bold mb-4">Today</Text>
               <WeeklyPlanCard
                 planId={todayPlan.id ?? null}
-                day={fullDayNames[todayPlan.day_of_week]}
+                day={todayPlan.day_of_week}
                 date={todayPlan.date}
                 status={todayPlan.status}
                 startSurah={todayPlan.startSurah}
@@ -79,7 +66,7 @@ export default function WeeklyPlan() {
                 <WeeklyPlanCard
                   key={plan.id}
                   planId={plan.id ?? null}
-                  day={fullDayNames[plan.day_of_week]}
+                  day={plan.day_of_week}
                   date={plan.date}
                   status={plan.status}
                   startSurah={plan.startSurah}
@@ -100,7 +87,7 @@ export default function WeeklyPlan() {
                 <WeeklyPlanCard
                   key={plan.id}
                   planId={plan.id ?? null}
-                  day={fullDayNames[plan.day_of_week]}
+                  day={plan.day_of_week}
                   date={plan.date}
                   status={plan.status}
                   startSurah={plan.startSurah}
