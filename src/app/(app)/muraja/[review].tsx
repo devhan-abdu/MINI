@@ -2,56 +2,46 @@ import { Stack, useLocalSearchParams, useRouter } from "expo-router";
 import Progress from "@/src/components/Progress";
 import ScreenWrapper from "@/src/components/ScreenWrapper";
 import { Button } from "@/src/components/ui/Button";
-import { useSession } from "@/src/hooks/useSession";
-import { IWeeklyPlan } from "@/src/types";
 import { Ionicons } from "@expo/vector-icons";
-import { useEffect, useMemo, useState } from "react";
-import { Text, TextInput, View } from "react-native";
-import { getWeeklyReviewData } from "@/src/services";
-import { computeWeeklyReview } from "@/src/lib/analytics";
-import { formatWeekRange } from "@/src/lib/utils";
-import { DayByDay } from "@/src/components/DayByDay";
-import { ReviewSkeleton } from "@/src/components/skeletons";
+import { useMemo } from "react";
+import { Text, View } from "react-native";
+import { DayByDay } from "@/src/features/muraja/components/DayByDay";
+import { ReviewSkeleton } from "@/src/features/muraja/components/skeletons";
+import { useWeeklyReview } from "@/src/features/muraja/hooks/useWeeklyReview";
+import { formatWeekRange } from "@/src/features/muraja/utils/dateHelpers";
+import { fullDayNames } from "@/src/features/muraja/utils/quranMapping";
 
 const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function WeeklyReviewPage() {
   const router = useRouter();
-  const { planId } = useLocalSearchParams<{ planId: string }>();
-  const { user } = useSession();
-  const userId = user?.id || null;
+  const { review } = useLocalSearchParams<{ review: string }>();
 
-  const [planData, setPlanData] = useState<IWeeklyPlan | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [reflection, setReflection] = useState("");
+  const { plan, analytics, isLoading, isError, refetch } = useWeeklyReview(
+    Number(review)
+  );
 
-  useEffect(() => {
-    const loadData = async () => {
-      setLoading(true);
-      const data = await getWeeklyReviewData(
-        userId ?? null,
-        planId ? Number(planId) : undefined
-      );
-      setPlanData(data);
-      setLoading(false);
-    };
-
-    loadData();
-  }, [planId]);
-
-  const analytics = useMemo(() => {
-    if (!planData) return null;
-
-    return computeWeeklyReview(planData);
-  }, [planData]);
-
-  if (!userId) return;
-
-  if (loading) {
+  if (isLoading) {
     return <ReviewSkeleton />;
   }
 
-  if (!userId || !planData || !analytics) {
+  if (isError) {
+    return (
+      <ScreenWrapper>
+        <View className="flex-1 items-center justify-center p-6">
+          <Ionicons name="alert-circle-outline" size={48} color="#ef4444" />
+          <Text className="text-lg font-bold mt-4">Something went wrong</Text>
+          <Text className="text-gray-500 text-center mb-6">
+            We couldn't load your review data.
+          </Text>
+          <Button onPress={() => refetch()} className="w-full">
+            Try Again
+          </Button>
+        </View>
+      </ScreenWrapper>
+    );
+  }
+  if (!plan || !analytics) {
     return (
       <ScreenWrapper>
         <Stack.Screen
@@ -78,44 +68,45 @@ export default function WeeklyReviewPage() {
     );
   }
 
-  const weekRange = formatWeekRange(
-    planData?.week_start_date,
-    planData?.week_end_date
-  );
-  const keyMetrics = [
-    {
-      id: 1,
-      label: "Total Time",
-      value: `${analytics.totalTime} min`,
-      icon: "time-outline",
-      color: "#10B981",
-      bgColor: "bg-emerald-50",
-    },
-    {
-      id: 2,
-      label: "Avg/Session",
-      value: `${analytics.avgSession} min`,
-      icon: "speedometer-outline",
-      color: "#3B82F6",
-      bgColor: "bg-blue-50",
-    },
-    {
-      id: 3,
-      label: "Longest Streak",
-      value: `${analytics.longestStreak}d`,
-      icon: "flame-outline",
-      color: "#F59E0B",
-      bgColor: "bg-amber-50",
-    },
-    {
-      id: 4,
-      label: "Best Day",
-      value: analytics.bestDay,
-      icon: "trophy-outline",
-      color: "#8B5CF6",
-      bgColor: "bg-violet-50",
-    },
-  ];
+  const weekRange = formatWeekRange(plan?.week_start_date, plan?.week_end_date);
+  const keyMetrics = useMemo(() => {
+    if (!analytics) return [];
+
+    return [
+      {
+        id: 1,
+        label: "Total Time",
+        value: `${analytics.totalTime} min`,
+        icon: "time-outline",
+        color: "#10B981",
+        bgColor: "bg-emerald-50",
+      },
+      {
+        id: 2,
+        label: "Avg/Session",
+        value: `${analytics.avgSession} min`,
+        icon: "speedometer-outline",
+        color: "#3B82F6",
+        bgColor: "bg-blue-50",
+      },
+      {
+        id: 3,
+        label: "Longest Streak",
+        value: `${analytics.longestStreak}d`,
+        icon: "flame-outline",
+        color: "#F59E0B",
+        bgColor: "bg-amber-50",
+      },
+      {
+        id: 4,
+        label: "Best Day",
+        value: analytics.bestDay,
+        icon: "trophy-outline",
+        color: "#8B5CF6",
+        bgColor: "bg-violet-50",
+      },
+    ];
+  }, [analytics]);
 
   return (
     <ScreenWrapper>
@@ -164,7 +155,10 @@ export default function WeeklyReviewPage() {
         <Text className="text-bold text-lg">Day-by-Day Status</Text>
         <View className="flex-row items-center gap-2 justify-between">
           {DAYS_OF_WEEK.map((day) => {
-            const specficDayData = planData?.weekly_plan_days?.[0];
+            const specficDayData = plan?.weekly_plan_days?.find(
+              (d) => d.day_of_week === fullDayNames[day]
+            );
+
             return (
               <View key={day}>
                 <DayByDay dayData={specficDayData} dayName={day} />
@@ -217,22 +211,6 @@ export default function WeeklyReviewPage() {
           </Text>
         </View>
       </View>
-
-      <View className="flex-col gap-2 mb-8">
-        <Text className="text-lg text-black/80 font-medium">Note</Text>
-
-        <TextInput
-          className="border border-gray-400 rounded-md min-h-24 px-4"
-          multiline
-          placeholder="Add any notes or reflection"
-          value={reflection}
-          onChangeText={setReflection}
-        />
-      </View>
-
-      <Button onPress={() => {}} className="mb-8">
-        Save Review
-      </Button>
     </ScreenWrapper>
   );
 }
