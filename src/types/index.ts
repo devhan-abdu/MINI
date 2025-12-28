@@ -1,25 +1,6 @@
 import * as Yup from "yup"
 import type { InferType } from "yup";
 
-export interface IWeeklyMurajaDay {
-    id?: number,
-    weekly_plan_id: number,
-    date: string,
-    day_of_week: string,
-    planned_start_page: number,
-    planned_end_page: number,
-    planned_pages: number,
-}
-export type TodayPlanType = IWeeklyMurajaDay & {
-  status: IDayLog["status"];
-  log_id: number | null;
-  startSurah: string;
-  endSurah: string;
-
-};
-
-
-
 
 export const WeeklyMurajaSchema = Yup.object({
   id: Yup.number()
@@ -110,31 +91,88 @@ export interface IDayLogAdd
 {
   dayId: number,
   userId: string,
-  status: string,
+  status: "completed" | "partial" | "missed";
   date: string,
   note: string,
   place: string,
-  min: number,
-  pages: number
+  actual_time_min: number,
+  completed_pages: number
 }
 
 export interface IDayLogSummary {
   id: number;
+  weekly_plan_day_id: number;  
   completed_pages: number;
   actual_time_min: number;
   status: "pending" | "completed" | "partial" | "missed";
+  date: string;
   note: string;
   place: string;
 }
 
-export interface IWeeklyLog {
-  id: number;
+export interface IWeeklyMurajaDay {
+    id?: number,
+    weekly_plan_id?: number,
+    date: string,
+    day_of_week: string,
+    planned_start_page: number,
+    planned_end_page: number,
+    planned_pages: number,
+    estimated_time_min: number,
+    daily_muraja_logs: IDayLogSummary[];
+ 
+}
+
+
+export interface IWeeklyMurajaDayInsert {
   date: string;
   day_of_week: string;
   planned_start_page: number;
   planned_end_page: number;
   planned_pages: number;
-  daily_muraja_logs: IDayLogSummary[];
+  estimated_time_min: number;
+  weekly_plan_id?: number; 
 }
+export type TodayPlanType = IWeeklyMurajaDay & {
+  status: IDayLog["status"];
+  log_id: number | null;
+  startSurah?: string ;
+  endSurah?: string;
+  actual_pages: number;
+  actual_time: number
+};
+   
+
+export interface IMonthHistory {
+  id: number;
+  week_start_date: string;
+  week_end_date: string,
+  start_surah: string;
+  end_surah: string;
+  start_page: number;
+  end_page: number;
+  start_juz: number,
+  end_juz: number,
+  planned_pages: number;
+  estimated_time_min: number;
+  status: "active" | 'completed'
+  weekly_plan_days: IWeeklyMurajaDay[];
+}
+
+export interface IWeeklyMuraja {
+  id: number;
+  week_start_date: string;
+  week_end_date: string,
+  start_surah: string;
+  end_surah: string;
+  start_page: number;
+  end_page: number;
+  start_juz: number,
+  end_juz: number,
+  planned_pages: number;
+  estimated_time_min: number;
+  status: "active" | 'completed'
+}
+
 
 
