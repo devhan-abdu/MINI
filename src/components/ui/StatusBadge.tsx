@@ -1,77 +1,75 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 
-type Status = "Completed" | "Pending" | "Missed" | "Partial";
+type Status = "completed" | "pending" | "missed" | "partial";
 
 interface StatusBadgeProps {
-    status: Status,
+  status: Status;
 }
 
-export default function StatusBadge({status}: StatusBadgeProps) {
-
-  const getStatusStyle= (status: Status) => {
-     switch(status) {
-        case "Completed": 
+export default function StatusBadge({ status }: StatusBadgeProps) {
+  const getStatusStyle = (status: Status) => {
+    switch (status) {
+      case "completed":
         return {
-            bg:"bg-green-50",
-            text:"text-primary",
-            border: "border-green-200",
-            icon: 'checkmark-circle',
-            iconColor: "#666"
+          bg: "bg-green-50",
+          text: "text-primary",
+          border: "border-green-200",
+          icon: "checkmark-circle",
+          iconColor: "#666",
         };
 
-          case "Pending": 
+      case "pending":
         return {
-            bg:"bg-amber-50",
-            text:"text-amber-800",
-            border: "border-amber-200",
-            icon: 'checkmark-circle',
-            iconColor: "#666"
+          bg: "bg-amber-50",
+          text: "text-amber-800",
+          border: "border-amber-200",
+          icon: "checkmark-circle",
+          iconColor: "#666",
         };
 
-          case "Missed": 
+      case "missed":
         return {
-            bg:"bg-red-50",
-            text:"text-red-800",
-            border: "border-red-200",
-            icon: 'checkmark-circle',
-            iconColor: "#666"
+          bg: "bg-red-50",
+          text: "text-red-800",
+          border: "border-red-200",
+          icon: "checkmark-circle",
+          iconColor: "#666",
         };
 
-          case "Partial": 
+      case "partial":
         return {
-            bg:"bg-yellow-50",
-            text:"text-yellow-800",
-            border: "border-yellow-200",
-            icon: 'checkmark-circle',
-            iconColor: "#666"
+          bg: "bg-yellow-50",
+          text: "text-yellow-800",
+          border: "border-yellow-200",
+          icon: "checkmark-circle",
+          iconColor: "#666",
         };
-           default:
+      default:
         return {
-            bg:"bg-gray-50",
-            text:"text-gray-800",
-            border: "border-gray-200",
-            icon: 'checkmark-circle',
-            iconColor: "#666"
+          bg: "bg-gray-50",
+          text: "text-gray-800",
+          border: "border-gray-200",
+          icon: "checkmark-circle",
+          iconColor: "#666",
         };
-
-     }
+    }
   };
 
-  const style = getStatusStyle(status)
+  const style = getStatusStyle(status);
 
   return (
-    <View className={`flex-row items-center rounded-full px-3 py-1.5 border ${style.bg} ${style.border} `}>
-        <Ionicons
-         name={style.icon as any}
-         size={14}
-         color={style.iconColor}
-         style = {{marginRight: 4}} />
+    <View
+      className={`flex-row items-center rounded-full px-3 py-1.5 border ${style.bg} ${style.border} `}
+    >
+      <Ionicons
+        name={style.icon as any}
+        size={14}
+        color={style.iconColor}
+        style={{ marginRight: 4 }}
+      />
 
-         <Text className={`font-medium text-sm ${style.text}`}>
-          {status}
-         </Text>
+      <Text className={`font-medium text-sm ${style.text}`}>{status}</Text>
     </View>
-  )
-
+  );
 }

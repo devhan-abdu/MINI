@@ -15,7 +15,7 @@ export default function ScreenWrapper({ children, className = "" }: IScreenWrapp
         behavior={Platform.OS === "ios" ? "padding" : undefined}
       >
         <ScrollView
-          contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingHorizontal: 16 }}
+          contentContainerStyle={{ flexGrow: 1, justifyContent: "center", paddingHorizontal: 12 }}
           keyboardShouldPersistTaps="handled"
         >
           <Pressable onPress={Keyboard.dismiss} className="flex-1">
