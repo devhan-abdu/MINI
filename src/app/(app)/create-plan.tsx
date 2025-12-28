@@ -5,21 +5,23 @@ import { Alert, Pressable, Text, TextInput, View } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Input from "@/src/components/ui/Input";
 import SurahDropdown, {
-  SurahPageDropdown,
-} from "@/src/components/SurahDropdown";
+   SurahPageDropdown,
+} from "@/src/features/muraja/components/SurahDropdown";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import {
-  IWeeklyMurajaDay,
+  IWeeklyMurajaDayInsert,
   WeeklyMurajaFormType,
   WeeklyMurajaSchema,
-  WeeklyMurajaType,
 } from "@/src/types";
 import { useState } from "react";
 import { Button } from "@/src/components/ui/Button";
-import { addWeeklyPlan, addWeeklyPlanDays } from "@/src/services";
 import { useSession } from "@/src/hooks/useSession";
-import { getPlannedDates } from "@/src/lib/utils";
+import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
+import { useCreatePlan } from "@/src/features/muraja/hooks/useCreatePlan";
+import { getPlannedDates } from "@/src/features/muraja/utils/dateHelpers";
+import { getWeeklyPlanData } from "@/src/features/muraja/utils/quranMapping";
+
 
 const dayObjects = [
   { name: "Mon", offset: 0 },
@@ -35,12 +37,13 @@ export default function CreateWeeklyPlan() {
   const router = useRouter();
   const [showDatePicker, setShowDatePicker] = useState(false);
   const { user } = useSession();
+  const { items } = useLoadSurahData();
+  const { createPlan, isCreating, error } = useCreatePlan();
 
   const {
     handleSubmit,
     formState: { errors, isSubmitting },
     control,
-    getValues,
   } = useForm({
     resolver: yupResolver(WeeklyMurajaSchema),
     defaultValues: {
@@ -62,40 +65,70 @@ export default function CreateWeeklyPlan() {
   const weekStart = useWatch({ control, name: "week_start_date" });
 
   const onSubmit = async (data: WeeklyMurajaFormType) => {
+   if (!user?.id) return;
+   
     try {
-      const formValues = getValues();
-
       const { selectedDays, ...rest } = data;
-      const planData = await addWeeklyPlan({
+
+      const calculatedDays = getPlannedDates(
+        weekStart,
+        selectedDays as number[],
+        rest.planned_pages,
+        rest.start_page
+      );
+
+      const endDate = calculatedDays[calculatedDays.length - 1].date;
+
+      const quranData =
+        getWeeklyPlanData(
+          rest.start_page,
+          rest.planned_pages,
+          selectedDays.length,
+          items
+        );
+      
+      if (!quranData.startSurah || !quranData.endSurah) {
+        Alert.alert(
+          "Error",
+          "Could not calculate Quranic range. Please check your inputs."
+        );
+        return;
+      }
+
+      const planPayload ={
         ...rest,
         user_id: user!.id,
-      });
+        end_surah: quranData.endSurah,
+        start_surah: quranData.startSurah,
+        end_page:quranData.endPage,
+        start_juz: quranData.startJuz!,
+        end_juz: quranData.endJuz!,
+        total_days: selectedDays.length,
+        week_end_date: endDate,
+        status: "pending"
+      };
 
-      const weekly_plan_id = planData[0].id;
 
-      const selectedDayss = (
-        formValues.selectedDays as (number | undefined)[]
-      ).filter((d): d is number => d !== undefined);
-
-      const plannedDays: IWeeklyMurajaDay[] = getPlannedDates(
-        weekStart,
-        selectedDayss,
-        formValues.planned_pages,
-        formValues.start_page
-      ).map((day) => ({
-        ...day,
-        weekly_plan_id,
+      const daysPayload: IWeeklyMurajaDayInsert[] = calculatedDays.map((day) => ({
+        day_of_week: day.day_of_week,
+        date: day.date,
+        planned_start_page: day.planned_start_page!,
+        planned_end_page: day.planned_end_page!,
+        planned_pages: rest.planned_pages!,
+        estimated_time_min: rest.estimated_time_min!,
       }));
+      
+     await createPlan({planData: planPayload, days: daysPayload});
 
-      await addWeeklyPlanDays(plannedDays);
+
       Alert.alert("Success", "Weekly plan created successfully!", [
         {
           text: "OK",
           onPress: () => router.back(),
         },
       ]);
-    } catch (error) {
-      Alert.alert("Error", `Failed to create weekly plan`);
+    } catch (error: any) {
+      Alert.alert("Error", `Failed to create weekly plan ${error.message} `);
     }
   };
 
@@ -200,7 +233,7 @@ export default function CreateWeeklyPlan() {
                       flex-1 min-w-[64px] h-10 rounded-full border bg-white
                       ${
                         isSelected
-                          ? "border-green-100 bg-green-300 text-green-900"
+                          ? "border-green-100 bg-green-400 text-green-900"
                           : "border-gray-200 bg-white text-black"
                       }
                       items-center justify-center
@@ -349,14 +382,10 @@ export default function CreateWeeklyPlan() {
             <Button
               className="flex-1"
               onPress={() => {
-                // Check for errors first
                 if (Object.keys(errors).length > 0) {
-                  // Create error message from all fields
                   let errorMessage = "Please fix the following errors:\n\n";
 
-                  // Loop through all errors
                   Object.entries(errors).forEach(([fieldName, error]) => {
-                    // Format field name for better display
                     const formattedFieldName = fieldName
                       .replace(/_/g, " ")
                       .replace(/\b\w/g, (l) => l.toUpperCase());
@@ -370,15 +399,14 @@ export default function CreateWeeklyPlan() {
                   return;
                 }
 
-                // If no errors, submit the form
                 handleSubmit(onSubmit)();
               }}
-              disabled={isSubmitting}
+              disabled={isCreating}
             >
               <View className="flex-row items-center justify-center gap-2">
                 <Ionicons name="add-circle-outline" size={20} color="#fff" />
                 <Text className="text-white font-semibold text-base">
-                  {isSubmitting ? "Creating ..." : "Create Plan"}
+                  {isCreating ? "Creating ..." : "Create Plan"}
                 </Text>
               </View>
             </Button>
