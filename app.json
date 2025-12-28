@@ -53,13 +53,11 @@
     "extra": {
       "router": {},
       "eas": {
-        "projectId": "09854552-5538-4896-9152-9a50b25af950"
+        "projectId": "886f0dc1-bf5a-4a08-a916-c5aa4bd80362"
       }
     },
-    "owner": "devhananabdu",
-    "updates": {
-      "url": "https://u.expo.dev/09854552-5538-4896-9152-9a50b25af950"
-    },
+    "owner": "devhan-abdu",
+    "updates": {},
     "runtimeVersion": {
       "policy": "appVersion"
     }

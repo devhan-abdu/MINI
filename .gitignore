@@ -29,7 +29,7 @@ yarn-error.*
 # macOS
 .DS_Store
 *.pem
-/src
+
 
 
 # local env files
@@ -43,3 +43,9 @@ app-example
 # generated native folders
 /ios
 /android
+.vscode
+_vscode
+.eas
+.expo
+
+

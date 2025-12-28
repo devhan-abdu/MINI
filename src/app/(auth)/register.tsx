@@ -1,8 +1,8 @@
 import ScreenWrapper from "@/src/components/ScreenWrapper";
 import { Button } from "@/src/components/ui/Button";
 import Input from "@/src/components/ui/Input";
-import { supabase } from "@/src/server/supabase";
 import { useRouter } from "expo-router";
+import { supabase } from "@/src/lib/supabase";
 import { useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
 
