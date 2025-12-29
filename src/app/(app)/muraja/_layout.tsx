@@ -55,7 +55,7 @@ export default function MurajaLayout() {
       />
 
       <Tabs.Screen
-        name="review"
+        name="[review]"
         options={{
           title: "Review",
           tabBarIcon: ({ focused, color }) => (
