@@ -42,7 +42,7 @@ export default function MurajaIndex() {
           {error ? (
             <Button onPress={() => refetch()}>Retry</Button>
           ) : (
-            <Button onPress={() => router.push("/create-plan")}>
+            <Button onPress={() => router.push("/(app)/muraja/create-plan")}>
               Create Plan
             </Button>
           )}
@@ -99,7 +99,7 @@ export default function MurajaIndex() {
 
       <Button
         className="mb-8 mt-auto"
-        onPress={() => router.push("/(app)/create-plan")}
+        onPress={() => router.push("/(app)/muraja/create-plan")}
       >
         Replace Current Plan
       </Button>
