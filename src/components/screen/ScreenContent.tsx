@@ -1,14 +1,32 @@
 import { ReactNode } from "react";
-import { ScrollView, View, Pressable, Keyboard } from "react-native";
+import {
+  ScrollView,
+  View,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  TouchableWithoutFeedback,
+} from "react-native";
 
 export function ScreenContent({ children }: { children: ReactNode }) {
   return (
-    <ScrollView
-      keyboardShouldPersistTaps="handled"
-      contentContainerStyle={{ paddingVertical: 16 }}
+    <KeyboardAvoidingView
+      behavior={Platform.OS === "ios" ? "padding" : "height"}
+      style={{ flex: 1 }}
+      keyboardVerticalOffset={Platform.OS === "ios" ? 100 : 0}
     >
-      <Pressable onPress={Keyboard.dismiss}>{children}</Pressable>
-    </ScrollView>
+      <ScrollView
+        contentContainerStyle={{
+          flexGrow: 1,
+          paddingVertical: 16,
+        }}
+        showsVerticalScrollIndicator={false}
+      >
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View className="flex-1 ">{children}</View>
+        </TouchableWithoutFeedback>
+      </ScrollView>
+    </KeyboardAvoidingView>
   );
 }
 

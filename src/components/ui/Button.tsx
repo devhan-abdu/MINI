@@ -2,7 +2,7 @@ import { cn } from "@/src/lib/utils";
 import { useState } from "react";
 import { Pressable, PressableProps, Text } from "react-native";
 
-type ButtonVariant = "primary" | "outline" | "ghost";
+type ButtonVariant = "primary" | "outline" | "ghost" | "none";
 
 interface ButtonProps extends PressableProps {
   children: React.ReactNode;
@@ -25,6 +25,7 @@ export function Button({
     primary: "bg-primary",
     outline: "border border-primary bg-transparent",
     ghost: "bg-transparent",
+    none: ""
   };
 
   return (
@@ -34,7 +35,7 @@ export function Button({
       onPressIn={() => setPressed(true)}
       onPressOut={() => setPressed(false)}
       className={cn(
-        "rounded-lg px-4 py-3 items-center justify-center",
+        "rounded-lg px-4 py-3 h-14 items-center justify-center",
         variants[variant],
         pressed && "opacity-80",
         disabled && "opacity-50",
