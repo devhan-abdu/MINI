@@ -6,18 +6,24 @@ export default function Progress({
   completionRate: number;
 }) {
   return (
-    <View className="mb-8">
-      <View className="flex-row items-center justify-between mb-2">
-        <Text className="text-gray-700 font-medium mb-2">Week Completion</Text>
-        <Text>{Math.round(completionRate)} %</Text>
+    <View className="mb-6 bg-primary/5 p-4 rounded-[24px] border border-primary/10">
+      <View className="flex-row items-center justify-between mb-3">
+        <View>
+          <Text className="text-primary-900 font-black text-sm uppercase tracking-tighter">
+            Week Completion
+          </Text>
+          <Text className="text-primary/50 text-[10px] font-bold">
+            Your weekly goal progress
+          </Text>
+        </View>
+        <Text className="text-primary font-black text-xl">
+          {Math.round(completionRate)}%
+        </Text>
       </View>
-      <View className={`overflow-hidden rounded-full h-4 bg-gray-400 w-full`}>
+      <View className="overflow-hidden rounded-full h-3 bg-primary/10 w-full">
         <View
-          className="h-full rounded-full"
-          style={{
-            width: `${completionRate}%`,
-            backgroundColor: "#276359",
-          }}
+          className="h-full rounded-full bg-primary"
+          style={{ width: `${completionRate}%` }}
         />
       </View>
     </View>
