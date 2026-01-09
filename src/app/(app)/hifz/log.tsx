@@ -15,10 +15,10 @@ import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
 import { useAddLog } from "@/src/features/hifz/hook/useAddLog";
 import { useSession } from "@/src/hooks/useSession";
 import { Button } from "@/src/components/ui/Button";
-import { getNextTask } from "@/src/features/hifz/utils";
 import { IHifzLog } from "@/src/features/hifz/types";
 import Screen from "@/src/components/screen/Screen";
 import { ScreenContent, ScreenFooter } from "@/src/components/screen/ScreenContent";
+import { getNextTask } from "@/src/features/hifz/utils/quran-logic";
 
 export default function LogProgress() {
   const router = useRouter();
