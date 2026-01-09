@@ -13,7 +13,6 @@ export const useGetHifzPlan = () => {
         },
         enabled: !!user?.id 
     })
-     console.log(data, "from get HifzPlan")
 
     return {
         hifz: data,
