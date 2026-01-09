@@ -6,19 +6,19 @@ interface Props {
   progress: number;
   size?: number;
   strokeWidth?: number;
+  surahName?: string;
+  pages?: string;
 }
 
 export default function HifzOverViewCard({
-  progress,
-  size = 120,
+  progress = 0,
+  size = 125,
   strokeWidth = 10,
+  surahName = "Al-Baqarah",
+  pages = "12-15",
 }: Props) {
-  const surah = "Al-Baqarah";
-  const startPage = 12;
-  const endpage = 15;
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
-
   const strokeDashoffset = circumference - (circumference * progress) / 100;
 
   return (
@@ -32,7 +32,7 @@ export default function HifzOverViewCard({
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="#e5e7eb"
+            stroke="rgba(255, 255, 255, 0.2)"
             strokeWidth={strokeWidth}
             fill="none"
           />
@@ -41,7 +41,7 @@ export default function HifzOverViewCard({
             cx={size / 2}
             cy={size / 2}
             r={radius}
-            stroke="#0b6623"
+            stroke="#ffffff"
             strokeWidth={strokeWidth}
             fill="none"
             strokeDasharray={circumference}
@@ -51,17 +51,24 @@ export default function HifzOverViewCard({
         </G>
       </Svg>
 
-      <View className="absolute inset-0 items-center justify-center pt-2">
-        <Text className="text-gray-400 font-bold text-[10px] uppercase">
+      <View className="absolute inset-0 items-center justify-center">
+        <Text className="text-white/60 font-bold text-[8px] uppercase tracking-tighter">
           Surah
         </Text>
-        <Text className="text-xl font-black text-gray-900 text-center leading-6">
-          Al-Baqarah
+
+        <Text
+          numberOfLines={1}
+          className="text-white text-sm font-black text-center px-1"
+        >
+          {surahName}
         </Text>
-        <View className="mt-2 bg-green-500/10 px-2 py-0.5 rounded-full">
-          <Text className="text-green-600 font-bold text-[10px]">
-            Pg {startPage}-{endpage}
-          </Text>
+
+        <Text className="text-white/70 text-[10px] font-semibold mt-0.5">
+          {Math.round(progress)}%
+        </Text>
+
+        <View className="mt-1 bg-white/20 px-2 py-0.5 rounded-full border border-white/10">
+          <Text className="text-white font-bold text-[9px]">Pg {pages}</Text>
         </View>
       </View>
     </View>
