@@ -8,6 +8,7 @@ import { router, Stack } from "expo-router";
 import { useEffect } from "react";
 import { ActivityIndicator, useColorScheme, View } from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
+import { StatusBar } from "expo-status-bar";
 
 export function RootLayoutNav() {
   const { session, loading } = useSession();
@@ -19,7 +20,7 @@ export function RootLayoutNav() {
     if (!session) {
       router.replace("/login");
     } else {
-      router.replace("/(app)");
+      router.replace("/(app)/muraja");
     }
   });
 
@@ -34,6 +35,7 @@ export function RootLayoutNav() {
   return (
     <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
       <SafeAreaProvider>
+        <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" />
           <Stack.Screen name="(app)" />

@@ -1,10 +1,11 @@
-import ScreenWrapper from "@/src/components/ScreenWrapper";
 import { Button } from "@/src/components/ui/Button";
 import Input from "@/src/components/ui/Input";
 import { useRouter } from "expo-router";
 import { supabase } from "@/src/lib/supabase";
 import { useState } from "react";
 import { Alert, Pressable, Text, View } from "react-native";
+import Screen from "@/src/components/screen/Screen";
+import { ScreenContent } from "@/src/components/screen/ScreenContent";
 
 export default function RegisterPage() {
   const [userName, setUserName] = useState("");
@@ -52,63 +53,84 @@ export default function RegisterPage() {
   }
 
   return (
-    <ScreenWrapper>
-      <View className="flex-1 mt-20">
-        <View className="flex-col gap-2 mb-10">
-          <Text className="text-[30px] font-bold text-black text-center">Create Your Account</Text>
-          <Text className="text-black/95 text-center">Start tracking your Quran journey today!</Text>
-        </View>
-
-        <Input
-          label="User Name"
-          placeholder="Enter your user name"
-          value={userName}
-          setValue={setUserName}
-        />
-        {errors.userName && <Text className="text-red-500 text-sm mt-1">{errors.userName}</Text>}
-
-        <Input
-          label="Email"
-          placeholder="Enter your email"
-          value={email}
-          setValue={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        {errors.email && <Text className="text-red-500 text-sm mt-1">{errors.email}</Text>}
-
-        <Input
-          label="Password"
-          placeholder="Enter your password"
-          value={password}
-          setValue={setPassword}
-        autoCapitalize="none"
-          secureTextEntry
-        />
-        {errors.password && <Text className="text-red-500 text-sm mt-1">{errors.password}</Text>}
-
-        <Input
-          label="Confirm Password"
-          placeholder="Confirm your password"
-          value={confirmPassword}
-          setValue={setConfirmPassword}
-            autoCapitalize="none"
-          secureTextEntry
-        />
-        {errors.confirmPassword && <Text className="text-red-500 text-sm mt-1">{errors.confirmPassword}</Text>}
-
-        <View className="mt-6 space-y-4">
-          <Button onPress={handleRegister} disabled={loading} variant="primary">
-            {loading ? "Signing up..." : "Sign Up"}
-          </Button>
-
-          <Pressable onPress={() => router.push("/(auth)/login")}>
-            <Text className="text-center font-medium text-black/60 text-lg py-6">
-              Already have an account? <Text className="text-primary font-bold">Login</Text>
+    <Screen>
+      <ScreenContent>
+        <View className="flex-1 mt-20">
+          <View className="flex-col gap-2 mb-10">
+            <Text className="text-[30px] font-bold text-black text-center">
+              Create Your Account
             </Text>
-          </Pressable>
+            <Text className="text-black/95 text-center">
+              Start tracking your Quran journey today!
+            </Text>
+          </View>
+
+          <Input
+            label="User Name"
+            placeholder="Enter your user name"
+            value={userName}
+            setValue={setUserName}
+          />
+          {errors.userName && (
+            <Text className="text-red-500 text-sm mt-1">{errors.userName}</Text>
+          )}
+
+          <Input
+            label="Email"
+            placeholder="Enter your email"
+            value={email}
+            setValue={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          {errors.email && (
+            <Text className="text-red-500 text-sm mt-1">{errors.email}</Text>
+          )}
+
+          <Input
+            label="Password"
+            placeholder="Enter your password"
+            value={password}
+            setValue={setPassword}
+            autoCapitalize="none"
+            secureTextEntry
+          />
+          {errors.password && (
+            <Text className="text-red-500 text-sm mt-1">{errors.password}</Text>
+          )}
+
+          <Input
+            label="Confirm Password"
+            placeholder="Confirm your password"
+            value={confirmPassword}
+            setValue={setConfirmPassword}
+            autoCapitalize="none"
+            secureTextEntry
+          />
+          {errors.confirmPassword && (
+            <Text className="text-red-500 text-sm mt-1">
+              {errors.confirmPassword}
+            </Text>
+          )}
+
+          <View className="mt-6 space-y-4">
+            <Button
+              onPress={handleRegister}
+              disabled={loading}
+              variant="primary"
+            >
+              {loading ? "Signing up..." : "Sign Up"}
+            </Button>
+
+            <Pressable onPress={() => router.push("/(auth)/login")}>
+              <Text className="text-center font-medium text-black/60 text-lg py-6">
+                Already have an account?{" "}
+                <Text className="text-primary font-bold">Login</Text>
+              </Text>
+            </Pressable>
+          </View>
         </View>
-      </View>
-    </ScreenWrapper>
+      </ScreenContent>
+    </Screen>
   );
 }
