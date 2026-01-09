@@ -1,5 +1,4 @@
 import { Button } from "@/src/components/ui/Button";
-import { StatusChip } from "@/src/components/ui/StatusChip";
 import { TodayPlanType } from "@/src/types";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -37,63 +36,90 @@ export const TodayMurajaCard = ({
           <Ionicons name="book-outline" size={24} color="#276359" />
         </View>
 
-        <View className="border-t border-gray-300 pt-6 ">
-          {status !== "pending" ? (
-            <View className="gap-3">
-              <StatusChip status={todayPlan.status} />
-              <Button
-                className="py-3 mt-2"
-                onPress={() =>
-                  router.push(`/muraja/weekly-plane/${todayPlan.id}`)
-                }
-              >
-                Log Today's Muraja'a
-              </Button>
-            </View>
-          ) : (
-            <View className="flex-row justify-between gap-3">
-              <ActionButton
-                label="Done"
-                color="bg-green-600"
-                onPress={() => onStatusUpdate("completed")}
-                loading={isUpdating}
-                disabled={isDisabled}
-              />
-              <ActionButton
-                label="Partial"
-                color="bg-yellow-500"
-                onPress={() => onStatusUpdate("partial")}
-                loading={isUpdating}
-                disabled={isDisabled}
-              />
-              <ActionButton
-                label="Missed"
-                color="bg-red-500"
-                onPress={() => onStatusUpdate("missed")}
-                loading={isUpdating}
-                disabled={isDisabled}
-              />
-            </View>
-          )}
+        <View className="border-t border-slate-100 pt-6 mt-4">
+          <View className="flex-row justify-between items-center mb-4">
+            <Text className="text-[10px] font-black uppercase tracking-[2px] text-slate-400">
+              Session Status
+            </Text>
+
+            <Pressable
+              onPress={() =>
+                router.push(`/muraja/weekly-plane/${todayPlan.id}`)
+              }
+              className="flex-row items-center bg-primary/20 px-3 py-1.5 rounded-full active:bg-slate-100"
+            >
+              <Text className="text-primary font-bold text-[11px] mr-1.5">
+                Add Log
+              </Text>
+              <Ionicons name="chevron-forward" size={12} color="#276359" />
+            </Pressable>
+          </View>
+
+          <View className="flex-row justify-between gap-2">
+            <ActionButton
+              label="Done"
+              icon="checkmark-circle"
+              colorClass="bg-primary border-emerald-600"
+              onPress={() => onStatusUpdate("completed")}
+              isActive={todayPlan.status === "completed"}
+              loading={isUpdating}
+            />
+            <ActionButton
+              label="Partial"
+              icon="pie-chart"
+              colorClass="bg-primary border-primary"
+              onPress={() => onStatusUpdate("partial")}
+              isActive={todayPlan.status === "partial"}
+              loading={isUpdating}
+            />
+            <ActionButton
+              label="Missed"
+              icon="close-circle"
+              colorClass="bg-red-500 border-red-500"
+              onPress={() => onStatusUpdate("missed")}
+              isActive={todayPlan.status === "missed"}
+              loading={isUpdating}
+            />
+          </View>
         </View>
       </View>
     </View>
   );
 };
 
-const ActionButton = ({ label, color, onPress, loading, disabled }: any) => {
+const ActionButton = ({
+  label,
+  icon,
+  colorClass,
+  onPress,
+  loading,
+  disabled,
+  isActive,
+}: any) => {
   return (
     <Pressable
-      className={`flex-1 ${color}  px-3 py-2 rounded-xl active:opacity-70 ${
-        disabled ? "opacity-50" : ""
-      }`}
       onPress={onPress}
       disabled={disabled}
+      className={`flex-1 flex-row items-center justify-center gap-2 px-3 py-3 rounded-2xl border 
+        ${isActive ? colorClass : "bg-white border-slate-100"} 
+        ${disabled ? "opacity-40" : "active:scale-[0.96] shadow-sm"}`}
     >
       {loading ? (
-        <ActivityIndicator color="white" size="small" />
+        <ActivityIndicator size="small" color="#64748b" />
       ) : (
-        <Text className="text-center font-bold text-white">{label}</Text>
+        <>
+          <Ionicons
+            name={icon}
+            size={16}
+            color={isActive ? "white" : "#64748b"}
+          />
+          <Text
+            className={`text-[11px] font-black uppercase tracking-wider 
+            ${isActive ? "text-white" : "text-slate-500"}`}
+          >
+            {label}
+          </Text>
+        </>
       )}
     </Pressable>
   );

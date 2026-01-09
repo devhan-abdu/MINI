@@ -1,4 +1,3 @@
-import ScreenWrapper from "@/src/components/ScreenWrapper";
 import { Button } from "@/src/components/ui/Button";
 import UpcomingSessionCard from "@/src/features/muraja/components/UpcomingSessionCard";
 
@@ -11,6 +10,10 @@ import { useWeeklyMuraja } from "@/src/features/muraja/hooks/useWeeklyMuraja";
 import { useMurajaOperation } from "@/src/features/muraja/hooks/useMurajaOperation";
 import { WeeklyOverviewCard } from "@/src/features/muraja/components/WeeklyOverviewCard";
 import { TodayMurajaCard } from "@/src/features/muraja/components/TodayMurajaCard";
+import { ScreenContent, ScreenFooter } from "@/src/components/screen/ScreenContent";
+import Screen from "@/src/components/screen/Screen";
+import MurajaEmptyState from "@/src/features/muraja/components/MurajaEmptyState";
+import { SectionHeader } from "@/src/components/SectionHeader";
 
 export default function MurajaIndex() {
   const router = useRouter();
@@ -27,27 +30,27 @@ export default function MurajaIndex() {
 
   if (loading)
     return (
-      <ScreenWrapper>
+      <Screen>
         <WeeklyMurajaSkeleton />
-      </ScreenWrapper>
+      </Screen>
     );
+  
+  if (!weeklyPlan) return (
+    <Screen>
+      <MurajaEmptyState/>
+    </Screen>
+  )
 
-  if (error || !weeklyPlan) {
+  if (error) {
     return (
-      <ScreenWrapper>
+      <Screen>
         <View className="flex-1 items-center justify-center gap-4">
           <Text className="text-center text-gray-500 mb-4">
-            {error ? "Failed to load plan" : "No active weekly plan found."}{" "}
+           Failed to load plan
           </Text>
-          {error ? (
-            <Button onPress={() => refetch()}>Retry</Button>
-          ) : (
-            <Button onPress={() => router.push("/(app)/muraja/create-plan")}>
-              Create Plan
-            </Button>
-          )}
+          <Button onPress={() => refetch()}>Retry</Button>
         </View>
-      </ScreenWrapper>
+      </Screen>
     );
   }
 
@@ -55,54 +58,48 @@ export default function MurajaIndex() {
   const formattedEnd = format(weeklyPlan.week_end_date, "MMM dd");
 
   return (
-    <ScreenWrapper>
-      <View className="mb-6 ">
-        <Text className="text-3xl font-bold text-gray-900">This Week Plan</Text>
-        <Text className=" text-gray-500">
-          For this week of {formattedStart} - {formattedEnd}
-        </Text>
-      </View>
+    <Screen>
+      <ScreenContent>
+        <WeeklyOverviewCard
+          weeklyPlan={weeklyPlan}
+          dayCount={plans.length}
+          dateRange={`${formattedStart} - ${formattedEnd}`}
+        />
 
-      <WeeklyOverviewCard weeklyPlan={weeklyPlan} dayCount={plans.length} />
-
-      {todayPlan ? (
-        <View className="mb-8">
-          <Text className="font-bold text-xl mb-4">Today's Muraja'a</Text>
-          <TodayMurajaCard
-            todayPlan={todayPlan}
-            onStatusUpdate={(status) =>
-              updateLog({ dayId: todayPlan.id, status })
-            }
-            isUpdating={isUpdating}
-          />
+        <View className="mt-4 mb-4">
+          <SectionHeader title="Today's Muraja'a" />
+          {todayPlan ? (
+            <TodayMurajaCard
+              todayPlan={todayPlan}
+              onStatusUpdate={(status) =>
+                updateLog({ dayId: todayPlan.id, status })
+              }
+              isUpdating={isUpdating}
+            />
+          ) : (
+            <View className="p-6 bg-gray-50 rounded-[32px] border border-dashed border-gray-200">
+              <Text className="text-center text-gray-400 font-medium">
+                No session scheduled for today.
+              </Text>
+            </View>
+          )}
         </View>
-      ) : (
-        <View className="p-6 bg-gray-50 rounded-2xl border border-dashed border-gray-300 mb-8">
-          <Text className="text-center text-gray-500">
-            No session scheduled for today.
-          </Text>
-        </View>
-      )}
 
-      {upcomingSessions.length > 0 && (
-        <View className="mb-8">
-          <Text className="font-bold text-xl mb-4">Upcoming Sessions</Text>
-          <UpcomingSessionCard upcomingSessions={upcomingSessions} />
-        </View>
-      )}
-
-      {!todayPlan && upcomingSessions.length === 0 && (
-        <Text className="text-gray-400 italic text-center mt-8">
-          No Upcoming plan for this week
-        </Text>
-      )}
-
-      <Button
-        className="mb-8 mt-auto"
-        onPress={() => router.push("/(app)/muraja/create-plan")}
-      >
-        Replace Current Plan
-      </Button>
-    </ScreenWrapper>
+        {upcomingSessions.length > 0 && (
+          <View className="mt-4">
+            <SectionHeader
+              title="Upcoming Sessions"
+              badge={`${upcomingSessions.length} Days`}
+            />
+            <UpcomingSessionCard upcomingSessions={upcomingSessions} />
+          </View>
+        )}
+      </ScreenContent>
+      <ScreenFooter>
+        <Button className="" onPress={() => router.push("/(app)/create-muraja-plan")}>
+          Replace Current Plan
+        </Button>
+      </ScreenFooter>
+    </Screen>
   );
 }

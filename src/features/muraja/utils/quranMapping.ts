@@ -9,6 +9,15 @@ export const fullDayNames: Record<string, string> = {
     Fri: "Friday",
     Sat: "Saturday",
 };
+
+export const DAY_MAP: Record<string, string> = {
+  "Monday": "Mon", "Tuesday": "Tue", "Wednesday": "Wed", "Thursday": "Thu",
+  "Friday": "Fri", "Saturday": "Sat", "Sunday": "Sun"
+};
+export const DAY_NUMBER_MAP: Record<string, number> = {
+  "Monday": 1, "Tuesday":2 ,"Wednesday": 3, "Thursday": 4,
+  "Friday": 5, "Saturday": 6, "Sunday": 0
+};
   
 const juzStartPages = [
   1, 22, 42, 62, 82, 102, 122, 142, 162, 182,
@@ -26,6 +35,9 @@ export function getJuzByPage(page: number) {
 export function getSurahByPage(page: number, surah: ISurah[]) {
      return surah.find(s => page >=s.startingPage && page <= s.endingPage)?.englishName
 }
+export function getSurah(page: number, surah: ISurah[]) {
+        return surah.find(s => page >=s.startingPage && page <= s.endingPage)
+}
 
 export function getWeeklyPlanData(startPage: number , plannedPages: number, selectedDaysLength: number, surah: ISurah[]) {
   const endPage = startPage + plannedPages * selectedDaysLength - 1
@@ -36,5 +48,7 @@ export function getWeeklyPlanData(startPage: number , plannedPages: number, sele
 
   return {  startSurah,endPage, endSurah, startJuz, endJuz}
 }
+
+
 
 

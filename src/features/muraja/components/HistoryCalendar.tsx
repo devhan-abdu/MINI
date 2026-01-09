@@ -83,7 +83,7 @@ export const HistoryCalendar = ({
       </View>
       <View className="flex-row items-center justify-center gap-6 border-t border-slate-200 py-5">
         <View className="flex-row items-center gap-2">
-          <Text className="bg-gray-200 rounded-full w-3 h-3" />
+          <Text className="bg-green-200 rounded-full w-3 h-3" />
 
           <Text className="text-sm text-black/80">Completed</Text>
         </View>

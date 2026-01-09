@@ -11,25 +11,26 @@ export default function MurajaLayout() {
         tabBarActiveTintColor: ACTIVE_COLOR,
         tabBarInactiveTintColor: INACTIVE_COLOR,
         tabBarStyle: {
-          height: 70,
-          borderTopWidth: 0.5,
-          elevation: 8,
-          paddingBottom: 12,
-          paddingTop: 2,
+          backgroundColor: "#fff",
+          borderTopWidth: 1,
+          borderTopColor: "#f3f4f6",
+          elevation: 0,
+          shadowOpacity: 0,
         },
+        headerStyle: { backgroundColor: "#fff" },
+        headerTintColor: "#111",
         tabBarLabelStyle: {
-          fontSize: 12,
-          fontWeight: "500",
+          fontSize: 11,
+          fontWeight: "700",
+          marginBottom: 5,
         },
-        headerTitleStyle: {
-          fontWeight: "bold",
-        },
+        headerShadowVisible: true,
       }}
     >
       <Tabs.Screen
         name="index"
         options={{
-          title: "Daily",
+          title: "Muraja",
           tabBarIcon: ({ focused, color }) => (
             <Ionicons
               name={focused ? "list" : "list-outline"}

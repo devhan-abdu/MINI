@@ -7,8 +7,9 @@ import { TodayPlanType } from "@/src/types";
 
 
 export default function WeeklyPlanCard({
- plan
-}: { plan: TodayPlanType }) {
+  plan,
+  isHero = false
+}: { plan: TodayPlanType, isHero?: boolean }) {
   const {id:planId ,day_of_week:day , date , status , startSurah, endSurah, log_id: logId , planned_pages:pages ,estimated_time_min: minutes , planned_start_page:startPage, planned_end_page:endPage } = plan;
  
   const router = useRouter();
@@ -24,69 +25,104 @@ export default function WeeklyPlanCard({
       },
     });
   };
+
+
+  const containerStyle = isHero
+    ? "bg-primary rounded-[32px] p-6 shadow-xl shadow-primary/30 border border-white/10 mb-6"
+    : "bg-white rounded-[24px] p-5 border border-gray-200 mb-4 shadow-xs ";
+
+  const textPrimary = isHero ? "text-white" : "text-gray-900";
+  const textSecondary = isHero ? "text-white/60" : "text-gray-500";
+  const dividerColor = isHero ? "bg-white/10" : "bg-gray-100";
+  const iconColor = isHero ? "#ffffff" : "#4b5563";
+
   return (
-    <View
-      className="border border-gray-300 bg-white shadow-sm rounded-xl flex-col gap-4 px-4 py-5 mb-4"
-      key={plan.id}
-    >
-      <View className="flex-row justify-between items-center mb-2">
-        <View>
-          <Text className="text-xl font-bold text-gray-900">{day}</Text>
-          <Text className="text-sm text-gray-900 mt-1">
+    <View className={containerStyle}>
+      <View className="flex-row justify-between items-start mb-5">
+        <View className="flex-1">
+          <Text
+            className={`${textSecondary} text-[10px] font-black uppercase tracking-widest mb-1`}
+          >
+            {isHero ? "Current Session" : day}
+          </Text>
+          <Text className={`${textPrimary} text-2xl font-black tracking-tight`}>
             {startSurah === endSurah
               ? startSurah
               : `${startSurah} – ${endSurah}`}
           </Text>
         </View>
-        <StatusBadge status={status} />
+        <StatusBadge status={status} inverted={isHero} />
       </View>
 
-      <View className="flex-row items-center justify-between px-2 border-t border-gray-200 pt-4">
-        <View className="items-center flex-1">
+      <View
+        className={`flex-row items-center border-t ${
+          isHero ? "border-white/10" : "border-gray-100"
+        } pt-5`}
+      >
+        <View className="flex-1">
           <View className="flex-row items-center gap-2 mb-1">
-            <Ionicons name="book-outline" size={16} color="#4b5563" />
-            <Text className="text-sm text-gray-700 font-medium">
-              page {startPage} - {endPage}
+            <Ionicons
+              name="book-outline"
+              size={14}
+              color={isHero ? "rgba(255,255,255,0.6)" : iconColor}
+            />
+            <Text className={`${textPrimary} font-bold text-sm`}>
+              Pgs {startPage}-{endPage}
             </Text>
           </View>
-          <Text className="text-xs text-gray-500">Page</Text>
+          <Text className={`${textSecondary} text-[9px] font-bold uppercase`}>
+            Range
+          </Text>
         </View>
 
-        <View className="h-6 w-px bg-gray-300" />
+        <View className={`h-8 w-[1px] ${dividerColor} mx-4`} />
 
-        <View className="items-center flex-1">
+        <View className="flex-1">
           <View className="flex-row items-center gap-2 mb-1">
-            <Ionicons name="time-outline" size={16} color="#4b5563" />
-            <Text className="text-sm text-gray-700 font-medium">
-              {minutes} min
+            <Ionicons
+              name="time-outline"
+              size={14}
+              color={isHero ? "rgba(255,255,255,0.6)" : iconColor}
+            />
+            <Text className={`${textPrimary} font-bold text-sm`}>
+              {minutes}m
             </Text>
           </View>
-          <Text className="text-xs text-gray-500">Time</Text>
+          <Text className={`${textSecondary} text-[9px] font-bold uppercase`}>
+            Duration
+          </Text>
         </View>
 
-        <View className="h-6 w-px bg-gray-300" />
-        <View className="items-center flex-1">
+        <View className={`h-8 w-[1px] ${dividerColor} mx-4`} />
+
+        <View className="flex-1">
           <View className="flex-row items-center gap-2 mb-1">
-            <Ionicons name="layers-outline" size={16} color="#4b5563" />
-            <Text className="text-sm text-gray-700 font-medium">
-              {pages} pages
-            </Text>
+            <Ionicons
+              name="layers-outline"
+              size={14}
+              color={isHero ? "rgba(255,255,255,0.6)" : iconColor}
+            />
+            <Text className={`${textPrimary} font-bold text-sm`}>{pages}</Text>
           </View>
-          <Text className="text-xs text-gray-500">Pages</Text>
+          <Text className={`${textSecondary} text-[9px] font-bold uppercase`}>
+            Pages
+          </Text>
         </View>
       </View>
 
       {date <= today && (
         <Button
-          className="py-3 mt-4"
+          className={`mt-6 h-12 rounded-2xl ${
+            isHero ? "bg-white shadow-none" : ""
+          }`}
           onPress={handlePress}
-          variant={today === date ? "primary" : "outline"}
+          variant={isHero ? "none" : today === date ? "primary" : "outline"}
         >
           {today === date
             ? "Log Today's Muraja'a"
             : status === "completed"
             ? "Veiw Log"
-            : "Log Past Day"}
+            : "Log Past Day"}{" "}
         </Button>
       )}
     </View>

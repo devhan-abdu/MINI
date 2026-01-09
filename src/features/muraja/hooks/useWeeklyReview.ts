@@ -5,7 +5,7 @@ import { murajaServices } from "../services/murajaServices";
 import { computeWeeklyReview } from "../utils/murajaAnalytics";
 
 
-export const useWeeklyReview = (weekId: number) => {
+export const useWeeklyReview = (weekId?: number) => {
     const { user } = useSession();
 
     const { data:plan, isLoading, isError, refetch } = useQuery({
@@ -14,7 +14,8 @@ export const useWeeklyReview = (weekId: number) => {
             if (!user?.id) return null;
             return murajaServices.getReviewStats(user.id, weekId);
         },
-        enabled: !!user?.id && !!weekId , 
+        enabled: !!user?.id,
+        
     });
 
    

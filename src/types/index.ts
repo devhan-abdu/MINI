@@ -44,9 +44,10 @@ export const WeeklyMurajaSchema = Yup.object({
     .min(1, "Estimated time must be greater than zero"),
 
   selectedDays: Yup.array()
-    .of(Yup.number())
-    .min(1, "select at least one day")
-    .required("please select days"),
+  .of(Yup.number().required())
+  .min(1, "select at least one day")
+  .required("please select days"),
+
 
   place: Yup.string().nullable(),
   note: Yup.string().nullable(),
@@ -123,6 +124,8 @@ export interface IWeeklyMurajaDay {
  
 }
 
+// days.map(day => ({dayName: day.day_of_week ,stats:day.daily_muraja_logs.status}))
+
 
 export interface IWeeklyMurajaDayInsert {
   date: string;
@@ -134,7 +137,7 @@ export interface IWeeklyMurajaDayInsert {
   weekly_plan_id?: number; 
 }
 export type TodayPlanType = IWeeklyMurajaDay & {
-  status: IDayLog["status"];
+  status: "pending" | "completed" | "partial" | "missed";
   log_id: number | null;
   startSurah?: string ;
   endSurah?: string;

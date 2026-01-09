@@ -1,10 +1,13 @@
-import ScreenWrapper from "@/src/components/ScreenWrapper";
 import WeeklyPlanCard from "@/src/features/muraja/components/WeeklyPlaneCard";
-import { ScrollView, Text, View, RefreshControl } from "react-native";
+import {  View } from "react-native";
 import { TodaySkeleton } from "@/src/features/muraja/components/skeletons";
 import Progress from "@/src/components/Progress";
 import { useWeeklyMuraja } from "@/src/features/muraja/hooks/useWeeklyMuraja";
 import { useMemo } from "react";
+import Screen from "@/src/components/screen/Screen";
+import { ScreenContent } from "@/src/components/screen/ScreenContent";
+import MurajaEmptyState from "@/src/features/muraja/components/MurajaEmptyState";
+import { SectionHeader } from "@/src/components/SectionHeader";
 
 export default function WeeklyPlan() {
   const {
@@ -13,10 +16,8 @@ export default function WeeklyPlan() {
     todayPlan,
     upcomingSessions,
     loading,
-    refetch,
   } = useWeeklyMuraja();
 
-  if (!weeklyPlan || !plans) return null;
 
   const pastPlans = useMemo(() => {
     const today = new Date().toISOString().slice(0, 10);
@@ -31,58 +32,49 @@ export default function WeeklyPlan() {
 
   if (loading && !plans.length) {
     return (
-      <ScreenWrapper>
-        {[1, 2, 3, 4].map((i) => (
-          <TodaySkeleton key={i} />
-        ))}
-      </ScreenWrapper>
+      <Screen>
+        <ScreenContent>
+          {[1, 2, 3, 4].map((i) => (
+            <TodaySkeleton key={i} />
+          ))}
+        </ScreenContent>
+      </Screen>
     );
   }
+  if (!weeklyPlan || !plans) {
+    return <MurajaEmptyState />;
+  }
 
-  return (
-    <ScreenWrapper>
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl refreshing={loading} onRefresh={refetch} />
-        }
-      >
+return (
+  <Screen>
+    <ScreenContent>
+      <Progress completionRate={progressPercentage} />
+
+      {todayPlan && (
         <View className="mb-6">
-          <Text className="text-sm text-gray-500 uppercase font-bold tracking-widest mb-1">
-            Weekly Progress
-          </Text>
-          <Progress completionRate={progressPercentage} />
+          <SectionHeader title="Focus Today" />
+          <WeeklyPlanCard plan={todayPlan} isHero={true} />
         </View>
+      )}
 
-        {todayPlan && (
-          <View className="mb-6">
-            <Text className="text-xl font-bold mb-4 text-gray-800">Today</Text>
-            <WeeklyPlanCard key={todayPlan.id} plan={todayPlan} />
-          </View>
-        )}
+      {upcomingSessions.length > 0 && (
+        <View className="mb-6">
+          <SectionHeader title="Next Sessions" />
+          {upcomingSessions.map((plan) => (
+            <WeeklyPlanCard key={plan.id} plan={plan} />
+          ))}
+        </View>
+      )}
 
-        {upcomingSessions.length > 0 && (
-          <View className="mb-6">
-            <Text className="text-xl font-bold mb-4 text-gray-800">
-              Upcoming
-            </Text>
-            {upcomingSessions.map((plan) => (
-              <WeeklyPlanCard key={plan.id} plan={plan} />
-            ))}
-          </View>
-        )}
-
-        {pastPlans.length > 0 &&
-           <View className="mb-6">
-            <Text className="text-xl font-bold mb-4 text-gray-800">
-              History
-            </Text>
-            {pastPlans.map((plan) => (
-              <WeeklyPlanCard key={plan.id} plan={plan} />
-            ))}
-          </View>
-        }
-      </ScrollView>
-    </ScreenWrapper>
-  );
+      {pastPlans.length > 0 && (
+        <View className="mb-6 opacity-70">
+          <SectionHeader title="Completed History" />
+          {pastPlans.map((plan) => (
+            <WeeklyPlanCard key={plan.id} plan={plan} />
+          ))}
+        </View>
+      )}
+    </ScreenContent>
+  </Screen>
+);
 }

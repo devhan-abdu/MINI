@@ -8,6 +8,8 @@ export default function WeeklyPlaneLayout() {
         options={{
           headerTitle: "Weekly Plane",
           headerShown: true,
+          headerStyle: { backgroundColor: "#fff" },
+          headerTintColor: "#111",
         }}
       />
     </Stack>

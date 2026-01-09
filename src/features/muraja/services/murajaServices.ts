@@ -46,14 +46,14 @@ const FULL_HISTORY_SELECT = `
 export const murajaServices = {
     
   async createCompletePlan({ planData, days }: { planData: WeeklyMurajaType, days: IWeeklyMurajaDayInsert[] }) {
-        const { data: newPlan, error: planError } = await supabase
-            .from("weekly_muraja_plan")
-            .insert(planData)
-            .select()
-            .single();
+    const { data: newPlan, error: planError } = await supabase
+      .from("weekly_muraja_plan")
+      .insert(planData)
+      .select()
+      .single();
     
     
-        if (planError) throw new Error(`Plan creation failed: ${planError.message}`)
+    if (planError) throw new Error(`Plan creation failed`)
         
         const linkedDays = days.map(day => ({ ...day, weekly_plan_id: newPlan.id }))
        
@@ -77,10 +77,9 @@ export const murajaServices = {
             // .eq("status", "active")           
             .order("week_start_date", { ascending: false })
             .limit(1)    
-            .maybeSingle();
+          .maybeSingle();
         
-        
-        if (error) throw new Error(`[murajaService.getDashboardState]: ${error.message}`);
+        if (error) throw new Error(`[murajaService.getDashboardState`);
          return data;
         
     },
@@ -120,10 +119,11 @@ export const murajaServices = {
     },
 
     async getReviewStats(userId: string, planId?: number):Promise<IMonthHistory | null> {
-    let query = supabase
+      
+      let query = supabase
       .from("weekly_muraja_plan")
-      .select(FULL_HISTORY_SELECT) 
-      .eq("user_id", userId);
+       .select(FULL_HISTORY_SELECT) 
+        .eq("user_id", userId)
 
     if (planId) {
       query = query.eq("id", planId);
@@ -132,10 +132,11 @@ export const murajaServices = {
         .eq("status", "completed")
         .order("week_end_date", { ascending: false })
         .limit(1);
-    }
+      }
+    
+    
 
-    const { data, error } = await query.maybeSingle();
-
+     const { data, error } = await query.maybeSingle();
     if (error) throw new Error(`[murajaService.getReviewStats]: ${error.message}`);
      return data ;
     },

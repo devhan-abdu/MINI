@@ -1,33 +1,30 @@
 import { Stack, useLocalSearchParams, useRouter } from "expo-router";
-import Progress from "@/src/components/Progress";
-import ScreenWrapper from "@/src/components/ScreenWrapper";
 import { Button } from "@/src/components/ui/Button";
 import { Ionicons } from "@expo/vector-icons";
 import { useMemo } from "react";
 import { Text, View } from "react-native";
-import { DayByDay } from "@/src/features/muraja/components/DayByDay";
 import { ReviewSkeleton } from "@/src/features/muraja/components/skeletons";
 import { useWeeklyReview } from "@/src/features/muraja/hooks/useWeeklyReview";
 import { formatWeekRange } from "@/src/features/muraja/utils/dateHelpers";
-import { fullDayNames } from "@/src/features/muraja/utils/quranMapping";
+import Screen from "@/src/components/screen/Screen";
+import { ScreenContent } from "@/src/components/screen/ScreenContent";
+import { DayByDay } from "@/src/features/muraja/components/DayByDay";
+import { SectionHeader } from "@/src/components/SectionHeader";
+import { WeeklyReportCard } from "@/src/features/hifz/components/WeeklyReportCard";
 
-const DAYS_OF_WEEK = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
 
 export default function WeeklyReviewPage() {
   const router = useRouter();
   const { review } = useLocalSearchParams<{ review: string }>();
-
   const { plan, analytics, isLoading, isError, refetch } = useWeeklyReview(
-    Number(review)
+    review ? Number(review) : undefined
   );
 
-  if (isLoading) {
-    return <ReviewSkeleton />;
-  }
+  if (isLoading) return <ReviewSkeleton />;
 
   if (isError) {
     return (
-      <ScreenWrapper>
+      <Screen>
         <View className="flex-1 items-center justify-center p-6">
           <Ionicons name="alert-circle-outline" size={48} color="#ef4444" />
           <Text className="text-lg font-bold mt-4">Something went wrong</Text>
@@ -38,15 +35,16 @@ export default function WeeklyReviewPage() {
             Try Again
           </Button>
         </View>
-      </ScreenWrapper>
+      </Screen>
     );
   }
   if (!plan || !analytics) {
     return (
-      <ScreenWrapper>
+      <Screen>
         <Stack.Screen
           options={{
-            headerTitle: "Review",
+            headerTitle: "Weekly Review",
+            headerShadowVisible: true
           }}
         />
         <View className="flex-1 items-center justify-center p-6 mt-20">
@@ -64,153 +62,98 @@ export default function WeeklyReviewPage() {
             Go Back
           </Button>
         </View>
-      </ScreenWrapper>
+      </Screen>
     );
   }
 
   const weekRange = formatWeekRange(plan?.week_start_date, plan?.week_end_date);
+
   const keyMetrics = useMemo(() => {
-    if (!analytics) return [];
+  if (!analytics) return [];
+  return [
+    {
+      id: 1,
+      label: "Total Time",
+      value: `${analytics.totalTime}m`,
+      icon: "time-outline",
+    },
+    {
+      id: 2,
+      label: "Avg/Session",
+      value: `${analytics.avgSession}m`,
+      icon: "speedometer-outline",
+    },
+    {
+      id: 3,
+      label: "Best Streak",
+      value: `${analytics.longestStreak}d`,
+      icon: "flame-outline",
+    },
+    {
+      id: 4,
+      label: "Peak Day",
+      value: analytics.bestDay,
+      icon: "trophy-outline",
+    },
+  ];
+}, [analytics]);
 
-    return [
-      {
-        id: 1,
-        label: "Total Time",
-        value: `${analytics.totalTime} min`,
-        icon: "time-outline",
-        color: "#10B981",
-        bgColor: "bg-emerald-50",
-      },
-      {
-        id: 2,
-        label: "Avg/Session",
-        value: `${analytics.avgSession} min`,
-        icon: "speedometer-outline",
-        color: "#3B82F6",
-        bgColor: "bg-blue-50",
-      },
-      {
-        id: 3,
-        label: "Longest Streak",
-        value: `${analytics.longestStreak}d`,
-        icon: "flame-outline",
-        color: "#F59E0B",
-        bgColor: "bg-amber-50",
-      },
-      {
-        id: 4,
-        label: "Best Day",
-        value: analytics.bestDay,
-        icon: "trophy-outline",
-        color: "#8B5CF6",
-        bgColor: "bg-violet-50",
-      },
-    ];
-  }, [analytics]);
+ return (
+   <>
+     <Stack.Screen
+       options={{ headerTitle: "Weekly Review", headerShadowVisible: true }}
+     />
+     <Screen>
+       <ScreenContent>
+         <WeeklyReportCard rate={ analytics.completionRate} completed={analytics.completed} partial={analytics.partial} missed={analytics.missed} weekRange={weekRange} />
 
-  return (
-    <ScreenWrapper>
-      <Stack.Screen
-        options={{
-          headerTitle: "Review",
-        }}
-      />
-      <View className="mb-6 flex-col gap-1">
-        <Text className="text-3xl font-bold text-gray-900">Weekly Review</Text>
-        <Text className="text-gray-500 text-sm">Overview for {weekRange}</Text>
-      </View>
+         <View className="mb-8">
+           <SectionHeader title="Daily Tracker" />
+           <DayByDay days={plan.weekly_plan_days ?? []} />
+         </View>
 
-      <View className="flex-row justify-between mb-8">
-        <View className="bg-green-100 flex-col items-center justify-center py-4 border border-slate-200 shadow-md rounded-xl w-[32%]">
-          <Text className="text-lg font-semibold text-center text-green-900">
-            Completed
-          </Text>
-          <Text className="text-xl font-bold text-center mt-1 text-green-900">
-            {analytics.completed}
-          </Text>
-        </View>
+         <View className="flex-row flex-wrap justify-between gap-3 mb-8">
+           {keyMetrics.map((metric) => (
+             <View
+               key={metric.id}
+               className="w-[48%] bg-white rounded-3xl p-4 border border-gray-100 flex-row items-center gap-3"
+             >
+               <View className="p-2 rounded-xl bg-gray-50">
+                 <Ionicons
+                   name={metric.icon as any}
+                   size={20}
+                   color="#276359"
+                 />
+               </View>
+               <View>
+                 <Text className="text-gray-500 font-bold text-sm uppercase tracking-tighter">
+                   {metric.label}
+                 </Text>
+                 <Text className="text-sm font-black text-gray-900">
+                   {metric.value}
+                 </Text>
+               </View>
+             </View>
+           ))}
+         </View>
 
-        <View className="bg-yellow-100 flex-col items-center justify-center border border-slate-200 shadow-md rounded-xl w-[32%]">
-          <Text className="text-lg font-semibold text-center text-yellow-900">
-            Partial
-          </Text>
-          <Text className="text-xl font-bold text-center mt-2 text-yellow-900">
-            {analytics.partial}
-          </Text>
-        </View>
-
-        <View className="bg-red-100 flex-col items-center justify-center border border-slate-200 shadow-md rounded-xl w-[32%]">
-          <Text className="text-lg font-semibold text-center text-red-900">
-            Missed
-          </Text>
-          <Text className="text-xl font-bold text-center mt-2 text-red-900">
-            {analytics.missed}
-          </Text>
-        </View>
-      </View>
-
-      <Progress completionRate={analytics.completionRate} />
-
-      <View className="mb-8 flex-col gap-4">
-        <Text className="text-bold text-lg">Day-by-Day Status</Text>
-        <View className="flex-row items-center gap-2 justify-between">
-          {DAYS_OF_WEEK.map((day) => {
-            const specficDayData = plan?.weekly_plan_days?.find(
-              (d) => d.day_of_week === fullDayNames[day]
-            );
-
-            return (
-              <View key={day}>
-                <DayByDay dayData={specficDayData} dayName={day} />
-              </View>
-            );
-          })}
-        </View>
-      </View>
-
-      <View className="flex-row flex-wrap justify-between gap-3 mb-8">
-        {keyMetrics.map((metric) => (
-          <View
-            key={metric.id}
-            className={`min-w-[48%] ${metric.bgColor} rounded-2xl p-4  border border-slate-200 rounded-xl flex-row items-center gap-3`}
-          >
-            <View className="p-3 rounded-full bg-white/30 items-center justify-center">
-              <Ionicons
-                name={metric.icon as any}
-                size={24}
-                color={metric.color}
-              />
-            </View>
-            <View className="flex-1">
-              <Text className="text-gray-700 font-semibold">
-                {metric.label}
-              </Text>
-              <Text className="text-lg font-bold text-gray-900">
-                {metric.value}
-              </Text>
-            </View>
-          </View>
-        ))}
-      </View>
-
-      <View className="p-4 border border-green-100 bg-green-100 text-green-900 flex-row gap-2 items-start rounded-lg shadow-md mb-8">
-        <Ionicons
-          name="bulb-outline"
-          size={24}
-          color="black"
-          className="rounded-full p-1 bg-green-100 text-green-900"
-        />
-        <View className="">
-          <Text className="text-green-900 fon-bold text-xl font-bold mb-2">
-            A Tip for the next week
-          </Text>
-          <Text className="text-sm text-black/80">
-            Lorem ipsum dolor sit amet consectetur adipisicing elit. Velit nam
-            nobis officia pariatur veniam ratione quisquam harum dolores
-            consequuntur? Nam.
-          </Text>
-        </View>
-      </View>
-    </ScreenWrapper>
-  );
+         <View className="bg-gray-50 rounded-[24px] p-5 border border-gray-100 flex-row gap-4 items-start mb-10">
+           <View className="bg-white p-2 rounded-lg shadow-sm">
+             <Ionicons name="bulb" size={20} color="#EAB308" />
+           </View>
+           <View className="flex-1">
+             <Text className="text-gray-900 font-black text-sm mb-1">
+               Growth Tip
+             </Text>
+             <Text className="text-gray-500 text-xs leading-5">
+               Consistency is better than intensity. If you are struggling with
+               a specific Juz, try reducing the daily page target for next week
+               to build confidence.
+             </Text>
+           </View>
+         </View>
+       </ScreenContent>
+     </Screen>
+   </>
+ );
 }
