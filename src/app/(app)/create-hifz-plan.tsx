@@ -16,13 +16,13 @@ import {
   HifzPlanSchemaFormType,
 } from "@/src/features/hifz/types";
 import SelectDays from "@/src/features/muraja/components/SelectDays";
-import { calculatePlanStats } from "@/src/features/hifz/utils";
 import StatsSummary from "@/src/features/hifz/components/StatsSummary";
 import { useGetHifzPlan } from "@/src/features/hifz/hook/useGetHifzPlan";
 import { useSaveHifzPlanHifz } from "@/src/features/hifz/hook/useSaveHifzPlan";
 import PlanFormSkeleton from "@/src/features/hifz/components/skeleton";
 import { ScreenContent, ScreenFooter } from "@/src/components/screen/ScreenContent";
 import Screen from "@/src/components/screen/Screen";
+import { calculatePlanStats } from "@/src/features/hifz/utils/plan-calculations";
 
 export default function CreateHifzPlan() {
   const router = useRouter();
