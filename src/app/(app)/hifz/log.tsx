@@ -4,13 +4,11 @@ import {
   Text,
   Pressable,
   TextInput,
-  ScrollView,
   Alert,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 
-import ScreenWrapper from "@/src/components/ScreenWrapper";
 import { StatusTab } from "@/src/features/hifz/components/StatusTab";
 import { useGetHifzPlan } from "@/src/features/hifz/hook/useGetHifzPlan";
 import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
@@ -18,6 +16,9 @@ import { useAddLog } from "@/src/features/hifz/hook/useAddLog";
 import { useSession } from "@/src/hooks/useSession";
 import { Button } from "@/src/components/ui/Button";
 import { getNextTask } from "@/src/features/hifz/utils";
+import { IHifzLog } from "@/src/features/hifz/types";
+import Screen from "@/src/components/screen/Screen";
+import { ScreenContent, ScreenFooter } from "@/src/components/screen/ScreenContent";
 
 export default function LogProgress() {
   const router = useRouter();
@@ -60,39 +61,48 @@ export default function LogProgress() {
    };
  }, [plan, surahData]);
 
-  const handleSave = async () => {
-    if (!plan || !logContext || isCreating) return;
+ const handleSave = async () => {
+   if (!plan || !logContext || isCreating || !plan.id) return;
 
-    try {
-      const today = new Date();
-      const logDay = (today.getDay() + 6) % 7;
+   try {
+     const today = new Date();
+     const logDay = (today.getDay() + 6) % 7;
 
-      const payload = {
-        hifz_plan_id: plan.id,
-        user_id: user?.id,
-        actual_pages_completed: pages,
-        actual_start_page: logContext.startPage,
-        actual_end_page: logContext.endPage,
-        status,
-        date: today.toISOString().slice(0, 10),
-        log_day: logDay,
-        notes: notes.trim(),
-      };
+     
+     const actualTask = getNextTask(
+       plan.direction as "forward" | "backward",
+       plan.hifz_daily_logs?.length
+         ? plan.hifz_daily_logs[plan.hifz_daily_logs.length - 1].actual_end_page
+         : plan.start_page,
+       pages, 
+       surahData,
+       plan.hifz_daily_logs?.length === 0
+     );
 
-      await addLog({ todayLog: payload, userId: user?.id });
-      router.back();
-    } catch (err) {
-      Alert.alert("Error", "Could not save your progress. Please try again.");
-    }
-  };
+     const payload: IHifzLog = {
+       hifz_plan_id: plan.id,
+       actual_pages_completed: pages,
+       actual_start_page: logContext.startPage,
+       actual_end_page: actualTask?.endPage || logContext.startPage,
+       status,
+       date: today.toISOString().slice(0, 10),
+       log_day: logDay,
+       notes: notes.trim(),
+     };
 
+     await addLog({ todayLog: payload, userId: user?.id });
+     router.back();
+   } catch (err) {
+     Alert.alert("Error", "Could not save your progress.");
+   }
+ };
   if (planLoading || quranLoading) return <View className="flex-1 bg-white" />;
   if (!plan || !logContext) return null;
 
   return (
-    <ScreenWrapper>
-      <ScrollView showsVerticalScrollIndicator={false} className="flex-1 px-1">
-        <View className="bg-primary p-6 rounded-2xl mb-8 shadow-xl shadow-green-900/20">
+    <Screen>
+      <ScreenContent>
+        <View className="bg-primary p-6 rounded-[32px] mb-8 shadow-xl shadow-green-900/20">
           <View className="flex-row justify-between items-start mb-2">
             <Text className="text-white/60 font-bold text-[10px] uppercase tracking-widest">
               Today's Task
@@ -203,11 +213,12 @@ export default function LogProgress() {
             textAlignVertical="top"
           />
         </View>
-
+      </ScreenContent>
+      <ScreenFooter>
         <Button
           onPress={handleSave}
           disabled={isCreating}
-          className="bg-primary h-14 mb-10 shadow-lg shadow-primary/30"
+          className="bg-primary h-14  shadow-lg shadow-primary/30"
         >
           <View className="flex-row items-center justify-center">
             <Text className="text-white font-black text-lg mr-2">
@@ -216,7 +227,7 @@ export default function LogProgress() {
             <Ionicons name="arrow-forward" size={20} color="white" />
           </View>
         </Button>
-      </ScrollView>
-    </ScreenWrapper>
+      </ScreenFooter>
+    </Screen>
   );
 }
