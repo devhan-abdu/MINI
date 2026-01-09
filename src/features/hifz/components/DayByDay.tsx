@@ -1,7 +1,7 @@
 import { Ionicons } from "@expo/vector-icons";
 import { View, Text } from "react-native";
-import { IHifzLog, IHifzPlan } from "../types";
-import { getWeeklyStatus } from "../utils";
+import {  IHifzPlan } from "../types";
+import { getWeeklyStatus } from "../utils/plan-status";
 
 export function DayByDay({ plan }: { plan: IHifzPlan }) {
     const week = getWeeklyStatus(plan)
@@ -22,7 +22,7 @@ export function DayByDay({ plan }: { plan: IHifzPlan }) {
             <View key={day.name} className="items-center">
               <View
                 className={`w-9 h-9 rounded-full items-center justify-center mb-2 
-            ${isCompleted ? "bg-primary" : "bg-gray-100"}
+             ${isCompleted ? "bg-primary" : "bg-gray-100"}
             ${isMissed ? "bg-red-50" : ""}
             ${isPending ? "border-2 border-primary border-dashed bg-white" : ""}
           `}

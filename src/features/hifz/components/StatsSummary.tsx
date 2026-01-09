@@ -1,10 +1,10 @@
 import { useMemo } from "react";
 import { useWatch, Control } from "react-hook-form";
 import { View, Text } from "react-native";
-import { calculatePlanStats } from "../utils";
 import { HifzPlanSchemaFormType } from "../types";
 import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
 import { Ionicons } from "@expo/vector-icons";
+import { calculatePlanStats } from "../utils/plan-calculations";
 
 const StatsSummary = ({
   control,
