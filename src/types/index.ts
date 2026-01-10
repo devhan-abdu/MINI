@@ -63,6 +63,7 @@ export type WeeklyMurajaType = Omit<WeeklyMurajaFormType, "selectedDays" | "star
   total_days: number,
   start_surah: string,
   week_end_date: string,
+  status: "active" | 'completed' | "paused"
 };
 
 export interface ISurah {

@@ -1,5 +1,5 @@
 import { supabase } from "@/src/lib/supabase";
-import { IDayLogAdd, IMonthHistory, IWeeklyMurajaDay, IWeeklyMurajaDayInsert, WeeklyMurajaType } from "@/src/types";
+import { IDayLogAdd, IMonthHistory, IWeeklyMurajaDayInsert, WeeklyMurajaType } from "@/src/types";
 
 const FULL_PLAN_SELECT = `
 *,
@@ -46,16 +46,25 @@ const FULL_HISTORY_SELECT = `
 export const murajaServices = {
     
   async createCompletePlan({ planData, days }: { planData: WeeklyMurajaType, days: IWeeklyMurajaDayInsert[] }) {
-    const { data: newPlan, error: planError } = await supabase
+
+    const { error: updateError } = await supabase
+      .from("weekly_muraja_plan")
+      .update({ status: "paused" })
+      .eq("user_id", planData.user_id)
+      .eq("status", "active")
+    
+    if (updateError) throw new Error("Failed to Archive the plan")
+    
+     const { data: newPlan, error: planError } = await supabase
       .from("weekly_muraja_plan")
       .insert(planData)
       .select()
       .single();
     
     
-    if (planError) throw new Error(`Plan creation failed`)
+    if (planError) throw new Error(`${planError.message}`)
         
-        const linkedDays = days.map(day => ({ ...day, weekly_plan_id: newPlan.id }))
+      const linkedDays = days.map(day => ({ ...day, weekly_plan_id: newPlan.id }))
        
        const { error: daysError } = await supabase
             .from("weekly_plan_days")
@@ -63,7 +72,7 @@ export const murajaServices = {
         
         if (daysError) {
             await supabase.from("weekly_muraja_plan").delete().eq("id", newPlan.id);
-            throw new Error(`Days creation failed: ${daysError.message}`);     
+            throw new Error(`Plan creation failed`);     
         }
         
         return newPlan
@@ -74,10 +83,10 @@ export const murajaServices = {
             .from("weekly_muraja_plan")
             .select(FULL_PLAN_SELECT)      
             .eq("user_id", userId)        
-            // .eq("status", "active")           
+            .eq("status", "active")           
             .order("week_start_date", { ascending: false })
             .limit(1)    
-          .maybeSingle();
+            .maybeSingle();
         
         if (error) throw new Error(`[murajaService.getDashboardState`);
          return data;
@@ -124,12 +133,12 @@ export const murajaServices = {
       .from("weekly_muraja_plan")
        .select(FULL_HISTORY_SELECT) 
         .eq("user_id", userId)
+        .eq("status", "completed")
 
     if (planId) {
       query = query.eq("id", planId);
     } else {
       query = query
-        .eq("status", "completed")
         .order("week_end_date", { ascending: false })
         .limit(1);
       }
@@ -149,6 +158,7 @@ export const murajaServices = {
       .from("weekly_muraja_plan")
       .select(FULL_HISTORY_SELECT) 
       .eq("user_id", userId)
+       .eq("status", "completed")
       .gte('week_end_date', startDate)
       .lte('week_start_date', endDate)
       .order("week_start_date", { ascending: false });
