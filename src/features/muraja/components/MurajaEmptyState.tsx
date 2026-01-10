@@ -42,7 +42,7 @@ export default function MurajaEmptyState() {
         </View>
 
         <Pressable
-          onPress={() => router.push("/(app)/muraja/create-plan")}
+          onPress={() => router.push("/(app)/create-muraja-plan")}
           className="bg-primary h-16 rounded-2xl flex-row items-center justify-center shadow-lg shadow-blue-900/20 active:scale-[0.98]"
         >
           <Text className="text-white font-black text-lg mr-2">
