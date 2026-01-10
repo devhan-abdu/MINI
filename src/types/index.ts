@@ -98,7 +98,8 @@ export interface IDayLogAdd
   note: string,
   place: string,
   actual_time_min: number,
-  completed_pages: number
+  completed_pages: number,
+  is_catch_up?:boolean
 }
 
 export interface IDayLogSummary {

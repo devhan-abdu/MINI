@@ -56,6 +56,9 @@ export default function LogPage() {
     month: "long",
   }).format(new Date(plan.date));
 
+   const todayStr = new Date().toISOString().slice(0, 10);
+   const isPastDay = plan.date < todayStr;
+  
   const handleSave = async () => {
     setError("");
 
@@ -68,17 +71,23 @@ export default function LogPage() {
       await updateLog({
         dayId: plan.id,
         status,
-        date: today,
+        date: plan.date,
         completed_pages: pages ? Number(pages) : undefined,
         actual_time_min: min ? Number(min) : undefined,
         place,
         note,
+        is_catch_up: isPastDay,
       });
 
-      Alert.alert("Success", "Muraja'a logged successfully!", [
+      const title = isPastDay ? "Caught Up!" : "Success";
+      const message = isPastDay
+        ? "You've successfully cleared a past session. Keep that momentum!"
+        : "Progress saved.";
+
+      Alert.alert(title, message, [
         { text: "OK", onPress: () => router.back() },
       ]);
-    } catch (err: any) {
+    } catch (err) {
       Alert.alert("Error", "Failed to save log");
     }
   };
@@ -96,6 +105,19 @@ export default function LogPage() {
 
       <Screen>
         <ScreenContent>
+          {isPastDay && (
+            <View className="bg-orange-50 border border-orange-100 p-4 rounded-2xl mb-6 flex-row items-center gap-3">
+              <Ionicons name="refresh-circle" size={24} color="#f97316" />
+              <View className="flex-1">
+                <Text className="text-orange-900 font-bold text-sm">
+                  Catch-Up Mode
+                </Text>
+                <Text className="text-orange-700/70 text-xs">
+                  Logging for {formattedDate}
+                </Text>
+              </View>
+            </View>
+          )}
           <View className="bg-primary p-6 rounded-[32px] mb-8 shadow-xl shadow-green-900/20">
             <Text className="text-white/60 font-bold text-[10px] uppercase tracking-widest mb-2">
               Today's Task
@@ -209,13 +231,13 @@ export default function LogPage() {
                   Place
                 </Text>
                 <Input
-                 placeholder="Place (optional)" 
+                  placeholder="Place (optional)"
                   value={place}
                   setValue={setPlace}
                   type="numeric"
                 />
               </View>
-             
+
               <View className="">
                 <Text className="text-gray-400 font-bold uppercase text-[10px] mb-2 ml-1 tracking-widest">
                   Reflection or Notes
@@ -235,18 +257,18 @@ export default function LogPage() {
           {error && <Text className="text-red-500 my-3">{error}</Text>}
         </ScreenContent>
         <ScreenFooter>
-           <Button
-                 onPress={handleSave}
-                    disabled={isUpdating}
-                    className="bg-primary h-14  shadow-lg shadow-primary/30"
-                  >
-                    <View className="flex-row items-center justify-center">
-                      <Text className="text-white font-black text-lg mr-2">
-                        Save Progress
-                      </Text>
-                      <Ionicons name="arrow-forward" size={20} color="white" />
-                    </View>
-                  </Button>
+          <Button
+            onPress={handleSave}
+            disabled={isUpdating}
+            className="bg-primary h-14  shadow-lg shadow-primary/30"
+          >
+            <View className="flex-row items-center justify-center">
+              <Text className="text-white font-black text-lg mr-2">
+                Save Progress
+              </Text>
+              <Ionicons name="arrow-forward" size={20} color="white" />
+            </View>
+          </Button>
         </ScreenFooter>
       </Screen>
     </>

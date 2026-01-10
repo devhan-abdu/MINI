@@ -105,51 +105,61 @@ export const UpcomingSkeleton = () => {
 };
 
 export const LogPageSkeleton = () => {
+  const Pulse = ({ className }: { className: string }) => (
+    <View className={`bg-gray-200 ${className}`} style={{ opacity: 0.6 }} />
+  );
+
   return (
     <Screen>
-      <View className="mb-8">
-        <View className="w-48 h-8 bg-gray-300 rounded-lg mb-4" />
+      <View className="px-6 pt-4">
+        <View className="bg-gray-100 p-6 rounded-[32px] mb-8 h-44 justify-between">
+          <View>
+            <Pulse className="w-20 h-3 rounded-full mb-3" />
+            <Pulse className="w-48 h-8 rounded-xl" />
+          </View>
+          <View className="flex-row items-center justify-between border-t border-gray-200 pt-5">
+            <Pulse className="w-20 h-4 rounded-md" />
+            <Pulse className="w-16 h-4 rounded-md" />
+            <Pulse className="w-16 h-4 rounded-md" />
+          </View>
+        </View>
 
-        <View className="flex-row items-center justify-between px-2 border-t border-gray-200 pt-4">
-          <View className="w-24 h-4 bg-gray-300 rounded-md" />
-          <View className="h-6 w-px bg-gray-300" />
-          <View className="w-16 h-4 bg-gray-300 rounded-md" />
-          <View className="h-6 w-px bg-gray-300" />
-          <View className="w-20 h-4 bg-gray-300 rounded-md" />
+        <Pulse className="w-32 h-6 rounded-md mb-4" />
+        <View className="flex-row justify-between mb-8 gap-3">
+          <Pulse className="flex-1 h-14 rounded-2xl" />
+          <Pulse className="flex-1 h-14 rounded-2xl" />
+          <Pulse className="flex-1 h-14 rounded-2xl" />
+        </View>
+
+        <View className="gap-6">
+          <View className="bg-gray-50 p-6 rounded-[28px] border border-gray-100 flex-row items-center justify-between">
+            <View className="gap-2">
+              <Pulse className="w-32 h-5 rounded-md" />
+              <Pulse className="w-24 h-3 rounded-md" />
+            </View>
+            <Pulse className="w-32 h-12 rounded-2xl" />
+          </View>
+
+          <View className="gap-4">
+            <View>
+              <Pulse className="w-24 h-3 rounded-full mb-2 ml-1" />
+              <Pulse className="w-full h-14 rounded-[20px]" />
+            </View>
+            <View>
+              <Pulse className="w-16 h-3 rounded-full mb-2 ml-1" />
+              <Pulse className="w-full h-14 rounded-[20px]" />
+            </View>
+            <View>
+              <Pulse className="w-32 h-3 rounded-full mb-2 ml-1" />
+              <Pulse className="w-full h-32 rounded-[28px]" />
+            </View>
+          </View>
         </View>
       </View>
 
-      <View className="w-24 h-6 bg-gray-300 rounded-md mb-4" />
-
-      <View className="flex-row bg-gray-100 rounded-xl p-1">
-        <View className="flex-1 h-10 bg-gray-300 rounded-lg mx-1" />
-        <View className="flex-1 h-10 bg-gray-300 rounded-lg mx-1" />
-        <View className="flex-1 h-10 bg-gray-300 rounded-lg mx-1" />
+      <View className="absolute bottom-0 left-0 right-0 p-6 bg-white border-t border-gray-50">
+        <Pulse className="w-full h-14 rounded-2xl" />
       </View>
-
-      <View className="mt-8 mb-12 gap-6">
-        <View className="gap-2">
-          <View className="w-32 h-4 bg-gray-300 rounded-md" />
-          <View className="w-full h-11 bg-gray-300 rounded-lg" />
-        </View>
-
-        <View className="gap-2">
-          <View className="w-40 h-4 bg-gray-300 rounded-md" />
-          <View className="w-full h-11 bg-gray-300 rounded-lg" />
-        </View>
-
-        <View className="gap-2">
-          <View className="w-24 h-4 bg-gray-300 rounded-md" />
-          <View className="w-full h-11 bg-gray-300 rounded-lg" />
-        </View>
-
-        <View className="gap-2">
-          <View className="w-20 h-4 bg-gray-300 rounded-md" />
-          <View className="w-full h-24 bg-gray-300 rounded-lg" />
-        </View>
-      </View>
-
-      <View className="h-12 w-full bg-gray-300 rounded-xl mb-8" />
     </Screen>
   );
 };

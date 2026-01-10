@@ -80,15 +80,15 @@ export default function WeeklyReviewPage() {
            weekRange={weekRange}
          />
        </ScreenContent>
-       <View className="bg-gray-50 rounded-[24px] p-5 border border-gray-100 flex-row gap-4 items-start mb-10">
+       <View className=" rounded-[24px] p-5 border border-gray-100 flex-row gap-4 items-start mb-10">
          <View className="bg-white p-2 rounded-lg shadow-sm">
            <Ionicons name="bulb" size={20} color="#276359" />
          </View>
          <View className="flex-1">
-           <Text className="text-primary-100 font-black text-sm mb-1">
+           <Text className="text-primary font-black text-md mb-2">
              Growth Tip
            </Text>
-           <Text className="text-primary text-sm leading-5">
+           <Text className="text-gray-400 text-sm leading-5">
              Consistency is better than intensity. If you are struggling with a
              specific Juz, try reducing the daily page target for next week to
              build confidence.

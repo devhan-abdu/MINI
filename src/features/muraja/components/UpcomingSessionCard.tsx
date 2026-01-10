@@ -11,41 +11,55 @@ export default function UpcomingSessionCard({
   const router = useRouter();
 
   return (
-    <View className="flex-col gap-3">
+    <View className="flex-col gap-3 px-1">
       {upcomingSessions.map((upcoming) => (
         <Pressable
           key={upcoming.id}
-          onPress={() => router.push("/muraja/weekly-plane/")}
+          onPress={() => router.push("/(app)/muraja/weekly-plane")}
+          style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
           className="bg-white rounded-xl p-4 border border-gray-300 bg-white shadow-sm"
         >
-          <View className="flex-row justify-between items-center gap-2">
-            <Ionicons
-              name="calendar-outline"
-              size={20}
-              className="p-3 rounded-full bg-green-100"
-              color={"#0b6623"}
-            />
+          <View className="flex-row items-center gap-4">
+            <View className="w-12 h-12 rounded-2xl bg-slate-50 items-center justify-center">
+              <Ionicons name="calendar" size={22} color="#276359" />
+            </View>
 
             <View className="flex-1">
-              <Text className="font-bold text-gray-800 text-lg">
-                {upcoming.day_of_week}
-              </Text>
-              <View className="flex-col items-start gap-2 mt-1">
-                <Text className="text-gray-900 mr-2">
-                  {upcoming.startSurah === upcoming.endSurah
-                    ? upcoming.startSurah
-                    : `${upcoming.startSurah} – ${upcoming.endSurah}`}
+              <View className="flex-row justify-between items-center mb-1">
+                <Text className="font-black text-slate-900 text-base uppercase tracking-tight">
+                  {upcoming.day_of_week}
                 </Text>
+                <Ionicons name="chevron-forward" size={16} color="#cbd5e1" />
+              </View>
+
+              <Text
+                className="text-slate-700 font-bold text-sm mb-2"
+                numberOfLines={1}
+              >
+                {upcoming.startSurah === upcoming.endSurah
+                  ? `Surah ${upcoming.startSurah}`
+                  : `${upcoming.startSurah} – ${upcoming.endSurah}`}
+              </Text>
+
+              <View className="flex-row items-center gap-3">
                 <View className="flex-row items-center gap-1">
-                  <Ionicons name="time-outline" size={18} color="#4B5563" />
-                  <Text className="text-gray-600 text-sm">
-                    {upcoming?.estimated_time_min}
+                  <Ionicons name="time-outline" size={14} color="#64748b" />
+                  <Text className="text-slate-500 text-[12px] font-medium">
+                    {upcoming.estimated_time_min}m
+                  </Text>
+                </View>
+
+                <View className="w-1 h-1 rounded-full bg-slate-300" />
+
+                <View className="flex-row items-center gap-1">
+                  <Ionicons name="book-outline" size={14} color="#64748b" />
+                  <Text className="text-slate-500 text-[12px] font-medium">
+                    Pages {upcoming.planned_start_page}–
+                    {upcoming.planned_end_page}
                   </Text>
                 </View>
               </View>
             </View>
-
-            <Ionicons name="chevron-forward" size={20} color="#666" />
           </View>
         </Pressable>
       ))}

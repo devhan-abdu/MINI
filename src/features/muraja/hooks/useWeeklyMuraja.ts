@@ -31,13 +31,14 @@ export const useWeeklyMuraja = () => {
             const endSurah = getSurahByPage(day.planned_end_page, surah);
             
             const log = day.daily_muraja_logs?.[0];
+            const status = log?.status ? log.status : (day.date < todayStr) ? "missed" : "pending"
             
 
             return {
                 ...day,
                 startSurah,
                 endSurah,
-                status: log?.status ?? "pending",
+                status,
                 log_id: log?.id ?? null,
                 actual_pages: log?.completed_pages ?? 0,
                 actual_time: log?.actual_time_min ?? 0
@@ -46,13 +47,15 @@ export const useWeeklyMuraja = () => {
 
         const todayPlan = days.find(p => p.date === todayStr) ?? null;
         const upcomingSessions = days.filter(p => p.date > todayStr);
+        const pastPlans = days.filter((p) => p.date < todayStr && p.date !== todayStr)
         const {weekly_plan_days, ...rest} = data
           
         return {
             weeklyPlan: rest,
             days,
             todayPlan,
-            upcomingSessions
+            upcomingSessions,
+            pastPlans
         };
     }, [data, surah]); 
 
@@ -61,6 +64,7 @@ export const useWeeklyMuraja = () => {
         plans: processedData?.days ?? [],
         todayPlan: processedData?.todayPlan ?? null,
         upcomingSessions: processedData?.upcomingSessions ?? [],
+        pastPlans: processedData?.pastPlans ?? [],
         loading: isLoading,
         error: isError,
         refetch

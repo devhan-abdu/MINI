@@ -122,7 +122,7 @@ export default function WeeklyPlanCard({
             ? "Log Today's Muraja'a"
             : status === "completed"
             ? "Veiw Log"
-            : "Log Past Day"}{" "}
+            : "Catch up"}
         </Button>
       )}
     </View>

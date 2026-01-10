@@ -10,13 +10,10 @@ import MurajaEmptyState from "@/src/features/muraja/components/MurajaEmptyState"
 import { SectionHeader } from "@/src/components/SectionHeader";
 
 export default function WeeklyPlan() {
-  const { weeklyPlan, plans, todayPlan, upcomingSessions, loading } =
+  const { weeklyPlan, plans, todayPlan, upcomingSessions,pastPlans, loading } =
     useWeeklyMuraja();
 
-  const pastPlans = useMemo(() => {
-    const today = new Date().toISOString().slice(0, 10);
-    return plans.filter((p) => p.date < today && p.date !== today);
-  }, [plans]);
+ 
 
   const progressPercentage = useMemo(() => {
     if (!plans.length) return 0;
@@ -64,10 +61,10 @@ export default function WeeklyPlan() {
           </View>
         )}
 
-        {pastPlans.length > 0 && (
+        {pastPlans?.length > 0 && (
           <View className="mb-6 opacity-70">
             <SectionHeader title="Completed History" />
-            {pastPlans.map((plan) => (
+            {pastPlans?.map((plan) => (
               <WeeklyPlanCard key={plan.id} plan={plan} />
             ))}
           </View>
