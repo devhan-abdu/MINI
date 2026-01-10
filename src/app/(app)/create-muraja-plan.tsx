@@ -34,6 +34,7 @@ import {
   WeeklyMurajaSchema,
   WeeklyMurajaFormType,
   IWeeklyMurajaDayInsert,
+  WeeklyMurajaType,
 } from "@/src/types";
 import { SectionHeader } from "@/src/components/SectionHeader";
 
@@ -88,7 +89,7 @@ export default function CreateWeeklyPlan() {
         return;
       }
 
-      const planPayload = {
+      const planPayload: WeeklyMurajaType = {
         ...rest,
         user_id: user.id,
         end_surah: quranData.endSurah,
@@ -98,7 +99,7 @@ export default function CreateWeeklyPlan() {
         end_juz: quranData.endJuz!,
         total_days: selectedDays.length,
         week_end_date: endDate,
-        status: "pending" as const,
+        status: "active",
       };
 
       const daysPayload: IWeeklyMurajaDayInsert[] = calculatedDays.map(
