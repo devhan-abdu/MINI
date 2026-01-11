@@ -4,41 +4,58 @@ import {
   DefaultTheme,
   ThemeProvider,
 } from "@react-navigation/native";
-import { router, Stack } from "expo-router";
-import { useEffect } from "react";
-import { ActivityIndicator, useColorScheme, View } from "react-native";
+import { Stack } from "expo-router";
+import {
+  ActivityIndicator,
+  useColorScheme,
+  View,
+  Image,
+  Text,
+} from "react-native";
 import { SafeAreaProvider } from "react-native-safe-area-context";
 import { StatusBar } from "expo-status-bar";
 
 export function RootLayoutNav() {
   const { session, loading } = useSession();
   const colorScheme = useColorScheme();
+  const isDark = colorScheme === "dark";
 
-  useEffect(() => {
-    if (loading) return;
-
-    if (!session) {
-      router.replace("/login");
-    } else {
-      router.replace("/(app)/muraja");
-    }
-  });
+  console.log(session,"session")
 
   if (loading) {
     return (
-      <View className="flex-1 justify-center items-center bg-white dark:bg-black">
-        <ActivityIndicator size="large" color="#0000ff" />
+      <View className="flex-1 justify-center items-center bg-white dark:bg-[#0f172a]">
+        <View className="items-center">
+          <Image
+            source={require("@/assets/images/minilogo.png")}
+            style={{ width: 120, height: 120, marginBottom: 12 }}
+            resizeMode="contain"
+          />
+
+          <Text className="text-4xl font-black text-slate-900 dark:text-white tracking-tighter">
+            Mini
+          </Text>
+
+          <View className="mt-1 mb-10">
+            <Text className="text-[10px] font-bold text-primary uppercase tracking-[4px]">
+              Hifz & Muraja
+            </Text>
+          </View>
+
+          <ActivityIndicator size="small" color="#276359" />
+        </View>
       </View>
     );
   }
 
   return (
-    <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+    <ThemeProvider value={isDark ? DarkTheme : DefaultTheme}>
       <SafeAreaProvider>
-        <StatusBar style="dark" />
         <Stack screenOptions={{ headerShown: false }}>
           <Stack.Screen name="(auth)" />
-          <Stack.Screen name="(app)" />
+          <Stack.Protected guard={!!session}>
+            <Stack.Screen name="(app)" />
+          </Stack.Protected>
         </Stack>
       </SafeAreaProvider>
     </ThemeProvider>
