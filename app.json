@@ -1,13 +1,18 @@
 {
   "expo": {
-    "name": "mini",
+    "name": "Mini",
     "slug": "mini",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/minilogo.png",
     "scheme": "mini",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
+    "splash": {
+    "image": "./assets/images/minilogo.png",
+    "resizeMode": "contain",
+    "backgroundColor": "#276359" 
+   },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.devhananabdu.mini"
@@ -33,12 +38,12 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/minilogo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
-          "backgroundColor": "#ffffff",
+          "backgroundColor": "#276359",
           "dark": {
-            "backgroundColor": "#000000"
+            "backgroundColor": "#1e293b"
           }
         }
       ],
