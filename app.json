@@ -9,10 +9,10 @@
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "splash": {
-    "image": "./assets/images/minilogo.png",
-    "resizeMode": "contain",
-    "backgroundColor": "#276359" 
-   },
+      "image": "./assets/images/minilogo.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#276359"
+    },
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.devhananabdu.mini"
@@ -49,7 +49,8 @@
       ],
       "expo-sqlite",
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      "@react-native-community/datetimepicker"
     ],
     "experiments": {
       "typedRoutes": true,
