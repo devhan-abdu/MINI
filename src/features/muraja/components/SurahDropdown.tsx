@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo } from "react";
 import { View, Text } from "react-native";
 import { Dropdown } from "react-native-element-dropdown";
 import { Ionicons } from "@expo/vector-icons";
@@ -23,51 +23,63 @@ interface ISurahPageDropDown {
 const SurahDropdown = ({ surah, setSurah }: ISurahDropDownProps) => {
   const { items, loading, error } = useLoadSurahData();
 
-  if (loading) return <Text className="text-center mt-4">Loading...</Text>;
-  if (error)
-    return <Text className="text-red-500 text-center mt-4">{error}</Text>;
+  const currentValue = useMemo(() => {
+    if (!surah || items.length === 0) return null;
+    const found = items.find((i) => i.number === Number(surah));
+    return found ? found.number : null;
+  }, [surah, items]);
 
-  const renderItemSurah = (item: DropDataType) => (
-    <View className="flex-row justify-between items-center p-4">
-      <Text className="text-base">{item.englishName}</Text>
-      {item.number === surah && (
-        <Ionicons name="checkmark" size={20} color="#276359" />
-      )}
-    </View>
-  );
+  if (loading)
+    return (
+      <View className="p-4">
+        <Text className="text-gray-400">Loading Surahs...</Text>
+      </View>
+    );
+  if (error) return <Text className="text-red-500 p-4">{error}</Text>;
 
   return (
     <Dropdown
       style={{
-        paddingHorizontal: 12,
+        paddingHorizontal: 16,
         paddingVertical: 12,
-        marginBottom: 24,
-        borderWidth: 2,
-        borderColor: "#D1D5DB",
-        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: "#E5E7EB",
+        borderRadius: 16,
+        backgroundColor: "white",
       }}
-      placeholderStyle={{ fontSize: 16, color: "#6B7280" }}
-      selectedTextStyle={{ fontSize: 16 }}
-      inputSearchStyle={{ height: 40, fontSize: 16 }}
-      iconStyle={{ width: 20, height: 20 }}
+      placeholderStyle={{ fontSize: 16, color: "#9CA3AF" }}
+      selectedTextStyle={{ fontSize: 16, color: "#111827", fontWeight: "600" }}
+      inputSearchStyle={{ borderRadius: 12 }}
       data={items}
       search
-      maxHeight={250}
+      maxHeight={300}
       labelField="englishName"
       valueField="number"
       placeholder="Select Surah"
-      searchPlaceholder="Search Surah..."
-      value={surah}
+      value={currentValue}
       onChange={(item) => setSurah(item.number)}
       renderLeftIcon={() => (
         <Ionicons
-          className="mr-2"
-          name="book-outline"
-          size={20}
+          name="book"
+          size={18}
           color="#276359"
+          style={{ marginRight: 10 }}
         />
       )}
-      renderItem={renderItemSurah}
+      renderItem={(item: DropDataType) => (
+        <View className="flex-row justify-between items-center p-4">
+          <Text
+            className={`text-base ${
+              item.number === surah ? "text-primary font-bold" : "text-gray-700"
+            }`}
+          >
+            {item.englishName}
+          </Text>
+          {item.number === surah && (
+            <Ionicons name="checkmark-circle" size={20} color="#276359" />
+          )}
+        </View>
+      )}
     />
   );
 };
@@ -77,59 +89,71 @@ export const SurahPageDropdown = ({
   page,
   setPage,
 }: ISurahPageDropDown) => {
-  const { items, loading, error } = useLoadSurahData();
+  const { items, loading } = useLoadSurahData();
 
-  if (loading) return <Text className="text-center mt-4">Loading...</Text>;
-  if (error)
-    return <Text className="text-red-500 text-center mt-4">{error}</Text>;
-
-  const surahPages: { number: number; label: string }[] = useMemo(() => {
-    if (!surah) return [];
-
-    const foundSurah = items.find((item) => item.number === surah);
+  const surahPages = useMemo(() => {
+    if (!surah || items.length === 0) return [];
+    const foundSurah = items.find((item) => item.number === Number(surah));
     if (!foundSurah) return [];
 
-    const pages = Array.from(
+    return Array.from(
       { length: foundSurah.endingPage - foundSurah.startingPage + 1 },
-      (_, i) => foundSurah.startingPage + i
+      (_, i) => {
+        const pageNum = foundSurah.startingPage + i;
+        return { number: pageNum, label: `Page ${pageNum}` };
+      }
     );
-
-    return pages.map((page) => ({ number: page, label: `Page ${page}` }));
   }, [surah, items]);
 
-  const renderItemPage = (item: { number: number; label: string }) => (
-    <View className="flex-row justify-between items-center p-4">
-      <Text className="text-base">{item.label}</Text>
-      {item.number === page && (
-        <Ionicons name="checkmark" size={20} color="#276359" />
-      )}
-    </View>
-  );
+  // Force sync for page
+  const currentPage = useMemo(() => {
+    if (!page || surahPages.length === 0) return null;
+    const found = surahPages.find((p) => p.number === Number(page));
+    return found ? found.number : null;
+  }, [page, surahPages]);
 
   return (
     <Dropdown
       style={{
-        paddingHorizontal: 12,
+        paddingHorizontal: 16,
         paddingVertical: 12,
-        marginBottom: 24,
-        borderWidth: 2,
-        borderColor: "#D1D5DB",
-        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: "#E5E7EB",
+        borderRadius: 16,
+        backgroundColor: "white",
       }}
-      placeholderStyle={{ fontSize: 16, color: "#6B7280" }}
-      selectedTextStyle={{ fontSize: 16 }}
-      inputSearchStyle={{ height: 40, fontSize: 16 }}
-      iconStyle={{ width: 20, height: 20 }}
+      placeholderStyle={{ fontSize: 16, color: "#9CA3AF" }}
+      selectedTextStyle={{ fontSize: 16, color: "#111827", fontWeight: "600" }}
       data={surahPages}
       search
-      maxHeight={250}
+      maxHeight={300}
       labelField="label"
       valueField="number"
-      placeholder="Select page "
-      searchPlaceholder="Search page ..."
-      value={page}
+      placeholder="Select Page"
+      value={currentPage}
       onChange={(item) => setPage(item.number)}
-      renderItem={renderItemPage}
+      renderLeftIcon={() => (
+        <Ionicons
+          name="document-text"
+          size={18}
+          color="#276359"
+          style={{ marginRight: 10 }}
+        />
+      )}
+      renderItem={(item) => (
+        <View className="flex-row justify-between items-center p-4">
+          <Text
+            className={`text-base ${
+              item.number === page ? "text-primary font-bold" : "text-gray-700"
+            }`}
+          >
+            {item.label}
+          </Text>
+          {item.number === page && (
+            <Ionicons name="checkmark-circle" size={20} color="#276359" />
+          )}
+        </View>
+      )}
     />
   );
 };
