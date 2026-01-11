@@ -66,7 +66,7 @@ export const TodaySkeleton = () => {
   return (
     <Screen>
       <View className="mb-8">
-        <View className="w-36 h-6 bg-gray-300 rounded-lg mb-4" />
+        <View className="w-36 h-6 bg-gray-100 rounded-lg mb-4" />
 
         <View className="bg-white rounded-xl p-4 border border-gray-300 shadow-sm">
           <View className="flex-row justify-between items-center mb-4">

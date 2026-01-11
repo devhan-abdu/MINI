@@ -4,38 +4,38 @@ import { View } from "react-native";
 export default function PlanFormSkeleton() {
   return (
     <View className="px-4 pt-4">
-      <View className="mb-6 h-14 w-full bg-gray-200 rounded-full animate-pulse" />
+      <View className="mb-6 h-14 w-full bg-gray-100 rounded-full animate-pulse" />
 
       <View className="mb-8 h-32 w-full bg-gray-100 rounded-[32px] animate-pulse" />
 
       <View className="mb-6">
-        <View className="w-24 h-4 bg-gray-200 rounded mb-3 animate-pulse" />
+        <View className="w-24 h-4 bg-gray-100 rounded mb-3 animate-pulse" />
         <View className="h-14 w-full bg-gray-50 border border-gray-100 rounded-2xl animate-pulse" />
       </View>
 
       <View className="mb-6">
-        <View className="w-32 h-4 bg-gray-200 rounded mb-3 animate-pulse" />
+        <View className="w-32 h-4 bg-gray-100 rounded mb-3 animate-pulse" />
         <View className="h-14 w-full bg-gray-50 border border-gray-100 rounded-2xl animate-pulse" />
       </View>
 
       <View className="flex-row gap-4 mb-8">
         <View className="flex-1">
-          <View className="w-20 h-4 bg-gray-200 rounded mb-3 animate-pulse" />
+          <View className="w-20 h-4 bg-gray-100 rounded mb-3 animate-pulse" />
           <View className="h-14 w-full bg-gray-50 border border-gray-100 rounded-2xl animate-pulse" />
         </View>
         <View className="flex-1">
-          <View className="w-20 h-4 bg-gray-200 rounded mb-3 animate-pulse" />
+          <View className="w-20 h-4 bg-gray-100 rounded mb-3 animate-pulse" />
           <View className="h-14 w-full bg-gray-50 border border-gray-100 rounded-2xl animate-pulse" />
         </View>
       </View>
 
       <View className="mb-10">
-        <View className="w-28 h-4 bg-gray-200 rounded mb-3 animate-pulse" />
+        <View className="w-28 h-4 bg-gray-100 rounded mb-3 animate-pulse" />
         <View className="flex-row justify-between mt-2">
           {[1, 2, 3, 4, 5, 6, 7].map((i) => (
             <View
               key={i}
-              className="w-10 h-10 rounded-full bg-gray-200 animate-pulse"
+              className="w-10 h-10 rounded-full bg-gray-100 animate-pulse"
             />
           ))}
         </View>
