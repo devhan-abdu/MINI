@@ -5,7 +5,7 @@ export interface IHifzLog {
     actual_end_page: number;
     actual_pages_completed: number;
     date: string;
-  log_day: number;
+   log_day: number;
     status: "completed" | "partial" | "missed",
     notes?: string;
 };
