@@ -8,7 +8,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
+import {  useRouter } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -130,18 +130,20 @@ export default function CreateWeeklyPlan() {
       })
     : "";
 
+  const ErrorMessage = ({ error }: { error: any }) => {
+    if (!error) return null;
+    return (
+      <View className="flex-row items-center mt-1 ml-1 gap-x-1">
+        <Ionicons name="alert-circle-outline" size={12} color="#ef4444" />
+        <Text className="text-red-500 text-[10px] font-bold uppercase tracking-tight">
+          {error.message}
+        </Text>
+      </View>
+    );
+  };
+
   return (
     <>
-      <Stack.Screen
-        options={{
-          title: "Create Weekly Plan",
-          headerShown: true,
-          headerShadowVisible: true,
-          headerStyle: { backgroundColor: "#fff" },
-          headerTintColor: "#111827",
-          headerTitleStyle: { fontWeight: "600" },
-        }}
-      />
       <Screen>
         <ScreenContent>
           <View className="bg-white border border-slate-100 rounded-[32px] p-5 mb-8 shadow-sm shadow-slate-200/50">
@@ -149,10 +151,14 @@ export default function CreateWeeklyPlan() {
               control={control}
               name="week_start_date"
               render={({ field: { value, onChange } }) => (
-                <>
+                <View>
                   <Pressable
                     onPress={() => setShowDatePicker(true)}
-                    className="flex-row items-center justify-between active:opacity-60"
+                    className={`flex-row items-center justify-between active:opacity-60 ${
+                      errors.week_start_date
+                        ? "border border-red-100 p-2 rounded-xl"
+                        : ""
+                    }`}
                   >
                     <View className="flex-row items-center gap-4">
                       <View className="w-12 h-12 rounded-2xl bg-primary/10 items-center justify-center">
@@ -179,6 +185,7 @@ export default function CreateWeeklyPlan() {
                       color="#cbd5e1"
                     />
                   </Pressable>
+                  <ErrorMessage error={errors.week_start_date} />
                   {showDatePicker && (
                     <DateTimePicker
                       value={value ? new Date(value) : new Date()}
@@ -189,7 +196,7 @@ export default function CreateWeeklyPlan() {
                       }}
                     />
                   )}
-                </>
+                </View>
               )}
             />
             <View className="h-[1px] bg-slate-50 my-5" />
@@ -202,6 +209,7 @@ export default function CreateWeeklyPlan() {
                     Weekly Routine
                   </Text>
                   <SelectDays value={value ?? []} onChange={onChange} />
+                  <ErrorMessage error={errors.selectedDays} />
                 </View>
               )}
             />
@@ -213,38 +221,47 @@ export default function CreateWeeklyPlan() {
               control={control}
               name="start_surah"
               render={({ field: { value, onChange } }) => (
-                <SurahDropdown surah={value} setSurah={onChange} />
+                <View>
+                  <SurahDropdown surah={value} setSurah={onChange} />
+                  <ErrorMessage error={errors.start_surah} />
+                </View>
               )}
             />
             <Controller
               control={control}
               name="start_page"
               render={({ field: { value, onChange } }) => (
-                <SurahPageDropdown
-                  surah={selectedSurah}
-                  setPage={onChange}
-                  page={value}
-                />
+                <View>
+                  <SurahPageDropdown
+                    surah={selectedSurah}
+                    setPage={onChange}
+                    page={value}
+                  />
+                  <ErrorMessage error={errors.start_page} />
+                </View>
               )}
             />
             <Controller
               control={control}
               name="planned_pages"
               render={({ field: { value, onChange } }) => (
-                <Input
-                  label="Daily Page Goal"
-                  placeholder="20"
-                  value={String(value)}
-                  setValue={(v) => onChange(Number(v))}
-                  keyboardType="numeric"
-                  leftIcon={
-                    <Ionicons
-                      name="document-text-outline"
-                      size={18}
-                      color="#94a3b8"
-                    />
-                  }
-                />
+                <View>
+                  <Input
+                    label="Daily Page Goal"
+                    placeholder="20"
+                    value={String(value)}
+                    setValue={(v) => onChange(Number(v))}
+                    keyboardType="numeric"
+                    leftIcon={
+                      <Ionicons
+                        name="document-text-outline"
+                        size={18}
+                        color="#94a3b8"
+                      />
+                    }
+                  />
+                  <ErrorMessage error={errors.planned_pages} />
+                </View>
               )}
             />
           </View>
@@ -255,39 +272,45 @@ export default function CreateWeeklyPlan() {
               control={control}
               name="estimated_time_min"
               render={({ field: { value, onChange } }) => (
-                <Input
-                  label="Daily Duration"
-                  value={String(value)}
-                  setValue={(v) => onChange(Number(v))}
-                  keyboardType="numeric"
-                  leftIcon={
-                    <Ionicons name="time-outline" size={18} color="#94a3b8" />
-                  }
-                  rightIcon={
-                    <Text className="text-slate-400 font-bold text-[10px] uppercase">
-                      min
-                    </Text>
-                  }
-                />
+                <View>
+                  <Input
+                    label="Daily Duration"
+                    value={String(value)}
+                    setValue={(v) => onChange(Number(v))}
+                    keyboardType="numeric"
+                    leftIcon={
+                      <Ionicons name="time-outline" size={18} color="#94a3b8" />
+                    }
+                    rightIcon={
+                      <Text className="text-slate-400 font-bold text-[10px] uppercase">
+                        min
+                      </Text>
+                    }
+                  />
+                  <ErrorMessage error={errors.estimated_time_min} />
+                </View>
               )}
             />
             <Controller
               control={control}
               name="place"
               render={({ field: { value, onChange } }) => (
-                <Input
-                  label="Location"
-                  placeholder="e.g. Mosque"
-                  value={value ?? ""}
-                  setValue={onChange}
-                  leftIcon={
-                    <Ionicons
-                      name="location-outline"
-                      size={18}
-                      color="#94a3b8"
-                    />
-                  }
-                />
+                <View>
+                  <Input
+                    label="Location"
+                    placeholder="e.g. Mosque"
+                    value={value ?? ""}
+                    setValue={onChange}
+                    leftIcon={
+                      <Ionicons
+                        name="location-outline"
+                        size={18}
+                        color="#94a3b8"
+                      />
+                    }
+                  />
+                  <ErrorMessage error={errors.place} />
+                </View>
               )}
             />
             <View>
@@ -298,14 +321,19 @@ export default function CreateWeeklyPlan() {
                 name="note"
                 control={control}
                 render={({ field: { value, onChange } }) => (
-                  <TextInput
-                    className="bg-slate-50 rounded-2xl p-4 min-h-[100px] text-slate-900 font-medium border border-slate-100 focus:border-primary/40 focus:bg-white"
-                    onChangeText={onChange}
-                    value={value ?? ""}
-                    placeholder="Set an intention or reminder..."
-                    multiline
-                    textAlignVertical="top"
-                  />
+                  <View>
+                    <TextInput
+                      className={`bg-slate-50 rounded-2xl p-4 min-h-[100px] text-slate-900 font-medium border ${
+                        errors.note ? "border-red-500" : "border-slate-100"
+                      } focus:border-primary/40 focus:bg-white`}
+                      onChangeText={onChange}
+                      value={value ?? ""}
+                      placeholder="Set an intention or reminder..."
+                      multiline
+                      textAlignVertical="top"
+                    />
+                    <ErrorMessage error={errors.note} />
+                  </View>
                 )}
               />
             </View>

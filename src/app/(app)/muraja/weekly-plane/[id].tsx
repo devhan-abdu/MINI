@@ -71,7 +71,7 @@ export default function LogPage() {
       await updateLog({
         dayId: plan.id,
         status,
-        date: plan.date,
+        date: plan.date || todayStr,
         completed_pages: pages ? Number(pages) : undefined,
         actual_time_min: min ? Number(min) : undefined,
         place,
@@ -94,16 +94,21 @@ export default function LogPage() {
 
   return (
     <>
-      <Stack.Screen
-        options={{
-          headerTitle: formattedDate,
-          headerTitleAlign: "center",
-          headerStyle: { backgroundColor: "#fff" },
-          headerTintColor: "#111",
-        }}
-      />
-
       <Screen>
+        <View className="flex-row items-center mt-4 mb-2 px-2">
+          <Pressable
+            onPress={() => router.back()}
+            className="w-12 h-12 items-center justify-center rounded-full active:bg-gray-100"
+          >
+            <Ionicons name="arrow-back" size={26} color="#111" />
+          </Pressable>
+
+          <View className="flex-1 ml-2">
+            <Text className="text-2xl font-black text-gray-900 tracking-tight">
+              {formattedDate}
+            </Text>
+          </View>
+        </View>
         <ScreenContent>
           {isPastDay && (
             <View className="bg-orange-50 border border-orange-100 p-4 rounded-2xl mb-6 flex-row items-center gap-3">

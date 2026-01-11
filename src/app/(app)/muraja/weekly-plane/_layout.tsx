@@ -2,16 +2,10 @@ import { Stack } from "expo-router";
 
 export default function WeeklyPlaneLayout() {
   return (
-    <Stack>
-      <Stack.Screen
-        name="index"
-        options={{
-          headerTitle: "Weekly Plane",
-          headerShown: true,
-          headerStyle: { backgroundColor: "#fff" },
-          headerTintColor: "#111",
-        }}
-      />
+    <Stack screenOptions={{
+      headerShown: false
+    }}>
+ 
     </Stack>
   );
 }

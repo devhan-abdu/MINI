@@ -68,7 +68,8 @@ export default function Hifz() {
               </Text>
             </Pressable>
           ),
-          headerShadowVisible: true,
+          headerShadowVisible: false,
+          headerShown: true,
         }}
       />
       <Screen>

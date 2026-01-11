@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -23,7 +23,11 @@ import { getNextTask } from "@/src/features/hifz/utils/quran-logic";
 export default function LogProgress() {
   const router = useRouter();
   const { user } = useSession();
-  const { hifz: plan, isLoading: planLoading } = useGetHifzPlan();
+  const {
+    hifz: plan,
+    isLoading: planLoading,
+    nextTask: logContext,
+  } = useGetHifzPlan();
   const { items: surahData, loading: quranLoading } = useLoadSurahData();
   const { addLog, isCreating } = useAddLog();
 
@@ -35,38 +39,12 @@ export default function LogProgress() {
  
   
 
- const logContext = useMemo(() => {
-   if (!plan || !surahData) return null;
-
-   const logs = plan.hifz_daily_logs || [];
-   const lastLog = logs[logs.length - 1]
-   const referencePage = lastLog ? lastLog.actual_end_page  : plan.start_page
-   
-  
-   const nextTask = getNextTask(
-     plan.direction,
-     referencePage,
-     plan.pages_per_day,
-     surahData,
-     !lastLog
-   );
-
-   if (!nextTask) return null;
-
-   return {
-     ...nextTask,
-     surah: nextTask.displaySurah, 
-     isBackward: plan.direction === "backward",
-     target: plan.pages_per_day,
-   };
- }, [plan, surahData]);
-
  const handleSave = async () => {
    if (!plan || !logContext || isCreating || !plan.id) return;
 
    try {
      const today = new Date();
-     const logDay = (today.getDay() + 6) % 7;
+     const logDay = today.getDay();
 
      
      const actualTask = getNextTask(

@@ -8,6 +8,7 @@ import { formatWeekRange } from "@/src/features/muraja/utils/dateHelpers";
 import Screen from "@/src/components/screen/Screen";
 import { ScreenContent } from "@/src/components/screen/ScreenContent";
 import { WeeklyReviewView } from "@/src/features/muraja/components/WeeklyReviewView";
+import { SectionHeader } from "@/src/components/SectionHeader";
 
 
 export default function WeeklyReviewPage() {
@@ -74,6 +75,10 @@ export default function WeeklyReviewPage() {
      />
      <Screen>
        <ScreenContent>
+         <SectionHeader
+           title="Weekly Review"
+           badge={`${plan.weekly_plan_days.length || 0} Sessions`}
+         />
          <WeeklyReviewView
            plan={plan}
            analytics={analytics}

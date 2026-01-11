@@ -43,6 +43,7 @@ export default function WeeklyPlan() {
   return (
     <Screen>
       <ScreenContent>
+        <SectionHeader title="Weekly Plan"/>
         <Progress completionRate={progressPercentage} />
 
         {todayPlan && (

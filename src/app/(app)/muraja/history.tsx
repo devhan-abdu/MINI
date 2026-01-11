@@ -58,11 +58,8 @@ export default function History() {
   return (
     <Screen>
       <ScreenContent>
-          <HistoryCalendar
-            userHistory={userHistory}
-            setViewDate={setViewDate}
-          />
-
+        <SectionHeader title="History" />
+        <HistoryCalendar userHistory={userHistory} setViewDate={setViewDate} />
         {hasData && (
           <View className="mb-8">
             <SectionHeader title="Monthly Insights" />
@@ -100,7 +97,6 @@ export default function History() {
             </View>
           </View>
         )}
-
         <View className="mb-10">
           <SectionHeader
             title="Weekly Reviews"

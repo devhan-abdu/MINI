@@ -24,7 +24,8 @@ export default function MurajaLayout() {
           fontWeight: "700",
           marginBottom: 5,
         },
-        headerShadowVisible: true,
+        headerShadowVisible: false,
+        headerShown: false
       }}
     >
       <Tabs.Screen
