@@ -66,6 +66,7 @@
   },
   "devDependencies": {
     "@types/react": "~19.1.0",
+    "babel-preset-expo": "^54.0.9",
     "eslint": "^9.25.0",
     "eslint-config-expo": "~10.0.0",
     "prettier-plugin-tailwindcss": "^0.5.14",
@@ -74,8 +75,8 @@
     "typescript": "~5.9.2"
   },
   "pnpm": {
-  "overrides": {
-    "react-native-safe-area-context": "5.6.2"
+    "overrides": {
+      "react-native-safe-area-context": "5.6.2"
+    }
   }
-}
 }
