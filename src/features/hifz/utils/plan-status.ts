@@ -1,7 +1,8 @@
 import { ISurah } from "@/src/types";
 import { IHifzPlan, IHifzLog } from "../types";
-import { countPlannedDaysElapsed } from "./plan-calculations";
+import { calculateFinishedDate, countPlannedDaysElapsed, getLastLog } from "./plan-calculations";
 import { getNextTask } from "./quran-logic";
+import { getSurahNameByNumber } from "../../muraja/utils/quranMapping";
 
 const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
@@ -22,144 +23,132 @@ export const isWithinCurrentWeek = (date: Date) => {
   return date >= startOfWeek && date <= endOfWeek;
 };
 
-export const hifzStatus = (data: IHifzPlan | null, surah?: ISurah[]) => {
-
-
-  if (!data || !surah) return null;
-
-
+export const hifzStatus = (plan: IHifzPlan | null, surah?: ISurah[]) => {
+  if (!plan || !surah) return null
+  
   const today = new Date()
-
-  today.setHours(0,0,0,0)
-
-  const startDate = new Date(data.start_date)
-
-
-  const diffInMs = today.getTime() - startDate.getTime()
-
-  const daysElapsed = Math.max(0, Math.floor(diffInMs / (1000 * 60 * 60 * 24))) 
-
-  const plannedDayElapsed = countPlannedDaysElapsed(startDate,today,data.selected_days)
-
+  today.setHours(0, 0, 0, 0)
   
-
-  const logs = data.hifz_daily_logs || []
-
-
-  const stats = logs.reduce((acc, log) => {
-
-     acc.actualPagesDone += (log.actual_pages_completed || 0);
-
-     if (log.status !== "missed") acc.successLogs++;
-
-    return acc;
-
- }, { successLogs: 0, actualPagesDone: 0, lastPageFinished: 0 });
-
+    const {
+    completedPages,
+    successDays,
+    lastLog,
+    hasTodayLog,
+    } = analyzeLogs(plan.hifz_daily_logs || []) ;
   
+  const currentPage = lastLog ? lastLog.actual_end_page : plan.start_page;
 
-  const lastLog = logs[logs.length -1]
 
-  const referencePage = lastLog ? lastLog.actual_end_page : data.start_page;
-
-  const isNewPlan = !lastLog;
-
-  
-
-  const nextTask = getNextTask(
-
-    data.direction,
-
-    referencePage,
-
-    data.pages_per_day,
-
+   const nextTask = getNextTask(
+    plan.direction,
+    currentPage,
+    plan.pages_per_day,
     surah,
-
-    isNewPlan
-
-  )
-
-
+    !lastLog
+   );
+  
+  if (!nextTask) return null
+  
+    const missedCount = calculateMissedDays(
+    plan,
+    today,
+    successDays,
+    hasTodayLog
+    );
   
 
-  const isTodayPlanned = data.selected_days.includes(today.getDay())
 
-  const hasTodayLog = logs.some(log => {
+  const plannedPages = missedCount * plan.pages_per_day;
 
-  const d = new Date(log.date)
+  const accuracy = plannedPages === 0 ?
+    100 : Math.min(Math.round((completedPages / plannedPages) * 100), 100)
+    
+  const progress =  Math.min(Math.round((completedPages / plan.total_pages) * 100), 100);
+  const remainingPages = Math.max(0, plan.total_pages - completedPages);
 
-  d.setHours(0, 0, 0, 0)
+   const { finishDate, daysNeeded } = calculateFinishedDate(
+    currentPage,
+    plan.direction,
+    plan.pages_per_day,
+    plan.selected_days.length || 1
+  );
 
-  return d.getTime() === today.getTime()
+    return {
+    progress,
+    accuracy,
+    missedCount,
+    remainingPages,
+    completedPages,
+    successDays,
 
-  })
+    currentPage,
+    currentSurah: nextTask.startSurah,
 
-  const missablePlannedDays =
+    todayTarget: plan.pages_per_day,
+    plannedPages,
 
-  plannedDayElapsed -
+    startSurah: getSurahNameByNumber(plan.start_surah, surah),
+    endSurah: plan.direction === "forward" ? "An-Nas" : "Al-Fatihah",
+    startPage: plan.start_page,
+    endPage: plan.direction === "forward" ? 604 : 1,
 
-  (isTodayPlanned && !hasTodayLog ? 1 : 0)
-
-
-  
-
-  const missedCount = Math.max(0, missablePlannedDays - stats.successLogs)
-
-  const plannedPages = missablePlannedDays * data.pages_per_day
-
-  console.log()
-
-
-
-  const isFirstDay = daysElapsed === 0;
-
-  const displayPlannedPages = isFirstDay && stats.actualPagesDone === 0 
-
-    ? data.pages_per_day 
-
-    : Math.round(plannedPages);
-
-  
-
- const accuracy = plannedPages > 0
-
-    ? Math.min(Math.round((stats.actualPagesDone / plannedPages) * 100), 100)
-
-   : 100;
-
-   return {
-
-     ...stats,
-
-     missedCount,
-
-     accuracy,
-
-     remainingPages: Math.max(0, data.total_pages - stats.actualPagesDone),
-
-     startSurah: nextTask?.startSurah,
-
-     endSurah: nextTask?.endSurah,
-
-     startPage: nextTask?.startPage,
-
-     endPage: nextTask?.endPage,
-
-     plannedPages: Math.round(plannedPages),
-
-     displayPlannedPages,
-
-     targetEndDate: data.estimated_end_date,
-
-     todayTarget: data.pages_per_day
-
+    targetEndDate: finishDate,
+    daysNeeded,
   };
 
 }
 
 
+export function analyzeLogs(logs: IHifzLog[]) {
+  const today = new Date().toISOString().slice(0,10);
 
+  let completedPages = 0
+  let successDays = 0;
+  let lastLog: IHifzLog | null = null
+  let hasTodayLog = false;
+
+  for (const log of logs) {
+    if (log.date === today) {
+      hasTodayLog = true
+    }
+
+    if (log.status === "completed" || log.status === "partial") {
+      successDays++;
+      completedPages += log.actual_pages_completed || 0
+      
+      if (!lastLog || log.date > lastLog?.date)
+      {
+        lastLog = log
+      }
+    }
+  }
+
+   return {
+    completedPages,
+    successDays,
+    lastLog,
+    hasTodayLog,
+  }; 
+}
+
+function calculateMissedDays(
+   plan: IHifzPlan,
+  today: Date,
+  successDays: number,
+  hasTodayLog: boolean
+) {
+    const plannedDaysElapsed = countPlannedDaysElapsed(
+    new Date(plan.start_date),
+    today,
+    plan.selected_days
+  );
+
+  const effectivePlannedDays =
+    plannedDaysElapsed -
+    (plan.selected_days.includes(today.getDay()) && !hasTodayLog ? 1 : 0);
+
+  return Math.max(0, effectivePlannedDays - successDays);
+}
 
 export const getWeeklyStatus = (plan: IHifzPlan) => {
   const logs = plan.hifz_daily_logs || [];
