@@ -1,8 +1,10 @@
-import { HifzPlanSchemaFormType } from "../types";
+import { ISurah } from "@/src/types";
+import { HifzPlanSchemaFormType, IHifzLog, IHifzPlan } from "../types";
 
 const MS_PER_DAY = 1000 * 60 * 60 * 24;
-
+//this one is used to get finshed date but  ut i need  the status calulation not from start but last logged page
 export const calculatePlanStats = (data: HifzPlanSchemaFormType) => {
+  
   const totalQuranPages = 604;
   const startPage = Number(data.start_page) || 1;
   const dailyRate = Number(data.pages_per_day) || 1;
@@ -30,6 +32,31 @@ export const calculatePlanStats = (data: HifzPlanSchemaFormType) => {
     targetSurah: data.direction === "forward" ? "An-Nas" : "Al-Fatihah" 
   };
 };
+
+export const calculateFinishedDate = (currentPage: number, direction: "forward" | "backward", pagesPerDay: number , weeklyFreq: number) => {
+  const totalQuranPages = 604;
+
+  const totalPages = direction === "forward" 
+    ? totalQuranPages - currentPage + 1 
+    : currentPage;
+
+  const sessionNeeded = Math.ceil(totalPages / pagesPerDay);
+  let daysNeeded = 1;
+  if (sessionNeeded > 1) {
+    daysNeeded = Math.ceil(((sessionNeeded - 1) / weeklyFreq) * 7) + 1;
+  }
+
+  const finishDate = new Date();
+  if (!isNaN(daysNeeded) && isFinite(daysNeeded)) {
+    finishDate.setDate(finishDate.getDate() + (daysNeeded - 1));
+  }
+
+  return {
+    finishDate: finishDate.toISOString().slice(0, 10),
+    daysNeeded
+  }
+
+}
 
 export const countPlannedDaysElapsed = (
   startDate: Date,
@@ -70,3 +97,18 @@ export const getPerformance = (val: number) => {
     label: "On Track", color: "text-blue-700", bg: "bg-blue-50", dot: "bg-blue-500", sign: "", value: val 
   };
 };
+
+export const getLastLog = (hifzPlan: IHifzPlan) => {
+
+  const logs = hifzPlan.hifz_daily_logs || [];
+  if (logs.length === 0) return null;
+
+  return logs.reduce<IHifzLog | null>((latest, log) => {
+    if (log.status == "missed") return latest;
+    if (!latest) return log;
+
+    return new Date(log.date) > new Date(latest.date)
+      ? log
+      : latest
+  }, null)
+}

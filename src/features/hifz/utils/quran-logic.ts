@@ -1,5 +1,6 @@
 import { ISurah } from "@/src/types";
 import { getJuzByPage, getSurah } from "../../muraja/utils/quranMapping";
+import { IHifzPlan } from "../types";
 
 export const getNextTask = (
   direction: "backward" | "forward",
@@ -22,7 +23,6 @@ export const getNextTask = (
     if (isForward) {
       currentPage = lastLoggedPage + 1;
     } else {
-      // Backward logic: if at end of surah, jump to start of previous surah
       currentPage = (lastLoggedPage >= currentSurah.endingPage)
         ? (surahData.find(s => s.number === currentSurah.number - 1)?.startingPage || 1)
         : lastLoggedPage + 1;
@@ -66,6 +66,32 @@ export const getNextTask = (
       ? sSurah?.englishName
       : `${sSurah?.englishName} & ${eSurah?.englishName}`,
     juz: getJuzByPage(endPage),
-    target: dailyRate
+    target: dailyRate,
+    status: "pending",
   };
 };
+
+export const getTodayTask = (
+  hifzPlan: IHifzPlan,
+  surahData: ISurah[],
+  pages: number = hifzPlan.pages_per_day,
+) => {
+  const todayStr = new Date().toISOString().slice(0, 10);
+
+
+  const historicalLogs = (hifzPlan.hifz_daily_logs || [])
+    .filter(log => log.date < todayStr)
+    .sort((a, b) => a.date.localeCompare(b.date));
+  
+  const lastLog = [...historicalLogs].reverse().find(log => log.status === "completed" || log.status === "partial")
+
+  const reaferencePage = lastLog ? lastLog.actual_end_page : hifzPlan.start_page;
+
+  return getNextTask(
+    hifzPlan.direction as "forward" | "backward",
+    reaferencePage,
+    pages,
+    surahData,
+    historicalLogs.length === 0,
+  );
+}
