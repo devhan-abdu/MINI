@@ -31,7 +31,7 @@ export const MurajaActionCard = ({ todayPlan }: { todayPlan: any }) => {
   };
 
   return (
-    <View className="bg-white rounded-[32px] p-6 border border-slate-100 shadow-sm shadow-slate-200">
+    <View className="bg-white rounded-[32px] p-6 border border-slate-200 shadow-md shadow-slate-200">
       <View className="flex-row justify-between items-start mb-6">
         <View className="flex-1">
                 

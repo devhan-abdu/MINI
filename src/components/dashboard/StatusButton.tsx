@@ -1,40 +1,49 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ActivityIndicator, Pressable,Text } from "react-native";
+import { ActivityIndicator, Pressable, Text } from "react-native";
 
 export const StatusButton = ({
   label,
   icon,
-  activeColor,
+  activeColor, 
   isActive,
+  isDisabled,
   onPress,
   loading,
-}: any) => (
-  <Pressable
-    onPress={onPress}
-    disabled={loading}
-    className={`flex-1 flex-row items-center justify-center py-3.5 rounded-2xl border ${
-      isActive
-        ? `${activeColor} border-transparent shadow-md shadow-slate-200`
-        : "bg-white border-slate-100"
-    } active:scale-[0.97] transition-all`}
-  >
-    {loading && isActive ? (
-      <ActivityIndicator size="small" color="white" />
-    ) : (
-      <>
-        <Ionicons
-          name={icon as any}
-          size={15}
-          color={isActive ? "white" : "#94a3b8"}
-        />
-        <Text
-          className={`ml-2 text-[10px] font-black uppercase tracking-wider ${
-            isActive ? "text-white" : "text-slate-500"
-          }`}
-        >
-          {label}
-        </Text>
-      </>
-    )}
-  </Pressable>
-);
+}: any) => {
+  const isSkip = label.toLowerCase() === "skip";
+
+  const containerStyle =
+    isActive ?
+      isSkip ?
+        "bg-red-50 border-red-100 shadow-sm" 
+      : `${activeColor} border-transparent shadow-md shadow-slate-200` 
+    : "bg-white border-slate-100";
+
+  const contentColor =
+    isActive ?
+      isSkip ?
+        "#ef4444" 
+      : "#ffffff" 
+    : "#94a3b8";
+
+  return (
+    <Pressable
+      onPress={onPress}
+      disabled={loading || isDisabled}
+      className={`flex-1 flex-row items-center justify-center py-3.5 rounded-xl border ${containerStyle} active:scale-[0.97]`}
+    >
+      {loading ?
+        <ActivityIndicator size="small" color={contentColor} />
+      : <>
+          <Ionicons name={icon as any} size={16} color={contentColor} />
+          <Text
+            style={{ color: contentColor }}
+            className="ml-2 text-[10px] font-black uppercase tracking-widest"
+          >
+            {label}
+          </Text>
+        </>
+      }
+    </Pressable>
+  );
+};

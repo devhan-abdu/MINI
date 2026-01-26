@@ -12,7 +12,7 @@ import { ISurah } from "@/src/types";
 export const TodayTasksSection = ({ surahData }: { surahData: ISurah[] }) => {
 
   const { todayPlan, loading: murajaLoading } = useWeeklyMuraja();
-  const { hifz, isLoading: hifzLoading, nextTask } = useGetHifzPlan();
+  const { hifz, isLoading: hifzLoading } = useGetHifzPlan();
 
   const hifzAnalytics = useMemo(() => {
     return hifzStatus(hifz ?? null, surahData);
@@ -27,7 +27,7 @@ export const TodayTasksSection = ({ surahData }: { surahData: ISurah[] }) => {
   return (
     <View className="gap-y-4">
       {hifzAnalytics ? (
-        <HifzActionCard hifz={hifz} nextTask={ nextTask} />
+        <HifzActionCard hifz={hifz}  />
       ) : (
         <EmptyTask message="No Hifz Plan for Today" />
       )}
