@@ -1,13 +1,7 @@
-import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Pressable,
-  TextInput,
-  Alert,
-} from "react-native";
+import React, { useEffect, useMemo, useState } from "react";
+import { View, Text, Pressable, TextInput } from "react-native";
 import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
+import { Stack, useRouter } from "expo-router";
 
 import { StatusTab } from "@/src/features/hifz/components/StatusTab";
 import { useGetHifzPlan } from "@/src/features/hifz/hook/useGetHifzPlan";
@@ -17,27 +11,80 @@ import { useSession } from "@/src/hooks/useSession";
 import { Button } from "@/src/components/ui/Button";
 import { IHifzLog } from "@/src/features/hifz/types";
 import Screen from "@/src/components/screen/Screen";
-import { ScreenContent, ScreenFooter } from "@/src/components/screen/ScreenContent";
-import { getNextTask } from "@/src/features/hifz/utils/quran-logic";
+import {
+  ScreenContent,
+  ScreenFooter,
+} from "@/src/components/screen/ScreenContent";
+import { getTodayTask } from "@/src/features/hifz/utils/quran-logic";
+import { Alert } from "@/src/components/Alert";
+import { LogProgressSkeleton } from "@/src/features/hifz/components/skeleton";
 
 export default function LogProgress() {
   const router = useRouter();
   const { user } = useSession();
-  const {
-    hifz: plan,
-    isLoading: planLoading,
-    nextTask: logContext,
-  } = useGetHifzPlan();
+
+  const { hifz: plan, isLoading: planLoading } = useGetHifzPlan();
   const { items: surahData, loading: quranLoading } = useLoadSurahData();
   const { addLog, isCreating } = useAddLog();
 
-  const [pages, setPages] = useState(plan?.pages_per_day || 1);
+  const [pages, setPages] = useState(1);
   const [status, setStatus] = useState<"completed" | "partial" | "missed">(
-    "completed"
+    "completed",
   );
   const [notes, setNotes] = useState("");
- 
-  
+  const [errorVisible, setErrorVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
+  const logContext = useMemo(() => {
+    if (!plan || !surahData || surahData.length === 0) return null;
+    return getTodayTask(plan, surahData);
+  }, [plan, surahData]);
+
+  useEffect(() => {
+    if (logContext) {
+      setPages(logContext.target);
+    }
+  }, [logContext]);
+
+  if (planLoading || quranLoading) {
+    return <LogProgressSkeleton/>
+  }
+
+  if (!plan) {
+    return (
+      <Screen>
+        <View className="flex-1 items-center justify-center p-6">
+          <Text className="text-xl font-black text-slate-900 text-center">
+            No Active Plan Found
+          </Text>
+          <Button className="mt-4" onPress={() => router.back()}>
+            Go Back
+          </Button>
+        </View>
+      </Screen>
+    );
+  }
+
+  if (!logContext) {
+    return (
+      <Screen>
+        <View className="flex-1 items-center justify-center p-6">
+          <Ionicons name="cafe-outline" size={48} color="#276359" />
+          <Text className="text-xl font-black text-slate-900 mt-4">
+            Rest Day
+          </Text>
+          <Text className="text-slate-500 text-center mt-2">
+            No task scheduled for today. Take a moment to revise!
+          </Text>
+          <Button className="mt-6" onPress={() => router.back()}>
+            Go Back
+          </Button>
+        </View>
+      </Screen>
+    );
+  }
+
+
 
  const handleSave = async () => {
    if (!plan || !logContext || isCreating || !plan.id) return;
@@ -46,16 +93,7 @@ export default function LogProgress() {
      const today = new Date();
      const logDay = today.getDay();
 
-     
-     const actualTask = getNextTask(
-       plan.direction as "forward" | "backward",
-       plan.hifz_daily_logs?.length
-         ? plan.hifz_daily_logs[plan.hifz_daily_logs.length - 1].actual_end_page
-         : plan.start_page,
-       pages, 
-       surahData,
-       plan.hifz_daily_logs?.length === 0
-     );
+     const actualTask = getTodayTask(plan, surahData, pages);
 
      const payload: IHifzLog = {
        hifz_plan_id: plan.id,
@@ -71,141 +109,178 @@ export default function LogProgress() {
      await addLog({ todayLog: payload, userId: user?.id });
      router.back();
    } catch (err) {
-     Alert.alert("Error", "Could not save your progress.");
+     setErrorMessage(
+       "Could not save your progress. Please check your connection.",
+     );
+     setErrorVisible(true);
    }
  };
-  if (planLoading || quranLoading) return <View className="flex-1 bg-white" />;
-  if (!plan || !logContext) return null;
-
+  
   return (
-    <Screen>
-      <ScreenContent>
-        <View className="bg-primary p-6 rounded-[32px] mb-8 shadow-xl shadow-green-900/20">
-          <View className="flex-row justify-between items-start mb-2">
-            <Text className="text-white/60 font-bold text-[10px] uppercase tracking-widest">
-              Today's Task
+    <>
+      <View
+        className="bg-white border-b border-slate-100"
+      >
+        <View className="h-16 px-4 flex-row items-center">
+          <Pressable
+            onPress={() => router.back()}
+            className="w-10 h-10 items-center justify-center rounded-full active:bg-slate-100"
+          >
+            <Ionicons name="arrow-back" size={24} color="#0f172a" />
+          </Pressable>
+
+          <View className="flex-1 ml-2">
+            <Text className="text-slate-400 font-bold uppercase tracking-[2px] text-[9px]">
+              Hifz
             </Text>
-            <View className="bg-white/20 px-2 py-1 rounded-3xl">
-              <Text className="text-white text-[9px] font-black uppercase">
-                {logContext.isBackward ? "Backward" : "Forward"}
-              </Text>
-            </View>
+            <Text className="text-lg font-black text-primary leading-tight">
+              Log Progress
+            </Text>
           </View>
-
-          <Text className="text-white text-3xl font-black mb-6">
-            {logContext.surah || "Surah Al-Baqarah"}
-          </Text>
-
-          <View className="flex-row items-center border-t border-white/10 pt-5">
-            <View className="pr-6 mr-6 border-r border-white/10">
-              <Text className="text-white text-3xl font-black">
-                {logContext.target}
+        </View>
+      </View>
+      <Screen>
+        <ScreenContent>
+          <View className="bg-primary p-6 rounded-[32px] mb-8 shadow-xl shadow-green-900/20">
+            <View className="flex-row justify-between items-start mb-2">
+              <Text className="text-white/60 font-bold text-[10px] uppercase tracking-widest">
+                Today's Task
               </Text>
-              <Text className="text-white/60 text-[10px] font-bold uppercase">
-                Target
-              </Text>
+              <View className="bg-white/20 px-2 py-1 rounded-3xl">
+                <Text className="text-white text-[9px] font-black uppercase">
+                  {plan.direction === "backward" ? "Backward" : "Forward"}
+                </Text>
+              </View>
             </View>
-            <View>
-              <Text className="text-white text-lg font-bold">
-                Pages {logContext.startPage}{" "}
-                {logContext.startPage !== logContext.endPage
-                  ? `— ${logContext.endPage}`
+
+            <Text className="text-white text-3xl font-black mb-6">
+              {logContext.displaySurah}
+            </Text>
+
+            <View className="flex-row items-center border-t border-white/10 pt-5">
+              <View className="pr-6 mr-6 border-r border-white/10">
+                <Text className="text-white text-3xl font-black">
+                  {logContext.target}
+                </Text>
+                <Text className="text-white/60 text-[10px] font-bold uppercase">
+                  Target
+                </Text>
+              </View>
+              <View>
+                <Text className="text-white text-lg font-bold">
+                  Pages {logContext.startPage}{" "}
+                  {logContext.startPage !== logContext.endPage ?
+                    `— ${logContext.endPage}`
                   : ""}
-              </Text>
-              <Text className="text-white/60 text-[10px] font-bold uppercase">
-                Juz {logContext.juz}
-              </Text>
+                </Text>
+                <Text className="text-white/60 text-[10px] font-bold uppercase">
+                  Juz {logContext.juz}
+                </Text>
+              </View>
             </View>
           </View>
-        </View>
 
-        <Text className="text-xl font-black text-gray-900 mb-4">
-          How did it go?
-        </Text>
-        <View className="flex-row justify-between mb-8">
-          <StatusTab
-            label="Completed"
-            icon="checkmark-circle"
-            active={status === "completed"}
-            onPress={() => {
-              setStatus("completed");
-              setPages(logContext.target);
-            }}
-          />
-          <StatusTab
-            label="Partial"
-            icon="contrast"
-            active={status === "partial"}
-            onPress={() => setStatus("partial")}
-          />
-          <StatusTab
-            label="Missed"
-            icon="close-circle"
-            active={status === "missed"}
-            onPress={() => {
-              setStatus("missed");
-              setPages(0);
-            }}
-          />
-        </View>
-
-        <View className="bg-gray-50 p-6 rounded-[28px] border border-gray-100 flex-row items-center justify-between mb-8">
-          <View>
-            <Text className="font-black text-gray-900 text-lg">
-              Pages Memorized
-            </Text>
-            <Text className="text-gray-400 text-xs font-medium">
-              Actual progress today
-            </Text>
-          </View>
-          <View className="flex-row items-center bg-white rounded-2xl p-1.5 border border-gray-200">
-            <Pressable
-              onPress={() => setPages((prev) => Math.max(0, prev - 1))}
-              className="w-10 h-10 items-center justify-center active:bg-gray-50 rounded-xl"
-            >
-              <Ionicons name="remove" size={20} color="#276359" />
-            </Pressable>
-            <Text className="text-2xl font-black text-gray-900 px-4">
-              {pages}
-            </Text>
-            <Pressable
-              onPress={() => setPages((prev) => prev + 1)}
-              className="w-10 h-10 items-center justify-center active:bg-gray-50 rounded-xl"
-            >
-              <Ionicons name="add" size={20} color="#276359" />
-            </Pressable>
-          </View>
-        </View>
-
-        <View className="mb-8">
-          <Text className="text-gray-400 font-bold uppercase text-[10px] mb-2 ml-1 tracking-widest">
-            Reflection or Notes
+          <Text className="text-xl font-black text-gray-900 mb-4">
+            How did it go?
           </Text>
-          <TextInput
-            multiline
-            placeholder="Difficulties with specific ayahs?"
-            placeholderTextColor="#9ca3af"
-            value={notes}
-            onChangeText={setNotes}
-            className="bg-gray-50 p-5 rounded-[28px] border border-gray-100 h-32 text-gray-900 font-medium"
-            textAlignVertical="top"
-          />
-        </View>
-      </ScreenContent>
-      <ScreenFooter>
-        <Button
-          onPress={handleSave}
-          disabled={isCreating}
-          className="bg-primary h-14  shadow-lg shadow-primary/30"
-        >
-          <View className="flex-row items-center justify-center">
-            <Text className="text-white font-black text-lg mr-2">
-              Save Progress
-            </Text>
-            <Ionicons name="arrow-forward" size={20} color="white" />
+          <View className="flex-row justify-between mb-8">
+            <StatusTab
+              label="Completed"
+              icon="checkmark-circle"
+              active={status === "completed"}
+              onPress={() => {
+                setStatus("completed");
+                setPages(logContext.target);
+              }}
+            />
+            <StatusTab
+              label="Partial"
+              icon="contrast"
+              active={status === "partial"}
+              onPress={() => setStatus("partial")}
+            />
+            <StatusTab
+              label="Missed"
+              icon="close-circle"
+              active={status === "missed"}
+              onPress={() => {
+                setStatus("missed");
+                setPages(0);
+              }}
+            />
           </View>
-        </Button>
-      </ScreenFooter>
-    </Screen>
+
+          <View className="bg-gray-50 p-6 rounded-[28px] border border-gray-100 flex-row items-center justify-between mb-8">
+            <View>
+              <Text className="font-black text-gray-900 text-lg">
+                Pages Memorized
+              </Text>
+              <Text className="text-gray-400 text-xs font-medium">
+                Actual progress today
+              </Text>
+            </View>
+            <View className="flex-row items-center bg-white rounded-2xl p-1.5 border border-gray-200">
+              <Pressable
+                onPress={() => setPages((prev) => Math.max(0, prev - 1))}
+                className="w-10 h-10 items-center justify-center active:bg-gray-50 rounded-xl"
+              >
+                <Ionicons name="remove" size={20} color="#276359" />
+              </Pressable>
+              <Text className="text-2xl font-black text-gray-900 px-4">
+                {pages}
+              </Text>
+              <Pressable
+                onPress={() => setPages((prev) => prev + 1)}
+                className="w-10 h-10 items-center justify-center active:bg-gray-50 rounded-xl"
+              >
+                <Ionicons name="add" size={20} color="#276359" />
+              </Pressable>
+            </View>
+          </View>
+
+          <View className="mb-8">
+            <Text className="text-gray-400 font-bold uppercase text-[10px] mb-2 ml-1 tracking-widest">
+              Reflection or Notes
+            </Text>
+            <TextInput
+              multiline
+              placeholder="Difficulties with specific ayahs?"
+              placeholderTextColor="#9ca3af"
+              value={notes}
+              onChangeText={setNotes}
+              className="bg-gray-50 p-5 rounded-[28px] border border-gray-100 h-32 text-gray-900 font-medium"
+              textAlignVertical="top"
+            />
+          </View>
+        </ScreenContent>
+        <ScreenFooter>
+          <Button
+            onPress={handleSave}
+            disabled={isCreating}
+            className="bg-primary h-14 mb-16 shadow-lg shadow-primary/30"
+          >
+            <View className="flex-row items-center justify-center">
+              <Text className="text-white font-black text-lg mr-2">
+                Save Progress
+              </Text>
+              <Ionicons name="arrow-forward" size={20} color="white" />
+            </View>
+          </Button>
+        </ScreenFooter>
+        <Alert
+          visible={errorVisible}
+          type="delete"
+          title="Action Failed"
+          message={errorMessage}
+          confirmText="Try Again"
+          cancelText="Close"
+          onConfirm={() => {
+            setErrorVisible(false);
+          }}
+          onCancel={() => setErrorVisible(false)}
+        />
+      </Screen>
+    </>
   );
 }
+

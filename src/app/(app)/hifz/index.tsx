@@ -11,7 +11,7 @@ import { getPerformance } from "@/src/features/hifz/utils/plan-calculations";
 import { hifzStatus } from "@/src/features/hifz/utils/plan-status";
 import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
 import { Ionicons } from "@expo/vector-icons";
-import { router, Tabs } from "expo-router";
+import { router } from "expo-router";
 import { useMemo } from "react";
 import { Pressable, Text, View } from "react-native";
 
@@ -19,59 +19,37 @@ export default function Hifz() {
   const { hifz, isLoading, error, refetch } = useGetHifzPlan();
   const { items: surah } = useLoadSurahData();
 
-  const analytics = useMemo(() => {
-    return hifzStatus(hifz ?? null, surah);
-  }, [hifz, surah]);
+ const analytics = useMemo(() => {
+   if (!hifz || !surah ) return null;
+   return hifzStatus(hifz, surah);
+ }, [hifz, surah]);
 
-  if (isLoading) return <HifzTrackerSkeleton />;
-  if (!hifz || !analytics) return <HifzEmptyState />;
+if (isLoading || (hifz && !analytics)) {
+  return <HifzTrackerSkeleton />;
+} 
+ if (error) {
+   return (
+     <Screen>
+       <View className="flex-1 items-center justify-center gap-4">
+         <Text className="text-center text-gray-500 mb-4">
+           Failed to load plan
+         </Text>
+         <Button onPress={() => refetch()}>Retry</Button>
+       </View>
+     </Screen>
+   );
+ }
+  if (!hifz) return <HifzEmptyState />
+  if (!analytics) return <HifzTrackerSkeleton />;
 
-  if (error) {
-    return (
-      <Screen>
-        <View className="flex-1 items-center justify-center gap-4">
-          <Text className="text-center text-gray-500 mb-4">
-            Failed to load plan
-          </Text>
-          <Button onPress={() => refetch()}>Retry</Button>
-        </View>
-      </Screen>
-    );
-  }
+ 
 
   const config = getPerformance(
-    analytics.plannedPages - analytics.actualPagesDone
+    analytics.plannedPages - analytics.completedPages
   );
 
   return (
     <>
-      <Tabs.Screen
-        options={{
-          headerTitle: () => (
-            <View className="ml-1">
-              <Text className="text-gray-400 font-bold uppercase tracking-[2px] text-[9px]">
-                Hifz
-              </Text>
-              <Text className="text-xl font-black text-gray-900 leading-tight">
-                Plan Tracker
-              </Text>
-            </View>
-          ),
-          headerRight: () => (
-            <Pressable
-              onPress={() => router.push("/(app)/create-hifz-plan")}
-              className="mr-4 bg-gray-100 flex-row items-center px-3 py-2 rounded-xl border border-gray-200 active:bg-gray-200"
-            >
-              <Ionicons name="settings-outline" size={14} color="#276359" />
-              <Text className="text-primary font-black text-[10px] ml-2 uppercase tracking-tighter">
-                Edit Plan
-              </Text>
-            </Pressable>
-          ),
-          headerShadowVisible: false,
-          headerShown: true,
-        }}
-      />
       <Screen>
         <ScreenContent>
           <View className="bg-primary rounded-[32px] p-6 shadow-xl shadow-black/10 border border-white/10">
@@ -93,17 +71,17 @@ export default function Hifz() {
                   <Text
                     className={`font-bold text-[11px] uppercase tracking-wider ${config.color}`}
                   >
-                    {config.value === 0
-                      ? config.label
-                      : `${Math.abs(config.value)} Pages ${config.label}`}
+                    {config.value === 0 ?
+                      config.label
+                    : `${Math.abs(config.value)} Pages ${config.label}`}
                   </Text>
                 </View>
               </View>
 
               <HifzOverViewCard
-                progress={analytics.accuracy}
-                pages={`${analytics.startPage} - ${analytics.endPage}`}
-                surahName={analytics.endSurah}
+                progress={analytics.progress}
+                remainingPages={analytics.remainingPages}
+                currentSurah={analytics.currentSurah}
                 strokeWidth={10}
               />
             </View>
@@ -128,55 +106,57 @@ export default function Hifz() {
               </View>
             </View>
           </View>
-          <View className="mt-8 mb-3E4TG5T4F5RF5RF4">
-            <Text className="text-lg font-black text-gray-900 mb-4">
+          <View className="mt-10 mb-2 px-1">
+            <Text className="text-gray-400 font-bold uppercase tracking-[2px] text-[10px] mb-2">
+              Activity
+            </Text>
+
+            <Text className="text-xl font-black text-gray-900 mb-5">
               Weekly Consistency
             </Text>
+
             <DayByDay plan={hifz} />
           </View>
-          <View className="flex-row flex-wrap justify-between mt-4">
-            <StatCard
-              title="Completed"
-              value={analytics.successLogs}
-              unit="Pages"
-              type="success"
-              icon="checkmark-done-circle"
-            />
-            <StatCard
-              title="Remaining"
-              value={analytics.remainingPages}
-              unit="Pages"
-              type="info"
-              icon="book"
-            />
-            <StatCard
-              title="Accuracy"
-              value={analytics.accuracy}
-              unit="Score"
-              type="warning"
-              icon="trophy"
-            />
-            <StatCard
-              title="Missed"
-              value={analytics.missedCount}
-              unit="Days"
-              type="danger"
-              icon="alert-circle"
-            />
-          </View>
-          <View className="mt-10 bg-primary/5 p-6 rounded-[32px] border border-dashed border-primary/30">
-            <Ionicons name="bulb" size={24} color="#276359" className="mb-2" />
-            <Text className="text-primary-900 font-bold text-lg mb-2 italic">
-              "The best among you are those who learn the Quran and teach it."
+          <View className="mt-10">
+            <Text className="text-gray-400 font-bold uppercase tracking-[2px] text-[10px] mb-2 px-1">
+              Insights
             </Text>
-            <Text className="text-primary/60 text-sm">
-              — Prophet Muhammad (ﷺ)
+            <Text className="text-xl font-black text-gray-900 mb-4 px-1">
+              Plan Analytics
             </Text>
+
+            <View className="flex-row flex-wrap justify-between">
+              <StatCard
+                title="Completed"
+                value={analytics.completedPages}
+                unit="Pages"
+                icon="checkmark-done-circle"
+              />
+              <StatCard
+                title="Remaining"
+                value={analytics.remainingPages}
+                unit="Pages"
+                icon="book"
+              />
+              <StatCard
+                title="Accuracy"
+                value={analytics.accuracy}
+                unit="Score"
+                icon="trophy"
+              />
+              <StatCard
+                title="Missed"
+                value={analytics.missedCount}
+                unit="Days"
+                type="danger"
+                icon="alert-circle"
+              />
+            </View>
           </View>
         </ScreenContent>
         <ScreenFooter>
           <Pressable
-            className="bg-primary h-14 rounded-2xl px-4 flex-row items-center justify-start shadow-lg shadow-primary/20 active:opacity-90"
+            className="bg-primary mb-16 h-14 rounded-2xl px-4 flex-row items-center justify-start shadow-lg shadow-primary/20 active:opacity-90"
             onPress={() => router.push(`/(app)/hifz/log`)}
           >
             <View className="bg-white/20 p-1.5 rounded-full mr-3">
