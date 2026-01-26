@@ -94,9 +94,22 @@ export default function CreateHifzPlan() {
 
   return (
     <>
-      <Stack.Screen
-        options={{ title: existingPlan ? "Edit Plan" : "New Hifz Plan" }}
-      />
+     <View className="bg-white border-b border-slate-100">
+             <View className="h-16 px-4 flex-row items-center">
+               <Pressable
+                 onPress={() => router.back()}
+                 className="w-10 h-10 items-center justify-center rounded-full active:bg-slate-100"
+               >
+                 <Ionicons name="arrow-back" size={24} color="#0f172a" />
+               </Pressable>
+     
+               <View className="flex-1 ml-2">
+                 <Text className="text-lg font-black text-primary leading-tight">
+                   Create Plan
+                 </Text>
+               </View>
+             </View>
+           </View>
       <Screen>
         <ScreenContent>
           <View className="mb-6">
@@ -263,7 +276,7 @@ export default function CreateHifzPlan() {
           <Button
             onPress={handleSubmit(onSubmit)}
             disabled={isSaving}
-            className="bg-primary h-14 rounded-2xl mb-12"
+            className="bg-primary h-14 rounded-2xl "
           >
             {isSaving ? (
               <ActivityIndicator color="white" />

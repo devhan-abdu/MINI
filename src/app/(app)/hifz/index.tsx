@@ -130,50 +130,57 @@ if (isLoading || (hifz && !analytics)) {
                 title="Completed"
                 value={analytics.completedPages}
                 unit="Pages"
-                icon="checkmark-done-circle"
+                icon="checkmark-done-circle-outline"
               />
               <StatCard
                 title="Remaining"
                 value={analytics.remainingPages}
                 unit="Pages"
-                icon="book"
+                icon="book-outline"
               />
               <StatCard
                 title="Accuracy"
                 value={analytics.accuracy}
                 unit="Score"
-                icon="trophy"
+                icon="trophy-outline"
               />
               <StatCard
                 title="Missed"
                 value={analytics.missedCount}
                 unit="Days"
                 type="danger"
-                icon="alert-circle"
+                icon="alert-circle-outline"
               />
             </View>
           </View>
         </ScreenContent>
         <ScreenFooter>
-          <Pressable
-            className="bg-primary mb-16 h-14 rounded-2xl px-4 flex-row items-center justify-start shadow-lg shadow-primary/20 active:opacity-90"
-            onPress={() => router.push(`/(app)/hifz/log`)}
-          >
-            <View className="bg-white/20 p-1.5 rounded-full mr-3">
-              <Ionicons name="add" size={20} color="white" />
-            </View>
+          <View className="flex-row gap-x-3">
+            <Pressable
+              className="flex-1 bg-primary h-14 rounded-2xl px-4 flex-row items-center justify-start shadow-lg shadow-primary/20 active:opacity-90"
+              onPress={() => router.push(`/(app)/hifz/log`)}
+            >
+              <View className="bg-white/20 p-1.5 rounded-full mr-3">
+                <Ionicons name="add" size={20} color="white" />
+              </View>
+              <Text className="text-white font-black text-lg tracking-tight">
+                Log Today's Hifz
+              </Text>
+            </Pressable>
 
-            <Text className="text-white font-black text-lg tracking-tight">
-              Log Today's Hifz
-            </Text>
-
-            <Ionicons
-              name="arrow-forward"
-              size={24}
-              color="#fff"
-              className="ml-auto"
-            />
-          </Pressable>
+            <Pressable
+              className="flex-1 bg-white h-14 rounded-2xl px-4 flex-row items-center justify-start border border-primary shadow-sm active:opacity-90"
+              onPress={() => router.push("/(app)/hifz/create-hifz-plan")}
+            >
+              <View className="bg-primary/10 p-1.5 rounded-full mr-3">
+                <Ionicons name="create-outline" size={18} color="#276359" />
+              </View>
+              <Text className="text-primary font-bold text-lg tracking-tight">
+                Edit Plan
+              </Text>
+            
+            </Pressable>
+          </View>
         </ScreenFooter>
       </Screen>
     </>

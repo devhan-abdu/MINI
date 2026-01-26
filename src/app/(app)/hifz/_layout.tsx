@@ -1,28 +1,33 @@
+import { Header } from "@/src/components/navigation/Header";
 import { Stack } from "expo-router";
+import { View } from "react-native";
 
 export default function HifzLayout() {
   return (
-    <Stack
-      screenOptions={{
-        headerStyle: { backgroundColor: "#fff" },
-        headerShadowVisible: false,
-        headerTintColor: "#276359", 
-        headerTitleStyle: {
-          fontWeight: "900",
-        },
-      }}
-    >
-      <Stack.Screen
-        name="index"
-        options={{ headerShown: false }} 
-      />
+    <View className="flex-1 bg-white">
+        <Header title="Hifz Al-Quran" />
 
-      <Stack.Screen
-        name="log"
-        options={{
+      <Stack
+        screenOptions={{
           headerShown: false,
+          contentStyle: { backgroundColor: "white" },
         }}
-      />
-    </Stack>
+      >
+        <Stack.Screen
+          name="index"
+          options={{
+            animation: "fade",
+          }}
+        />
+        <Stack.Screen name="log" options={{ animation: "slide_from_right" }} />
+        <Stack.Screen
+          name="create-hifz-plan"
+          options={{
+           animation: "slide_from_right",
+            presentation: "modal",
+          }}
+        />
+      </Stack>
+    </View>
   );
 }

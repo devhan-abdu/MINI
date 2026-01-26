@@ -16,7 +16,7 @@ import {
   ScreenFooter,
 } from "@/src/components/screen/ScreenContent";
 import { getTodayTask } from "@/src/features/hifz/utils/quran-logic";
-import { Alert } from "@/src/components/Alert";
+import { Alert } from "@/src/components/common/Alert";
 import { LogProgressSkeleton } from "@/src/features/hifz/components/skeleton";
 
 export default function LogProgress() {
@@ -47,7 +47,7 @@ export default function LogProgress() {
   }, [logContext]);
 
   if (planLoading || quranLoading) {
-    return <LogProgressSkeleton/>
+    return <LogProgressSkeleton />;
   }
 
   if (!plan) {
@@ -84,59 +84,49 @@ export default function LogProgress() {
     );
   }
 
+  const handleSave = async () => {
+    if (!plan || !logContext || isCreating || !plan.id) return;
 
+    try {
+      const today = new Date();
+      const logDay = today.getDay();
 
- const handleSave = async () => {
-   if (!plan || !logContext || isCreating || !plan.id) return;
+      const actualTask = getTodayTask(plan, surahData, pages);
 
-   try {
-     const today = new Date();
-     const logDay = today.getDay();
+      const payload: IHifzLog = {
+        hifz_plan_id: plan.id,
+        actual_pages_completed: pages,
+        actual_start_page: logContext.startPage,
+        actual_end_page: actualTask?.endPage || logContext.startPage,
+        status,
+        date: today.toISOString().slice(0, 10),
+        log_day: logDay,
+        notes: notes.trim(),
+      };
 
-     const actualTask = getTodayTask(plan, surahData, pages);
+      await addLog({ todayLog: payload, userId: user?.id });
+      router.back();
+    } catch (err) {
+      setErrorMessage(
+        "Could not save your progress. Please check your connection.",
+      );
+      setErrorVisible(true);
+    }
+  };
 
-     const payload: IHifzLog = {
-       hifz_plan_id: plan.id,
-       actual_pages_completed: pages,
-       actual_start_page: logContext.startPage,
-       actual_end_page: actualTask?.endPage || logContext.startPage,
-       status,
-       date: today.toISOString().slice(0, 10),
-       log_day: logDay,
-       notes: notes.trim(),
-     };
-
-     await addLog({ todayLog: payload, userId: user?.id });
-     router.back();
-   } catch (err) {
-     setErrorMessage(
-       "Could not save your progress. Please check your connection.",
-     );
-     setErrorVisible(true);
-   }
- };
-  
   return (
     <>
-      <View
-        className="bg-white border-b border-slate-100"
-      >
+      <View className="bg-white border-b border-slate-100">
         <View className="h-16 px-4 flex-row items-center">
           <Pressable
             onPress={() => router.back()}
             className="w-10 h-10 items-center justify-center rounded-full active:bg-slate-100"
           >
             <Ionicons name="arrow-back" size={24} color="#0f172a" />
-          </Pressable>
-
-          <View className="flex-1 ml-2">
-            <Text className="text-slate-400 font-bold uppercase tracking-[2px] text-[9px]">
-              Hifz
-            </Text>
-            <Text className="text-lg font-black text-primary leading-tight">
+          </Pressable> 
+            <Text className="text-lg font-black text-primary leading-tight ml-2">
               Log Progress
             </Text>
-          </View>
         </View>
       </View>
       <Screen>
@@ -257,7 +247,7 @@ export default function LogProgress() {
           <Button
             onPress={handleSave}
             disabled={isCreating}
-            className="bg-primary h-14 mb-16 shadow-lg shadow-primary/30"
+            className="bg-primary h-14  shadow-lg shadow-primary/30"
           >
             <View className="flex-row items-center justify-center">
               <Text className="text-white font-black text-lg mr-2">
@@ -283,4 +273,3 @@ export default function LogProgress() {
     </>
   );
 }
-
