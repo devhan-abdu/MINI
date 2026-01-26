@@ -41,7 +41,7 @@ export default function HifzEmptyState() {
         </View>
 
         <Pressable
-          onPress={() => router.push("/(app)/create-hifz-plan")}
+          onPress={() => router.push("/(app)/hifz/create-hifz-plan")}
           className="bg-primary h-16 rounded-2xl flex-row items-center justify-center shadow-lg shadow-primary/30 active:scale-[0.98]"
         >
           <Text className="text-white font-black text-lg mr-2">

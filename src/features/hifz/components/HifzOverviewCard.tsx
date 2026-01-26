@@ -6,18 +6,18 @@ interface Props {
   progress: number;
   size?: number;
   strokeWidth?: number;
-  surahName?: string;
-  pages?: string;
-  variant?: "primary" | "white"; 
+  currentSurah?: string; 
+  remainingPages?: number; 
+  variant?: "primary" | "white";
 }
 
 export default function HifzOverViewCard({
   progress = 0,
-  size = 125,
+  size = 135, 
   strokeWidth = 10,
-  surahName = "Al-Baqarah",
-  pages = "12-15",
-  variant = "primary", 
+  currentSurah = "Al-Baqarah",
+  remainingPages = 0,
+  variant = "primary",
 }: Props) {
   const radius = (size - strokeWidth) / 2;
   const circumference = 2 * Math.PI * radius;
@@ -25,10 +25,10 @@ export default function HifzOverViewCard({
 
   const isWhite = variant === "white";
 
-  const trackColor = isWhite ? "#f1f5f9" : "rgba(255, 255, 255, 0.2)"; 
-  const progressColor = isWhite ? "#276359" : "#ffffff"; 
+  const trackColor = isWhite ? "#f1f5f9" : "rgba(255, 255, 255, 0.15)";
+  const progressColor = isWhite ? "#276359" : "#ffffff";
 
-  const labelColor = isWhite ? "text-slate-400" : "text-white/60";
+  const labelColor = isWhite ? "text-slate-400" : "text-white/50";
   const mainTextColor = isWhite ? "text-slate-900" : "text-white";
   const badgeBg = isWhite ? "bg-slate-100" : "bg-white/20";
   const badgeText = isWhite ? "text-slate-600" : "text-white";
@@ -64,33 +64,37 @@ export default function HifzOverViewCard({
         </G>
       </Svg>
 
-      <View className="absolute inset-0 items-center justify-center">
+      <View className="absolute inset-0 items-center justify-center px-4">
         <Text
-          className={`${labelColor} font-black text-[8px] uppercase tracking-widest`}
+          className={`${labelColor} font-black text-[7px] uppercase tracking-[2px] mb-0.5`}
         >
-          Surah
+          Progress
         </Text>
 
         <Text
-          numberOfLines={1}
-          className={`${mainTextColor} text-sm font-black text-center px-1 tracking-tighter`}
-        >
-          {surahName}
-        </Text>
-
-        <Text
-          className={`${
-            isWhite ? "text-primary" : "text-white/80"
-          } text-[10px] font-black mt-0.5`}
+          className={`${mainTextColor} text-2xl font-black tracking-tighter leading-none`}
         >
           {Math.round(progress)}%
         </Text>
 
         <View
-          className={`mt-1.5 ${badgeBg} px-2 py-0.5 rounded-full border ${badgeBorder}`}
+          className={`h-[1px] w-8 my-1.5 ${isWhite ? "bg-slate-100" : "bg-white/20"}`}
+        />
+
+        <Text
+          numberOfLines={1}
+          className={`${mainTextColor} text-[10px] font-black uppercase tracking-tight text-center`}
         >
-          <Text className={`${badgeText} font-black text-[8px]`}>
-            Pg {pages}
+          {currentSurah}
+        </Text>
+
+        <View
+          className={`mt-2 ${badgeBg} px-2.5 py-0.5 rounded-full border ${badgeBorder}`}
+        >
+          <Text
+            className={`${badgeText} font-black text-[7px] uppercase tracking-widest`}
+          >
+            {remainingPages} Left
           </Text>
         </View>
       </View>
