@@ -7,7 +7,10 @@ import { useEffect, useMemo, useState } from "react";
 import { Alert, Pressable, Text, TextInput, View } from "react-native";
 import { useMurajaOperation } from "@/src/features/muraja/hooks/useMurajaOperation";
 import { useWeeklyMuraja } from "@/src/features/muraja/hooks/useWeeklyMuraja";
-import { ScreenContent, ScreenFooter } from "@/src/components/screen/ScreenContent";
+import {
+  ScreenContent,
+  ScreenFooter,
+} from "@/src/components/screen/ScreenContent";
 import Screen from "@/src/components/screen/Screen";
 import { StatusTab } from "@/src/features/hifz/components/StatusTab";
 
@@ -22,7 +25,7 @@ export default function LogPage() {
 
   const plan = useMemo(
     () => plans.find((p) => p.id === Number(id)),
-    [plans, id]
+    [plans, id],
   );
 
   const [status, setStatus] = useState<StatusType>("pending");
@@ -37,7 +40,9 @@ export default function LogPage() {
     if (existingLog) {
       setStatus(existingLog.status as StatusType);
       setPages(existingLog.completed_pages ?? plan.planned_pages);
-      setMin(existingLog.actual_time_min?.toString() ?? plan.estimated_time_min);
+      setMin(
+        existingLog.actual_time_min?.toString() ?? plan.estimated_time_min,
+      );
       setPlace(existingLog.place ?? "");
       setNote(existingLog.note ?? "");
     }
@@ -56,9 +61,9 @@ export default function LogPage() {
     month: "long",
   }).format(new Date(plan.date));
 
-   const todayStr = new Date().toISOString().slice(0, 10);
-   const isPastDay = plan.date < todayStr;
-  
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const isPastDay = plan.date < todayStr;
+
   const handleSave = async () => {
     setError("");
 
@@ -80,8 +85,9 @@ export default function LogPage() {
       });
 
       const title = isPastDay ? "Caught Up!" : "Success";
-      const message = isPastDay
-        ? "You've successfully cleared a past session. Keep that momentum!"
+      const message =
+        isPastDay ?
+          "You've successfully cleared a past session. Keep that momentum!"
         : "Progress saved.";
 
       Alert.alert(title, message, [
@@ -129,9 +135,9 @@ export default function LogPage() {
             </Text>
 
             <Text className="text-white text-3xl font-black mb-6">
-              {plan.startSurah === plan.endSurah
-                ? plan.startSurah
-                : `${plan.startSurah} – ${plan.endSurah}`}
+              {plan.startSurah === plan.endSurah ?
+                plan.startSurah
+              : `${plan.startSurah} – ${plan.endSurah}`}
             </Text>
 
             <View className="flex-row items-center justify-between border-t border-white/10 pt-5">

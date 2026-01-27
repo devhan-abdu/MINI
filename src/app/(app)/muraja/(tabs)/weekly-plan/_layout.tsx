@@ -2,11 +2,9 @@ import { Header } from "@/src/components/navigation/Header";
 import { Stack } from "expo-router";
 import { View } from "react-native";
 
-export default function MurajaLayout() {
+export default function WeeklyLayout() {
   return (
     <View className="flex-1 bg-white">
-        <Header title="Muraja Al-Quran" />
-
       <Stack
         screenOptions={{
           headerShown: false,
@@ -14,18 +12,12 @@ export default function MurajaLayout() {
         }}
       >
         <Stack.Screen
-          name="(tabs)"
+          name="index"
           options={{
             animation: "fade",
           }}
         />
-        <Stack.Screen
-          name="create-muraja-plan"
-          options={{
-           animation: "slide_from_right",
-            presentation: "modal",
-          }}
-        />
+        <Stack.Screen name="[id]" options={{ animation: "slide_from_right" }} />
       </Stack>
     </View>
   );

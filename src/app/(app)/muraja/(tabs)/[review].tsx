@@ -39,12 +39,12 @@ export default function WeeklyReviewPage() {
   if (!plan || !analytics) {
     return (
       <Screen>
-        <Stack.Screen
+        {/* <Stack.Screen
           options={{
             headerTitle: "Weekly Review",
             headerShadowVisible: true
           }}
-        />
+        /> */}
         <View className="flex-1 items-center justify-center p-6 mt-20">
           <View className="bg-gray-100 p-6 rounded-full mb-4">
             <Ionicons name="calendar-outline" size={60} color="#94a3b8" />
@@ -70,9 +70,6 @@ export default function WeeklyReviewPage() {
 
  return (
    <>
-     <Stack.Screen
-       options={{ headerTitle: "Weekly Review", headerShadowVisible: true }}
-     />
      <Screen>
        <ScreenContent>
          <SectionHeader
@@ -85,21 +82,6 @@ export default function WeeklyReviewPage() {
            weekRange={weekRange}
          />
        </ScreenContent>
-       <View className=" rounded-[24px] p-5 border border-gray-100 flex-row gap-4 items-start mb-10">
-         <View className="bg-white p-2 rounded-lg shadow-sm">
-           <Ionicons name="bulb" size={20} color="#276359" />
-         </View>
-         <View className="flex-1">
-           <Text className="text-primary font-black text-md mb-2">
-             Growth Tip
-           </Text>
-           <Text className="text-gray-400 text-sm leading-5">
-             Consistency is better than intensity. If you are struggling with a
-             specific Juz, try reducing the daily page target for next week to
-             build confidence.
-           </Text>
-         </View>
-       </View>
      </Screen>
    </>
  );

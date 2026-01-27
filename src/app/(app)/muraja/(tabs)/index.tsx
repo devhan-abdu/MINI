@@ -90,7 +90,7 @@ const router = useRouter();
         <ScreenFooter>
           <Button
             variant="outline"
-            onPress={() => router.push("/(app)/create-muraja-plan")}
+            onPress={() => router.push("/(app)/muraja/create-muraja-plan")}
           >
             Replace Current Plan
           </Button>
