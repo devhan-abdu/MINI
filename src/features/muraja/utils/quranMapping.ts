@@ -35,6 +35,9 @@ export function getJuzByPage(page: number) {
 export function getSurahByPage(page: number, surah: ISurah[]) {
      return surah.find(s => page >=s.startingPage && page <= s.endingPage)?.englishName
 }
+export function getSurahNameByNumber(surahNumber: number, surah: ISurah[]) {
+     return surah.find(s => s.number === surahNumber)?.englishName
+}
 export function getSurah(page: number, surah: ISurah[]) {
         return surah.find(s => page >=s.startingPage && page <= s.endingPage)
 }

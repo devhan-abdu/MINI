@@ -3,7 +3,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useSession } from "@/src/hooks/useSession";
 import { murajaServices } from "../services/murajaServices";
 import { calculateStreak } from "../utils/calculateStreak";
-import { DAY_NUMBER_MAP } from "../utils/quranMapping";
 
 
 export const useHistory = (year:number , month:number) => {

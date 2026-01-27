@@ -2,9 +2,9 @@ import { LogPageSkeleton } from "@/src/features/muraja/components/skeletons";
 import { Button } from "@/src/components/ui/Button";
 import Input from "@/src/components/ui/Input";
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, useLocalSearchParams, useRouter } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Alert, Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, Text, TextInput, View } from "react-native";
 import { useMurajaOperation } from "@/src/features/muraja/hooks/useMurajaOperation";
 import { useWeeklyMuraja } from "@/src/features/muraja/hooks/useWeeklyMuraja";
 import {
@@ -13,6 +13,8 @@ import {
 } from "@/src/components/screen/ScreenContent";
 import Screen from "@/src/components/screen/Screen";
 import { StatusTab } from "@/src/features/hifz/components/StatusTab";
+import { useAlert } from "@/src/hooks/useAlert";
+import { Alert } from "@/src/components/common/Alert";
 
 type StatusType = "pending" | "completed" | "partial" | "missed";
 
@@ -22,6 +24,7 @@ export default function LogPage() {
 
   const { weeklyPlan, plans, loading } = useWeeklyMuraja();
   const { updateLog, isUpdating } = useMurajaOperation();
+  const { alertConfig, showSuccess, showError, hideAlert } = useAlert();
 
   const plan = useMemo(
     () => plans.find((p) => p.id === Number(id)),
@@ -90,11 +93,9 @@ export default function LogPage() {
           "You've successfully cleared a past session. Keep that momentum!"
         : "Progress saved.";
 
-      Alert.alert(title, message, [
-        { text: "OK", onPress: () => router.back() },
-      ]);
+      showSuccess(title, message, () => router.back());
     } catch (err) {
-      Alert.alert("Error", "Failed to save log");
+      showError("Ups!", "Failed to save log");
     }
   };
 
@@ -282,6 +283,7 @@ export default function LogPage() {
           </Button>
         </ScreenFooter>
       </Screen>
+      <Alert {...alertConfig} onCancel={hideAlert} confirmText="OK" />
     </>
   );
 }

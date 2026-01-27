@@ -95,8 +95,8 @@ export default function OnboardingBridge() {
             <Button
               disabled={!selected}
               onPress={() => {
-                if (selected === "hifz") router.push("/(app)/create-hifz-plan");
-                else router.push("/(app)/create-muraja-plan");
+                if (selected === "hifz") router.push("/(app)/hifz/create-hifz-plan");
+                else router.push("/(app)/muraja/create-muraja-plan");
               }}
               style={{ opacity: selected ? 1 : 0.5 }}
               className="bg-primary h-18 mb-6 rounded-[28px] items-center justify-center shadow-2xl shadow-primary/40"

@@ -12,7 +12,6 @@ export const supabase = createClient(supabaseUrl, supabasePublishableKey, {
     autoRefreshToken: true,
     persistSession: true,
     detectSessionInUrl: false,
-    lock: processLock,
   },
 });
 

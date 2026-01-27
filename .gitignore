@@ -47,5 +47,8 @@ app-example
 _vscode
 .eas
 .expo
+/src/app/(app)/mushaf.tsx
+docs.tx
+/src/hooks/usePushNotification.ts
 
 

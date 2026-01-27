@@ -1,18 +1,24 @@
+import { Alert } from "@/src/components/common/Alert";
 import Screen from "@/src/components/screen/Screen";
 import { ScreenContent } from "@/src/components/screen/ScreenContent";
 import { Button } from "@/src/components/ui/Button";
 import Input from "@/src/components/ui/Input";
+import { useAlert } from "@/src/hooks/useAlert";
 import { supabase } from "@/src/lib/supabase";
 import { useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ email?: string; password?: string }>({});
+  const [errors, setErrors] = useState<{ email?: string; password?: string }>(
+    {},
+  );
   const router = useRouter();
+
+  const { alertConfig, showError, hideAlert } = useAlert();
 
   async function handleLogin() {
     const newErrors: typeof errors = {};
@@ -33,12 +39,12 @@ export default function LoginPage() {
       });
 
       if (error) throw error;
-      setEmail("")
-      setPassword("")
+      setEmail("");
+      setPassword("");
 
-      router.push("/(app)"); 
+      router.push("/(app)");
     } catch (err: any) {
-      Alert.alert("Login Error", err.message); 
+      showError("Ups!", err.message);
     } finally {
       setLoading(false);
     }
@@ -107,6 +113,7 @@ export default function LoginPage() {
           </View>
         </View>
       </ScreenContent>
+      <Alert {...alertConfig} onCancel={hideAlert} confirmText="OK" />
     </Screen>
   );
 }

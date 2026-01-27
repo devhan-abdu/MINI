@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Stack, useRouter } from "expo-router";
-import { Alert, Pressable, Text, View, ActivityIndicator } from "react-native";
+import { useRouter } from "expo-router";
+import { Pressable, Text, View, ActivityIndicator } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Input from "@/src/components/ui/Input";
 import SurahDropdown, {
@@ -26,6 +26,8 @@ import {
 } from "@/src/components/screen/ScreenContent";
 import Screen from "@/src/components/screen/Screen";
 import { calculatePlanStats } from "@/src/features/hifz/utils/plan-calculations";
+import { useAlert } from "@/src/hooks/useAlert";
+import { Alert } from "@/src/components/common/Alert";
 
 export default function CreateHifzPlan() {
   const router = useRouter();
@@ -33,6 +35,8 @@ export default function CreateHifzPlan() {
   const { user } = useSession();
   const { hifz: existingPlan, isLoading } = useGetHifzPlan();
   const { savePlan, isSaving } = useSaveHifzPlanHifz(existingPlan?.id);
+
+  const { alertConfig, showSuccess, showError, hideAlert } = useAlert();
 
   const {
     handleSubmit,
@@ -78,13 +82,13 @@ export default function CreateHifzPlan() {
         days_per_week: data.selectedDays.length,
       };
       await savePlan(planData);
-      Alert.alert(
+      showSuccess(
         "Success",
         existingPlan ? "Plan updated!" : "Journey started!",
-        [{ text: "OK", onPress: () => router.back() }]
+        () => router.back(),
       );
     } catch (error: any) {
-      Alert.alert("Error", error.message);
+      showError("Error", error.message);
     }
   };
 
@@ -94,22 +98,22 @@ export default function CreateHifzPlan() {
 
   return (
     <>
-     <View className="bg-white border-b border-slate-100">
-             <View className="h-16 px-4 flex-row items-center">
-               <Pressable
-                 onPress={() => router.back()}
-                 className="w-10 h-10 items-center justify-center rounded-full active:bg-slate-100"
-               >
-                 <Ionicons name="arrow-back" size={24} color="#0f172a" />
-               </Pressable>
-     
-               <View className="flex-1 ml-2">
-                 <Text className="text-lg font-black text-primary leading-tight">
-                   Create Plan
-                 </Text>
-               </View>
-             </View>
-           </View>
+      <View className="bg-white border-b border-slate-100">
+        <View className="h-16 px-4 flex-row items-center">
+          <Pressable
+            onPress={() => router.back()}
+            className="w-10 h-10 items-center justify-center rounded-full active:bg-slate-100"
+          >
+            <Ionicons name="arrow-back" size={24} color="#0f172a" />
+          </Pressable>
+
+          <View className="flex-1 ml-2">
+            <Text className="text-lg font-black text-primary leading-tight">
+              Create Hifz Plan
+            </Text>
+          </View>
+        </View>
+      </View>
       <Screen>
         <ScreenContent>
           <View className="mb-6">
@@ -121,7 +125,7 @@ export default function CreateHifzPlan() {
                   <Pressable
                     onPress={() => onChange("forward")}
                     className={`flex-1 py-3 rounded-full ${
-                      value === "forward" ? "bg-primary shadow" : ""
+                      value === "forward" ? "bg-primary " : "bg-transparent"
                     }`}
                   >
                     <Text
@@ -135,7 +139,7 @@ export default function CreateHifzPlan() {
                   <Pressable
                     onPress={() => onChange("backward")}
                     className={`flex-1 py-3 rounded-full ${
-                      value === "backward" ? "bg-primary shadow" : ""
+                      value === "backward" ? "bg-primary " : "bg-transparent"
                     }`}
                   >
                     <Text
@@ -278,16 +282,16 @@ export default function CreateHifzPlan() {
             disabled={isSaving}
             className="bg-primary h-14 rounded-2xl "
           >
-            {isSaving ? (
+            {isSaving ?
               <ActivityIndicator color="white" />
-            ) : (
-              <Text className="text-white font-black uppercase tracking-widest">
+            : <Text className="text-white font-black uppercase tracking-widest">
                 {existingPlan ? "Update Plan" : "Create Plan"}
               </Text>
-            )}
+            }
           </Button>
         </ScreenFooter>
       </Screen>
+      <Alert {...alertConfig} onCancel={hideAlert} confirmText="OK" />
     </>
   );
 }

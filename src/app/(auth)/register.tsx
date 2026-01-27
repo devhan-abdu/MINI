@@ -3,9 +3,11 @@ import Input from "@/src/components/ui/Input";
 import { useRouter } from "expo-router";
 import { supabase } from "@/src/lib/supabase";
 import { useState } from "react";
-import { Alert, Image, Pressable, Text, View } from "react-native";
+import { Image, Pressable, Text, View } from "react-native";
 import Screen from "@/src/components/screen/Screen";
 import { ScreenContent } from "@/src/components/screen/ScreenContent";
+import { useAlert } from "@/src/hooks/useAlert";
+import { Alert } from "@/src/components/common/Alert";
 
 export default function RegisterPage() {
   const [userName, setUserName] = useState("");
@@ -13,8 +15,15 @@ export default function RegisterPage() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [errors, setErrors] = useState<{ userName?: string; email?: string; password?: string; confirmPassword?: string }>({});
+  const [errors, setErrors] = useState<{
+    userName?: string;
+    email?: string;
+    password?: string;
+    confirmPassword?: string;
+  }>({});
   const router = useRouter();
+
+  const { alertConfig, showSuccess, showError, hideAlert } = useAlert();
 
   async function handleRegister() {
     const newErrors: typeof errors = {};
@@ -22,7 +31,8 @@ export default function RegisterPage() {
     if (!userName.trim()) newErrors.userName = "User name is required";
     if (!email.trim()) newErrors.email = "Email is required";
     if (!password) newErrors.password = "Password is required";
-    if (password !== confirmPassword) newErrors.confirmPassword = "Passwords do not match";
+    if (password !== confirmPassword)
+      newErrors.confirmPassword = "Passwords do not match";
 
     setErrors(newErrors);
 
@@ -39,14 +49,16 @@ export default function RegisterPage() {
 
       if (error) throw error;
 
-      Alert.alert("Success", "Account created successfully!");
-      router.push("/"); 
-      setEmail("")
-      setPassword("")
-      setConfirmPassword("")
-      setUserName("")
+      showSuccess("Success!", "Account created successfully!", () =>
+        router.back(),
+      );
+      router.push("/");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setUserName("");
     } catch (err: any) {
-      Alert.alert("Error", "Something went wrong: " );
+      showError("Ups!", "Something went wrong: ");
     } finally {
       setLoading(false);
     }
@@ -130,7 +142,6 @@ export default function RegisterPage() {
             </Text>
           )}
 
-          {/* --- ACTIONS --- */}
           <View className="mt-8 mb-10">
             <Button
               onPress={handleRegister}
@@ -149,6 +160,7 @@ export default function RegisterPage() {
           </View>
         </View>
       </ScreenContent>
+      <Alert {...alertConfig} onCancel={hideAlert} confirmText="OK" />
     </Screen>
   );
 }

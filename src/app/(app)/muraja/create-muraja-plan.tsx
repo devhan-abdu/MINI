@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import {
-  Alert,
   Pressable,
   Text,
   TextInput,
@@ -37,6 +36,8 @@ import {
   WeeklyMurajaType,
 } from "@/src/types";
 import { SectionHeader } from "@/src/components/SectionHeader";
+import { useAlert } from "@/src/hooks/useAlert";
+import { Alert } from "@/src/components/common/Alert";
 
 export default function CreateWeeklyPlan() {
   const router = useRouter();
@@ -44,6 +45,7 @@ export default function CreateWeeklyPlan() {
   const { user } = useSession();
   const { items } = useLoadSurahData();
   const { createPlan, isCreating } = useCreatePlan();
+  const { alertConfig, showSuccess, showError, hideAlert } = useAlert();
 
   const {
     handleSubmit,
@@ -85,7 +87,7 @@ export default function CreateWeeklyPlan() {
       );
 
       if (!quranData.startSurah || !quranData.endSurah) {
-        Alert.alert("Error", "Could not calculate Quranic range.");
+        showError("Calculation Error", "Could not calculate Quranic range.");
         return;
       }
 
@@ -114,11 +116,14 @@ export default function CreateWeeklyPlan() {
       );
 
       await createPlan({ planData: planPayload, days: daysPayload });
-      Alert.alert("Success", "Plan created!", [
-        { text: "OK", onPress: () => router.back() },
-      ]);
+
+      showSuccess(
+        "Plan Launched!",
+        "Your weekly Muraja journey has been created successfully.",
+        () => router.back(),
+      );
     } catch (error: any) {
-      Alert.alert("Error", error.message);
+      showError("Ups!", error.message);
     }
   };
 
@@ -384,6 +389,8 @@ export default function CreateWeeklyPlan() {
           </View>
         </ScreenFooter>
       </Screen>
+
+      <Alert {...alertConfig} onCancel={hideAlert} confirmText="OK" />
     </>
   );
 }

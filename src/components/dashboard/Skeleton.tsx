@@ -4,7 +4,7 @@ import { View } from "react-native";
 
 export const SectionSkeleton = () => {
   return (
-    <View className="bg-white rounded-2xl p-6 mb-6 shadow-xl border border-gray-200 animat-pulse">
+    <View className="bg-white rounded-2xl p-6 mb-6 shadow-xl border border-gray-200  animat-pulse">
       <View className="w-24 h-4 bg-gray-300 rounded-md mb-3" />
       <View className="w-32 h-8 bg-gray-300 rounded-lg mb-5" />
 
@@ -29,7 +29,7 @@ const SkeletonItem = ({ className }: { className?: string }) => (
 
 export const DashboardSkeleton = () => {
   return (
-    <View className="flex-1 bg-white p-4">
+    <View className="flex-1 bg-white p-4 mt-24">
     <CardSkeleton/>
 
       <View className="mt-10 px-1">
