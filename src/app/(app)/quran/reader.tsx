@@ -11,18 +11,23 @@ import {
   View,
 } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { FlashList, FlashListRef } from "@shopify/flash-list";
+
+
+const ALL_PAGES = Array.from({ length: 604 }, (_, i) => i + 1).reverse();
 
 export default function QuranScreen() {
   const { pages, loading } = useGetFullQuran();
   const { page } = useLocalSearchParams<{ page?: string }>();
   const navigation = useNavigation();
-  const listRef = useRef<FlatList>(null);
-  const { width } = useWindowDimensions();
+  const listRef = useRef<FlashListRef<number>>(null);
+  const { width, height } = useWindowDimensions();
+  const insets = useSafeAreaInsets()
 
   const [showHeader, setShowHeader] = useState(false);
 
-  const insets = useSafeAreaInsets();
-
+const HEADER_HEIGHT = 60;
+const AVAILABLE_HEIGHT = height - insets.top - insets.bottom - HEADER_HEIGHT;
   const targetPage = Number(page || 1);
 
   const initialIndex = useMemo(() => {
@@ -59,41 +64,33 @@ export default function QuranScreen() {
     );
   }
 
-  return (
-    <View className="flex-1 bg-gray-50 ">
-      {/* <Pressable className="flex-1" onPress={() => setShowHeader(!showHeader)}> */}
-      <FlatList
-        ref={listRef}
-        data={pages}
-        horizontal
-        pagingEnabled
-        inverted
-        showsHorizontalScrollIndicator={false}
-        removeClippedSubviews={false}
-        initialScrollIndex={initialIndex}
-        windowSize={7}
-        initialNumToRender={3}
-        maxToRenderPerBatch={3}
-        renderItem={({ item }) => <QuranPage page={item} />}
-        keyExtractor={(item) => item.pageNumber.toString()}
-        getItemLayout={(_, index) => ({
-          length: width,
-          offset: width * index,
-          index,
-        })}
-      />
-      {/* </Pressable> */}
-      {/* {showHeader && (
-        <View
-          className="absolute top-0 left-0 right-0 z-50
-                     bg-white/95 px-4 pt-12 pb-3"
-        >
-          <Text className="text-center text-base font-semibold">Quran</Text>
-          <Text className="text-center text-xs text-gray-500">
-            Page {targetPage}
-          </Text>
-        </View>
-      )} */}
-    </View>
-  );
+ return (
+   <View className="flex-1 bg-gray-50 items-center justify-center px-6">
+     {/* Temporary in-progress screen while Quran reader is under development */}
+     <View className="items-center justify-center space-y-4">
+       <ActivityIndicator size="large" color="#276359" />
+       <Text className="text-xl font-semibold text-gray-800 text-center">
+         Quran Reader is in progress
+       </Text>
+       {/* <Text className="text-gray-500 text-center">
+         Pages and navigation will appear soon. Thank you for your patience.
+       </Text> */}
+     </View>
+     {/* Optional placeholder for where the FlashList will go later */}
+     {/* <Pressable className="flex-1" onPress={() => setShowHeader(!showHeader)}>
+        <FlashList
+          ref={listRef}
+          data={ALL_PAGES}
+          renderItem={({ item }) => <QuranPage pageNumber={item} pageWidth={width} pageHeight={AVAILABLE_HEIGHT} />}
+          horizontal
+          pagingEnabled
+          keyExtractor={(item) => item.toString()}  
+          initialScrollIndex={initialIndex}
+          drawDistance={width * 2}
+          onEndReachedThreshold={0.5}
+        />
+      </Pressable> */}
+   </View>
+ );
+
 }

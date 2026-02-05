@@ -28,8 +28,9 @@ export const useGetFullQuran = () => {
         }
 
         const response = await fetch(
-          "https://api.qurani.ai/gw/qh/v1/quran/quran-uthmani"
+          "https://api.qurani.ai/gw/qh/v1/quran/"
         );
+        
 
         const json: IFullQuranResponse = await response.json();
 

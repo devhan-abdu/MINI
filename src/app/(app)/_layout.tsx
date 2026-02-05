@@ -72,7 +72,7 @@ export default function AppLayout() {
       />
 
       <Tabs.Screen
-        name="mushaf"
+        name="quran"
         options={{
           title: "Quran",
           tabBarIcon: ({ focused, color }) => (

@@ -1,67 +1,51 @@
-import { Dimensions, Text,View } from "react-native";
-import { Page } from "../type";
-import { SurahHeader } from "./SurahHeader";
+import { useQuranPage } from "@/src/hooks/useQuranPage";
+import { Text, View } from "react-native";
 
-export function QuranPage({ page }: { page: Page}) {
-  const { width } = Dimensions.get("window")
+interface QuranPageprops {
+  pageNumber: number,
+  pageWidth: number,
+  pageHeight: number
+}
+
+export function QuranPage({ pageNumber, pageWidth, pageHeight }: QuranPageprops) {
+  const { lines } = useQuranPage(pageNumber)
+  const  LINE_HEIGHT = pageHeight /15
   
   
-    if (!page || !page.sections) {
-      return null;
-    }
-
   return (
-    <View style={{ width: width }} className="px-1  py-10 ">
-      <View className="flex-row items-center justify-between gap-4 py-6 px-4">
-        <Text className="text-gray-600">Surah {page.surahName}</Text>
-        <Text className="text-gray-600">Juz' {page.juz}</Text>
-      </View>
-
-      {page.sections.map((section, index) => (
-        <View key={index} className="flex-col items-center justify-center ">
-          {section.header && (
-            <>
-              <SurahHeader surahName={section.header.surahName} />
-              {section.header.showBismillah && (
-                <Text
-                  style={{
-                    fontFamily: "UthmanicHafs",
-                    fontSize: 25,
-                    lineHeight: 52,
-                    textAlign: "center",
-                    writingDirection: "rtl",
-                  }}
-                >
-                  بِســــمِ ٱللَّهِ ٱلرَّحۡمَٰنِ ٱلرَّحِيمِ
-                </Text>
-              )}
-            </>
-          )}
-
-          <Text key={index}>
-            {section.ayahs.map((a, idx) => (
+    <View
+      style={{ width: pageWidth, height: pageHeight, paddingHorizontal: 15 }}
+    >
+      {lines?.map((line, index) => (
+        <View
+          key={index}
+          className="justify-center items-center w-full"
+          style={{ height: LINE_HEIGHT }}
+        >
+          {line.line_type === "surah_name" ?
+            <View className="bg-slate-100 px-4 py-1 rounded-md">
               <Text
-                key={idx}
-                style={{
-                  fontFamily: "meQuran",
-                  fontSize: 22,
-                  lineHeight: 48,
-                  textAlign: "center",
-                  writingDirection: "rtl",
-                }}
+                className="text-slate-900" 
+                style={{ fontFamily: "Thuluth", fontSize: LINE_HEIGHT * 0.5 }}
               >
-                {a.text}{" "}
-                <Text style={{ color: "#276359", fontFamily: "UthmanicHafs" }}>
-                  {a.ayahNumber}
-                </Text>{" "}
+                {line.surah_name}
               </Text>
-            ))}
-          </Text>
+            </View>
+          : <Text
+              numberOfLines={1}
+              adjustsFontSizeToFit
+              className="text-black w-full" 
+              style={{
+                fontFamily: "UthmanicHafs",
+                fontSize: LINE_HEIGHT * 0.7,
+                textAlign: line.is_centered ? "center" : "justify",
+              }}
+            >
+              {line.line_text}
+            </Text>
+          }
         </View>
       ))}
-      <Text className="text-gray-600 mt-auto mb-4 px-4">{page.pageNumber}</Text>
     </View>
   );
 }
-
-

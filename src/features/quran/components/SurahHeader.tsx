@@ -8,7 +8,7 @@ export function SurahHeader({ surahName }: { surahName: string }) {
         borderWidth: 1.5,
         borderColor: "#276359",
         borderRadius: 14,
-        borderStyle:'dashed'
+        borderStyle: "dashed",
       }}
     >
       {/* <View className="flex-1 h-full">
