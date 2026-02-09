@@ -17,11 +17,7 @@ import { ActivityIndicator, View } from "react-native";
 export default function RootLayout() {
 
   const [fontsLoaded] = useFonts({
-    UthmanicHafs: require("../../assets/fonts/KFGQPCUthmanicScriptHAFS.otf"),
-    Thuluth: require("../../assets/fonts/Thuluth.ttf"),
-    UthmanTaha: require("../../assets/fonts/UthmanTaha.ttf"),
-    meQuran: require("../../assets/fonts/meQuran.ttf"),
-    hafs: require("../../assets/fonts/hafs.ttf"),
+    Amiri: require("../../assets/fonts/AmiriQuran.ttf"),
   });
 
 
@@ -42,7 +38,7 @@ export default function RootLayout() {
           <SQLiteProvider
             databaseName="qpc-v2-15-lines.db"
             assetSource={{
-              assetId: require("../../assets/qpc-v2-15-lines.db"),
+              assetId: require("../../assets/db/quran.db"),
             }}
             useSuspense
           >

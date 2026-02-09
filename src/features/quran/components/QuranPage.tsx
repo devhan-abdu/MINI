@@ -32,18 +32,16 @@ export function QuranPage({
           justifyContent: "space-between",
           alignItems: "flex-end",
           paddingHorizontal: 20,
-          
         }}
       >
-        <Text style={{ fontSize: 14, color: "#666" }}>
-          Al-Baqarah
-        </Text>
-        <Text style={{ fontSize: 14, color: "#666" }}>
-          Juz' 1
-        </Text>
+        <Text style={{ fontSize: 14, color: "#666" }}>Al-Baqarah</Text>
+        <Text style={{ fontSize: 14, color: "#666" }}>Juz' 1</Text>
       </View>
 
-      <View style={{ height: MUSHAF_GRID_HEIGHT }}  className="flex-1 items-center justify-center mt-4">
+      <View
+        style={{ height: MUSHAF_GRID_HEIGHT }}
+        className="flex-1 items-center justify-center mt-4"
+      >
         {lines?.map((line, index) => (
           <View
             key={index}
@@ -65,12 +63,12 @@ export function QuranPage({
                   borderColor: "#e5e7eb",
                   borderRadius: 4,
                   justifyContent: "center",
-                  marginBottom: 6
+                  marginBottom: 6,
                 }}
               >
                 <Text
                   style={{
-                    fontFamily: "UthmanicHafs",
+                    fontFamily: "Amiri",
                     fontSize: LINE_HEIGHT * 0.45,
                     textAlign: "center",
                   }}
@@ -83,8 +81,8 @@ export function QuranPage({
                 adjustsFontSizeToFit
                 minimumFontScale={0.7}
                 style={{
-                  fontFamily: "UthmanicHafs",
-                  fontSize: LINE_HEIGHT * 0.9,
+                  fontFamily: "Amiri",
+                  fontSize: LINE_HEIGHT ,
                   textAlign: line.is_centered ? "center" : "center",
                   writingDirection: "rtl",
                   color: "#000",
