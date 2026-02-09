@@ -32,6 +32,7 @@ export default function SurahIndex() {
         <Ionicons name="alert-circle" size={48} color="#ef4444" />
         <Text className="text-lg font-bold text-slate-900 mt-2">Oops!</Text>
         <Text className="text-slate-500 text-center mt-1">{error}</Text>
+  
       </View>
     );
   }
