@@ -1,18 +1,12 @@
-import { AuthContextProvider } from "../hooks/useSession";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import "./../global.css";
-import { RootLayoutNav } from "../components/navigation/RootLayoutNav";
+import { useEffect } from "react";
 import * as SplashScreen from "expo-splash-screen";
-import { Suspense, useEffect } from "react";
 import { useFonts } from "expo-font";
 import { SQLiteProvider } from "expo-sqlite";
+import { Suspense } from "react";
 import { ActivityIndicator, View } from "react-native";
+import { RootLayoutNav } from "../components/navigation/RootLayoutNav";
 
-  SplashScreen.preventAutoHideAsync().catch(() => {});
-    const queryClient = new QueryClient();
-
-    
-
+SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
 
@@ -31,22 +25,15 @@ export default function RootLayout() {
     return null;
   }
 
-  return (
-    <QueryClientProvider client={queryClient}>
-      <AuthContextProvider>
-        <Suspense fallback={<LoadingView />}>
-          <SQLiteProvider
-            databaseName="qpc-v2-15-lines.db"
-            assetSource={{
-              assetId: require("../../assets/db/quran.db"),
-            }}
-            useSuspense
-          >
-            <RootLayoutNav />
-          </SQLiteProvider>
-        </Suspense>
-      </AuthContextProvider>
-    </QueryClientProvider>
+    return (
+       <Suspense fallback={<LoadingView />}>
+      <SQLiteProvider
+        databaseName="quran.db"
+        assetSource={{ assetId: require("../../assets/quran.db") }}
+      >
+      <RootLayoutNav/>
+      </SQLiteProvider>
+    </Suspense> 
   );
 
   
