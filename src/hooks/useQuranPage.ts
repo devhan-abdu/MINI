@@ -10,47 +10,65 @@ export const useQuranPage = (pageNumber: number) => {
     
 
     useEffect(() => {
-
         let cancelled = false
 
-      
         async function loadPage(page: number) {
-            if (pageCache.has(page) || loadingPages.has(page)) return
-            loadingPages.add(page)
+            if (pageCache.has(page) || loadingPages.has(page) || page < 1 || page > 604) return
             
-            const query = `
-       SELECT 
-            p.line_number, 
-            p.line_type, 
-            p.is_centered,
-            p.surah_number,
-            (SELECT GROUP_CONCAT(text, '') FROM words WHERE word_index BETWEEN p.first_word_id AND p.last_word_id) as line_text
-          FROM pages p
-          WHERE p.page_number = ?
-          ORDER BY p.line_number ASC
-        `
-      ;
-            const result = await db.getAllAsync(query, [page])
+            loadingPages.add(page)
 
-            pageCache.set(page, result)
-            loadingPages.delete(page)
 
-            if (!cancelled && page === pageNumber) {
-                setLines(result)
+            try {
+                
+                const query = `
+                        SELECT 
+                        p.*,
+                        s.name_simple AS surah_english_name,
+                        s.name_arabic AS surah_arebic_name,
+                        (
+                            SELECT GROUP_CONCAT(text, ' ')
+                            FROM words
+                            WHERE id BETWEEN p.first_word_id AND p.last_word_id
+                            ORDER BY id ASC
+                        ) AS line_text
+                        FROM pages p
+                        LEFT JOIN surah_names s ON p.surah_number = s.id
+                        WHERE p.page_number = ?
+                        ORDER BY p.line_number ASC
+                        `;
+
+
+                const result = await db.getAllAsync(query, [page])
+                pageCache.set(page, result)
+
+                if (!cancelled && page === pageNumber) {
+                    setLines(result)
+                }
+            } catch (e) {
+                console.error("Query failed", e)
+            } finally {
+                loadingPages.delete(page)
             }
-
         }
 
-        loadPage(pageNumber)
-        loadPage(pageNumber - 1)
-        loadPage(pageNumber + 1)
-        
+        if (pageCache.has(pageNumber)) {
+            setLines(pageCache.get(pageNumber)!);
+        } else {
+            loadPage(pageNumber)
+        }
 
+        const timer = setTimeout(() => {
+            loadPage(pageNumber - 1);
+            loadPage(pageNumber + 1);
+        }, 1000);
+            
         return () => {
             cancelled = true
+            clearTimeout(timer)
         }
-    },[pageNumber,db])
+    }, [pageNumber, db])
+          
 
-    
-    return {lines}
-}
+      return {lines , isLoading: lines.length ===0 } 
+  
+    }
