@@ -50,5 +50,7 @@ _vscode
 /src/app/(app)/mushaf.tsx
 docs.tx
 /src/hooks/usePushNotification.ts
-
+/assets/db/quran.db
+*.db
+*.ttf
 
