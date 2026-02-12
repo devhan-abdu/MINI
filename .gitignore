@@ -53,4 +53,8 @@ docs.tx
 /assets/db/quran.db
 *.db
 *.ttf
+*.aab
+*.apk
+build-1768573250211.apk
+
 
