@@ -29,8 +29,9 @@ const StatsSummary = ({
       formData.selectedDays,
       formData.direction,
       formData.start_date,
+      formData.start_surah
     ]
-  );
+  ,);
 
   const startSurahName = useMemo(() => {
     console.log(formData,"formdata")

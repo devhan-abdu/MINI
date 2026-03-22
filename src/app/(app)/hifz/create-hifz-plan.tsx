@@ -28,6 +28,7 @@ import Screen from "@/src/components/screen/Screen";
 import { calculatePlanStats } from "@/src/features/hifz/utils/plan-calculations";
 import { useAlert } from "@/src/hooks/useAlert";
 import { Alert } from "@/src/components/common/Alert";
+import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
 
 export default function CreateHifzPlan() {
   const router = useRouter();
@@ -42,6 +43,7 @@ export default function CreateHifzPlan() {
     handleSubmit,
     formState: { errors },
     control,
+    setValue,
     reset,
   } = useForm({
     resolver: yupResolver(HifzPlanSchema),
@@ -54,6 +56,8 @@ export default function CreateHifzPlan() {
       direction: "forward",
     },
   });
+    const startSurah = useWatch({ control, name: "start_surah" });
+    const {items} = useLoadSurahData()
 
   useEffect(() => {
     if (existingPlan) {
@@ -67,6 +71,18 @@ export default function CreateHifzPlan() {
       });
     }
   }, [existingPlan, reset]);
+
+  useEffect(() => {
+    if (startSurah && items.length > 0) {
+      const found = items.find((s) => s.number === Number(startSurah))
+
+      if (found) {
+        setValue("start_page", found.startingPage)
+      }
+    }
+  }, [startSurah, items, setValue])
+
+  
 
   const onSubmit = async (data: HifzPlanSchemaFormType) => {
     if (!user?.id) return;
@@ -92,7 +108,6 @@ export default function CreateHifzPlan() {
     }
   };
 
-  const startSurah = useWatch({ control, name: "start_surah" });
 
   if (isLoading) return <PlanFormSkeleton />;
 
