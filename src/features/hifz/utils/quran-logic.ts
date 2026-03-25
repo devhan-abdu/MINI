@@ -75,6 +75,7 @@ export const getTodayTask = (
   hifzPlan: IHifzPlan,
   surahData: ISurah[],
   pages: number = hifzPlan.pages_per_day,
+  
 ) => {
   const todayStr = new Date().toISOString().slice(0, 10);
 

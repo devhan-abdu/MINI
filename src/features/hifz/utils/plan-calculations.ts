@@ -75,7 +75,7 @@ export const countPlannedDaysElapsed = (
   const remainingDays = totalDays % 7;
 
   let plannedDays = fullWeeks * selectedDays.length;
-  const startDayOfWeek = start.getDay();
+  const startDayOfWeek = (start.getDay() + 6 ) % 7;
 
   for (let i = 0; i < remainingDays; i++) {
     const currentDay = (startDayOfWeek + i) % 7;

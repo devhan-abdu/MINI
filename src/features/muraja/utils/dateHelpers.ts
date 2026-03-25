@@ -1,14 +1,5 @@
 
-const dayNames = [
-  "Sunday",
-  "Monday", 
-  "Tuesday",
-  "Wednesday",
-  "Thursday",
-  "Friday",
-  "Saturday"
-];
-
+const dayNames = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
 
 export function getPlannedDates(
   weekStartDate: string,
@@ -40,7 +31,7 @@ export function getPlannedDates(
     
     return {
       date: obj.dateString,
-      day_of_week: dayNames[obj.date.getDay()],
+      day_of_week: dayNames[(obj.date.getDay() + 6) % 7],
       planned_start_page,
       planned_end_page,
       planned_pages: plannedPages,

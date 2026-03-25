@@ -4,16 +4,15 @@ import { calculateFinishedDate, countPlannedDaysElapsed, getLastLog } from "./pl
 import { getNextTask } from "./quran-logic";
 import { getSurahNameByNumber } from "../../muraja/utils/quranMapping";
 
-const dayNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+const dayNames = [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat","Sun",];
 
 export const isWithinCurrentWeek = (date: Date) => {
   const now = new Date();
 
-  const startOfWeek = new Date(now);
-  const day = now.getDay();
-  const diff = now.getDate() - day + (day === 0 ? -6 : 1);
+   const day = (now.getDay() + 6) % 7;
 
-  startOfWeek.setDate(diff);
+  const startOfWeek = new Date(now);
+  startOfWeek.setDate(startOfWeek.getDate() -day);
   startOfWeek.setHours(0, 0, 0, 0);
 
   const endOfWeek = new Date(startOfWeek);
@@ -145,7 +144,7 @@ function calculateMissedDays(
 
   const effectivePlannedDays =
     plannedDaysElapsed -
-    (plan.selected_days.includes(today.getDay()) && !hasTodayLog ? 1 : 0);
+    (plan.selected_days.includes((today.getDay() + 6) % 7) && !hasTodayLog ? 1 : 0);
 
   return Math.max(0, effectivePlannedDays - successDays);
 }
@@ -159,7 +158,8 @@ export const getWeeklyStatus = (plan: IHifzPlan) => {
   const startDate = new Date(plan.start_date);
   startDate.setHours(0, 0, 0, 0);
 
-  const todayIndex = today.getDay();
+  const todayNumber = today.getDay();
+  const todayIndex = (todayNumber + 6) % 7
 
   const week = dayNames.map((name, index) => {
     const dayDate = new Date(today);
@@ -181,7 +181,7 @@ export const getWeeklyStatus = (plan: IHifzPlan) => {
     const logDate = new Date(log.date);
 
     if (isWithinCurrentWeek(logDate)) {
-      const logDayIndex = logDate.getDay();
+      const logDayIndex = (logDate.getDay() + 6 ) % 7;
       week[logDayIndex].log = log;
     }
   });
