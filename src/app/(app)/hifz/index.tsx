@@ -1,3 +1,4 @@
+import { HifzActionCard } from "@/src/components/dashboard/HifzActionCard";
 import Screen from "@/src/components/screen/Screen";
 import { ScreenContent, ScreenFooter } from "@/src/components/screen/ScreenContent";
 import { Button } from "@/src/components/ui/Button";
@@ -106,6 +107,15 @@ if (isLoading || (hifz && !analytics)) {
               </View>
             </View>
           </View>
+          <View className="mt-10">
+            <Text className="text-gray-400 font-bold uppercase tracking-[2px] text-[10px] mb-2 px-1">
+              Focus
+            </Text>
+            <Text className="text-xl font-black text-gray-900 mb-4 px-1">
+              Today Hifz
+            </Text>
+            <HifzActionCard hifz={hifz} plannedPage={analytics.plannedPages} completedPage={ analytics.completedPages} />
+          </View>
           <View className="mt-10 mb-2 px-1">
             <Text className="text-gray-400 font-bold uppercase tracking-[2px] text-[10px] mb-2">
               Activity
@@ -178,7 +188,6 @@ if (isLoading || (hifz && !analytics)) {
               <Text className="text-primary font-bold text-lg tracking-tight">
                 Edit Plan
               </Text>
-            
             </Pressable>
           </View>
         </ScreenFooter>

@@ -271,7 +271,7 @@ export default function CreateHifzPlan() {
           </View>
 
           <View className="mb-10">
-            <Text className="text-gray-400 font-bold text-[10px] uppercase mb-2 ml-1">
+            <Text className="text-gray-400 font-bold text-[10px] uppercase mb-4 ml-1">
               Weekly Schedule
             </Text>
             <Controller

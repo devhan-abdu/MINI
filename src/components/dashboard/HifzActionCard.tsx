@@ -9,8 +9,9 @@ import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
 import { useSession } from "@/src/hooks/useSession";
 import { StatusButton } from "./StatusButton";
 import { Alert } from "../common/Alert";
+import { getTargetPage } from "@/src/features/hifz/utils/getTargetPage";
 
-export const HifzActionCard = ({ hifz }: { hifz: IHifzPlan }) => {
+export const HifzActionCard = ({ hifz, plannedPage, completedPage }: { hifz: IHifzPlan, plannedPage: number, completedPage: number }) => {
   const { addLog, isCreating } = useAddLog();
   const { items: surahData } = useLoadSurahData();
   const { user } = useSession();
@@ -20,20 +21,50 @@ export const HifzActionCard = ({ hifz }: { hifz: IHifzPlan }) => {
   const [errorMessage, setErrorMessage] = useState("");
   const [warningVisible, setWarningVisible] = useState(false);
 
-  const todayTask = getTodayTask(hifz, surahData);
+    const today = new Date();
+    const todayStr = today.toISOString().slice(0, 10);
+    const dayNumber = (today.getDay() + 6) % 7;
+    const todaysLog = hifz.hifz_daily_logs?.find(
+      (log) => log.date === todayStr,
+    );
+    const currentStatus = todaysLog?.status || "pending";
+  
 
-  if (!todayTask) return;
+  const targetInfo = getTargetPage(
+    hifz.selected_days, 
+    plannedPage, 
+    completedPage, 
+    hifz.pages_per_day,
+    dayNumber
+  );
 
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const todaysLog = hifz.hifz_daily_logs?.find((log) => log.date === todayStr);
-  const currentStatus = todaysLog?.status || "pending";
+
+if (!targetInfo || targetInfo.totalTarget === 0) {
+    return (
+      <View className="bg-slate-50 border border-dashed border-slate-200 rounded-[24px] p-6 items-center">
+        <Text className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">
+          Rest Day (No Hifz)
+        </Text>
+      </View>
+    );
+  }
+ 
+
+  const todayTask = getTodayTask(hifz, surahData, targetInfo.totalTarget);
+  
+  if (!todayTask) return (
+    <View className="bg-slate-50 border border-dashed border-slate-200 rounded-[24px] p-6 items-center">
+      <Text className="text-slate-400 font-bold text-[10px] uppercase tracking-widest">
+        Rest Day (No Hifz)
+      </Text>
+    </View>
+  );
+
 
   const handleStatusChange = async (status: "completed" | "missed") => {
     if (!hifz || !todayTask || isCreating || !hifz.id) return;
 
-    const today = new Date();
-    const todayStr = today.toISOString().slice(0, 10);
-    const logDay = today.getDay();
+   
 
     const payload = {
       hifz_plan_id: hifz.id!,
@@ -42,7 +73,7 @@ export const HifzActionCard = ({ hifz }: { hifz: IHifzPlan }) => {
       actual_end_page: todayTask.endPage,
       status,
       date: todayStr,
-      log_day: logDay,
+      log_day: dayNumber,
     };
     try {
       await addLog({ todayLog: payload, userId: user?.id });
@@ -62,75 +93,109 @@ export const HifzActionCard = ({ hifz }: { hifz: IHifzPlan }) => {
     }
   };
 
-  return (
-    <View className="bg-white rounded-[32px] p-6 border border-slate-200 shadow-md shadow-slate-200">
-      <View className="flex-row justify-between items-start mb-6">
-        <View className="flex-1">
-          <Text className="text-slate-900 font-black text-xl tracking-tight">
-            {todayTask.displaySurah}
-          </Text>
-          <Text className="text-slate-400 text-[10px] font-black uppercase tracking-[1.5px] mt-1">
-            Hifz: Pages {todayTask.startPage}–{todayTask.endPage}
-          </Text>
-        </View>
 
-        <Pressable
-          onPress={() => router.push("/(app)/hifz/log")}
-          className="w-10 h-10 items-center justify-center rounded-full active:bg-primary/95 bg-primary"
-        >
-          <Ionicons name="create-outline" size={22} color="#fff" />
-        </Pressable>
-      </View>
+ return (
+   <View
+     className={`rounded-[32px] p-6 border ${!targetInfo.isPlannedDay ? "bg-amber-50/50 border-amber-100" : "bg-white border-slate-200"} shadow-md shadow-slate-200`}
+   >
+     <View className="flex-row justify-between items-start mb-4">
+       <View className="flex-1">
+         <View className="flex-row items-center mb-1">
+           <Text className="text-slate-900 font-black text-xl tracking-tight">
+             {todayTask.displaySurah}
+           </Text>
+           {!targetInfo.isPlannedDay && (
+             <View className="bg-amber-100 px-2 py-0.5 rounded-full ml-2">
+               <Text className="text-amber-700 text-[8px] font-black uppercase">
+                 Rest Day
+               </Text>
+             </View>
+           )}
+         </View>
 
-      <View className="flex-row gap-2">
-        <StatusButton
-          label="Done"
-          icon="checkmark-circle"
-          activeColor="bg-primary"
-          isDisabled={currentStatus === "completed"}
-          isActive={currentStatus === "completed"}
-          onPress={() => onStatusPress("completed")}
-          loading={isCreating}
-        />
+         <View className="flex-row items-center">
+           <Text className="text-slate-400 text-[10px] font-black uppercase tracking-[1.5px]">
+             Pages {todayTask.startPage}–{todayTask.endPage}
+           </Text>
+           {targetInfo.catchUpAmount > 0 && (
+             <Text className="text-primary text-[10px] font-black uppercase tracking-[1.5px] ml-2">
+               (+{targetInfo.catchUpAmount} Catch up)
+             </Text>
+           )}
+         </View>
+       </View>
 
-        <StatusButton
-          label="Skip"
-          icon="close-circle"
-          activeColor="bg-red-600"
-          isDisabled={currentStatus === "missed"}
-          isActive={currentStatus === "missed"}
-          onPress={() => onStatusPress("missed")}
-          loading={isCreating}
-        />
-      </View>
+       <Pressable
+         onPress={() => router.push("/(app)/hifz/log")}
+         className="w-10 h-10 items-center justify-center rounded-full bg-primary"
+       >
+         <Ionicons name="chevron-forward" size={22} color="#fff" />
+       </Pressable>
+     </View>
 
-      <Alert
-        visible={errorVisible}
-        type="delete"
-        title="Action Failed"
-        message={errorMessage}
-        confirmText="Try Again"
-        cancelText="Close"
-        onConfirm={() => {
-          setErrorVisible(false);
-        }}
-        onCancel={() => setErrorVisible(false)}
-      />
-      <Alert
-        visible={warningVisible}
-        type="warning"
-        title="Overwrite Progress?"
-        message="You already marked today as completed. Skipping now will delete your saved pages for today. Continue?"
-        confirmText="Yes, Skip"
-        cancelText="Keep Progress"
-        onConfirm={() => {
-          setWarningVisible(false);
-          handleStatusChange("missed");
-        }}
-        onCancel={() => {
-          setWarningVisible(false);
-        }}
-      />
-    </View>
-  );
+     {targetInfo.catchUpAmount > 0 && (
+       <View className="bg-slate-50 rounded-2xl p-3 mb-5 flex-row items-center">
+         <Ionicons name="sparkles" size={14} color="#276359" />
+         <Text className="text-slate-500 text-[11px] ml-2 font-medium">
+           {targetInfo.isPlannedDay ?
+             `Included ${targetInfo.catchUpAmount} extra pages to help you stay on track.`
+           : `Focusing on ${targetInfo.catchUpAmount} pages today to clear your backlog.`}
+         </Text>
+       </View>
+     )}
+
+     <View className="flex-row gap-2">
+       <StatusButton
+         label={targetInfo.isPlannedDay ? "Done" : "Catch Up"}
+         icon="checkmark-circle"
+         activeColor="bg-primary"
+         isDisabled={currentStatus === "completed"}
+         isActive={currentStatus === "completed"}
+         onPress={() => onStatusPress("completed")}
+         loading={isCreating}
+       />
+       {targetInfo.isPlannedDay && (
+         <StatusButton
+           label="Skip"
+           icon="close-circle"
+           activeColor="bg-red-600"
+           isDisabled={currentStatus === "missed"}
+           isActive={currentStatus === "missed"}
+           onPress={() => onStatusPress("missed")}
+           loading={isCreating}
+         />
+       )}
+     </View>
+
+     <Alert
+       visible={errorVisible}
+       type="delete"
+       title="Action Failed"
+       message={errorMessage}
+       confirmText="Try Again"
+       cancelText="Close"
+       onConfirm={() => {
+         setErrorVisible(false);
+       }}
+       onCancel={() => setErrorVisible(false)}
+     />
+     <Alert
+       visible={warningVisible}
+       type="warning"
+       title="Overwrite Progress?"
+       message="You already marked today as completed. Skipping now will delete your saved pages for today. Continue?"
+       confirmText="Yes, Skip"
+       cancelText="Keep Progress"
+       onConfirm={() => {
+         setWarningVisible(false);
+         handleStatusChange("missed");
+       }}
+       onCancel={() => {
+         setWarningVisible(false);
+       }}
+     />
+   </View>
+ );
 };
+
+

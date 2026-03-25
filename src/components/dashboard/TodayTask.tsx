@@ -27,7 +27,8 @@ export const TodayTasksSection = ({ surahData }: { surahData: ISurah[] }) => {
   return (
     <View className="gap-y-4">
       {hifzAnalytics ? (
-        <HifzActionCard hifz={hifz}  />
+      <HifzActionCard hifz={hifz} plannedPage={hifzAnalytics.plannedPages} completedPage={ hifzAnalytics.completedPages} />
+
       ) : (
         <EmptyTask message="No Hifz Plan for Today" />
       )}
