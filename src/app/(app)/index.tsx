@@ -2,7 +2,7 @@ import { TodayTasksSection } from "@/src/components/dashboard/TodayTask";
 import Screen from "@/src/components/screen/Screen";
 import { ScreenContent } from "@/src/components/screen/ScreenContent";
 import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
-import { View,Text } from "react-native";
+import { View } from "react-native";
 import { Redirect } from "expo-router";
 import { useGetHifzPlan } from "@/src/features/hifz/hook/useGetHifzPlan";
 import { useWeeklyMuraja } from "@/src/features/muraja/hooks/useWeeklyMuraja";
@@ -13,6 +13,7 @@ import { Header } from "@/src/components/navigation/Header";
 import { hifzStatus } from "@/src/features/hifz/utils/plan-status";
 import { useMemo } from "react";
 import { useHistory } from "@/src/features/muraja/hooks/useHistory";
+import { Text } from "@/src/components/common/ui/Text";
 
 export default function Dashboard() {
   const { items: surah, loading } = useLoadSurahData();
@@ -23,17 +24,16 @@ export default function Dashboard() {
   const month = new Date().getMonth() + 1;
   const { analytics } = useHistory(year, month);
 
- const hifzAnalytics = useMemo(() => {
-   if (!hifzPlan || !surah.length) return null;
-   return hifzStatus(hifzPlan, surah);
- }, [hifzPlan, surah]);
+  const hifzAnalytics = useMemo(() => {
+    if (!hifzPlan || !surah.length) return null;
+    return hifzStatus(hifzPlan, surah);
+  }, [hifzPlan, surah]);
 
   if (loadingHifz || loadingMuraja || loading) return <DashboardSkeleton />;
 
   if (!hifzPlan && !murajaPlan) {
     return <Redirect href="/(app)/onboarding" />;
   }
-
 
   return (
     <>
@@ -46,10 +46,10 @@ export default function Dashboard() {
             surah={surah}
           />
           <View className="mt-10 px-1">
-            <Text className="text-gray-400 font-bold uppercase tracking-[2px] text-[10px] mb-2">
+            <Text className="text-gray-400   uppercase tracking-[2px] text-[10px] mb-2">
               Insights
             </Text>
-            <Text className="text-2xl font-black text-slate-900 mb-6">
+            <Text className="text-2xl  text-slate-900 mb-6">
               Plan Analytics
             </Text>
 
@@ -91,13 +91,11 @@ export default function Dashboard() {
           </View>
 
           <View className="mt-6  px-1">
-            <Text className="text-gray-400 font-bold uppercase tracking-[2px] text-[10px] mb-2">
+            <Text className="text-gray-400   uppercase tracking-[2px] text-[10px] mb-2">
               Focus
             </Text>
 
-            <Text className="text-xl font-black text-gray-900 mb-5">
-              Today's Task
-            </Text>
+            <Text className="text-xl  text-gray-900 mb-5">Today's Task</Text>
 
             <TodayTasksSection surahData={surah} />
           </View>

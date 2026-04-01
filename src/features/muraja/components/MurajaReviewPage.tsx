@@ -121,7 +121,7 @@ export default function MurajaReviewPage({
             onPress={handleSubmit}
             disabled={isCreating}
           >
-            <Text className="text-slate-500 font-black uppercase text-[10px] tracking-widest text-center">
+            <Text className="text-slate-500  uppercase text-[10px] tracking-widest text-center">
               {isCreating ? "Setting up..." : "Continue Journey"}
             </Text>
           </Button>
@@ -132,7 +132,7 @@ export default function MurajaReviewPage({
           >
             <View className="flex-row items-center justify-center gap-2">
               <Ionicons name="rocket-outline" size={16} color="#fff" />
-              <Text className="text-white font-black uppercase text-[10px] tracking-widest">
+              <Text className="text-white  uppercase text-[10px] tracking-widest">
                 Launch New Plan
               </Text>
             </View>

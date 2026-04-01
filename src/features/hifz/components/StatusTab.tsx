@@ -1,5 +1,5 @@
 import { Ionicons } from "@expo/vector-icons";
-import { Pressable,Text } from "react-native";
+import { Pressable, Text } from "react-native";
 
 type StatusTabType = {
   label: string;
@@ -21,11 +21,7 @@ export function StatusTab({ label, icon, active, onPress }: StatusTabType) {
         size={24}
         color={active ? "#2D6A4F" : "#9CA3AF"}
       />
-      <Text
-        className={`font-bold mt-2 ${
-          active ? "text-[#2D6A4F]" : "text-gray-400"
-        }`}
-      >
+      <Text className={`  mt-2 ${active ? "text-[#2D6A4F]" : "text-gray-400"}`}>
         {label}
       </Text>
     </Pressable>

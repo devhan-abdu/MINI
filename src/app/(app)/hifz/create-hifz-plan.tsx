@@ -1,6 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Pressable, Text, View, ActivityIndicator } from "react-native";
+import { View, ActivityIndicator, Pressable } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import Input from "@/src/components/ui/Input";
 import SurahDropdown, {
@@ -29,6 +29,7 @@ import { calculatePlanStats } from "@/src/features/hifz/utils/plan-calculations"
 import { useAlert } from "@/src/hooks/useAlert";
 import { Alert } from "@/src/components/common/Alert";
 import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
+import { Text } from "@/src/components/common/ui/Text";
 
 export default function CreateHifzPlan() {
   const router = useRouter();
@@ -56,8 +57,8 @@ export default function CreateHifzPlan() {
       direction: "forward",
     },
   });
-    const startSurah = useWatch({ control, name: "start_surah" });
-    const {items} = useLoadSurahData()
+  const startSurah = useWatch({ control, name: "start_surah" });
+  const { items } = useLoadSurahData();
 
   useEffect(() => {
     if (existingPlan) {
@@ -74,15 +75,13 @@ export default function CreateHifzPlan() {
 
   useEffect(() => {
     if (startSurah && items.length > 0) {
-      const found = items.find((s) => s.number === Number(startSurah))
+      const found = items.find((s) => s.number === Number(startSurah));
 
       if (found) {
-        setValue("start_page", found.startingPage)
+        setValue("start_page", found.startingPage);
       }
     }
-  }, [startSurah, items, setValue])
-
-  
+  }, [startSurah, items, setValue]);
 
   const onSubmit = async (data: HifzPlanSchemaFormType) => {
     if (!user?.id) return;
@@ -108,7 +107,6 @@ export default function CreateHifzPlan() {
     }
   };
 
-
   if (isLoading) return <PlanFormSkeleton />;
 
   return (
@@ -123,7 +121,7 @@ export default function CreateHifzPlan() {
           </Pressable>
 
           <View className="flex-1 ml-2">
-            <Text className="text-lg font-black text-primary leading-tight">
+            <Text className="text-lg  text-primary leading-tight">
               Create Hifz Plan
             </Text>
           </View>
@@ -137,34 +135,34 @@ export default function CreateHifzPlan() {
               name="direction"
               render={({ field: { value, onChange } }) => (
                 <View className="flex-row bg-gray-100 p-1 rounded-full">
-                  <Pressable
+                  <Button
                     onPress={() => onChange("forward")}
                     className={`flex-1 py-3 rounded-full ${
                       value === "forward" ? "bg-primary " : "bg-transparent"
                     }`}
                   >
                     <Text
-                      className={`text-center font-bold ${
+                      className={`text-center   ${
                         value === "forward" ? "text-white" : "text-gray-500"
                       }`}
                     >
-                      Traditional
+                      Forward
                     </Text>
-                  </Pressable>
-                  <Pressable
+                  </Button>
+                  <Button
                     onPress={() => onChange("backward")}
                     className={`flex-1 py-3 rounded-full ${
                       value === "backward" ? "bg-primary " : "bg-transparent"
                     }`}
                   >
                     <Text
-                      className={`text-center font-bold ${
+                      className={`text-center   ${
                         value === "backward" ? "text-white" : "text-gray-500"
                       }`}
                     >
                       Juz Amma First
                     </Text>
-                  </Pressable>
+                  </Button>
                 </View>
               )}
             />
@@ -173,7 +171,7 @@ export default function CreateHifzPlan() {
           <StatsSummary control={control} />
 
           <View className="mb-6">
-            <Text className="text-gray-400 font-bold text-[10px] uppercase mb-2 ml-1">
+            <Text className="text-gray-400   text-[10px] uppercase mb-2 ml-1">
               Start Date
             </Text>
             <Controller
@@ -186,7 +184,7 @@ export default function CreateHifzPlan() {
                     errors.start_date ? "border-red-500" : "border-gray-200"
                   }`}
                 >
-                  <Text className="text-base font-medium">
+                  <Text className="text-base ">
                     {new Date(value).toDateString()}
                   </Text>
                   <Ionicons name="calendar" size={20} color="#276359" />
@@ -227,7 +225,7 @@ export default function CreateHifzPlan() {
 
           <View className="flex-row gap-4 mb-6">
             <View className="flex-1">
-              <Text className="text-gray-400 font-bold text-[10px] uppercase mb-2 ml-1">
+              <Text className="text-gray-400   text-[10px] uppercase mb-2 ml-1">
                 Start Surah
               </Text>
               <Controller
@@ -246,7 +244,7 @@ export default function CreateHifzPlan() {
               />
             </View>
             <View className="flex-1">
-              <Text className="text-gray-400 font-bold text-[10px] uppercase mb-2 ml-1">
+              <Text className="text-gray-400   text-[10px] uppercase mb-2 ml-1">
                 Start Page
               </Text>
               <Controller
@@ -271,7 +269,7 @@ export default function CreateHifzPlan() {
           </View>
 
           <View className="mb-10">
-            <Text className="text-gray-400 font-bold text-[10px] uppercase mb-4 ml-1">
+            <Text className="text-gray-400   text-[10px] uppercase mb-4 ml-1">
               Weekly Schedule
             </Text>
             <Controller
@@ -299,7 +297,7 @@ export default function CreateHifzPlan() {
           >
             {isSaving ?
               <ActivityIndicator color="white" />
-            : <Text className="text-white font-black uppercase tracking-widest">
+            : <Text className="text-white  uppercase tracking-widest">
                 {existingPlan ? "Update Plan" : "Create Plan"}
               </Text>
             }

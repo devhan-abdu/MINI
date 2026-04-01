@@ -1,19 +1,21 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { Text } from "@/src/components/common/ui/Text";
+import { View } from "react-native";
+
 import Svg, { Circle, G } from "react-native-svg";
 
 interface Props {
   progress: number;
   size?: number;
   strokeWidth?: number;
-  currentSurah?: string; 
-  remainingPages?: number; 
+  currentSurah?: string;
+  remainingPages?: number;
   variant?: "primary" | "white";
 }
 
 export default function HifzOverViewCard({
   progress = 0,
-  size = 135, 
+  size = 135,
   strokeWidth = 10,
   currentSurah = "Al-Baqarah",
   remainingPages = 0,
@@ -66,13 +68,13 @@ export default function HifzOverViewCard({
 
       <View className="absolute inset-0 items-center justify-center px-4">
         <Text
-          className={`${labelColor} font-black text-[7px] uppercase tracking-[2px] mb-0.5`}
+          className={`${labelColor}  text-[7px] uppercase tracking-[2px] mb-0.5`}
         >
           Progress
         </Text>
 
         <Text
-          className={`${mainTextColor} text-2xl font-black tracking-tighter leading-none`}
+          className={`${mainTextColor} text-2xl  tracking-tighter leading-none`}
         >
           {Math.round(progress)}%
         </Text>
@@ -83,7 +85,7 @@ export default function HifzOverViewCard({
 
         <Text
           numberOfLines={1}
-          className={`${mainTextColor} text-[10px] font-black uppercase tracking-tight text-center`}
+          className={`${mainTextColor} text-[10px]  uppercase tracking-tight text-center`}
         >
           {currentSurah}
         </Text>
@@ -92,7 +94,7 @@ export default function HifzOverViewCard({
           className={`mt-2 ${badgeBg} px-2.5 py-0.5 rounded-full border ${badgeBorder}`}
         >
           <Text
-            className={`${badgeText} font-black text-[7px] uppercase tracking-widest`}
+            className={`${badgeText}  text-[7px] uppercase tracking-widest`}
           >
             {remainingPages} Left
           </Text>

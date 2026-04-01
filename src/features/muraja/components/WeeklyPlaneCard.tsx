@@ -5,13 +5,27 @@ import StatusBadge from "../../../components/ui/StatusBadge";
 import { useRouter } from "expo-router";
 import { TodayPlanType } from "@/src/types";
 
-
 export default function WeeklyPlanCard({
   plan,
-  isHero = false
-}: { plan: TodayPlanType, isHero?: boolean }) {
-  const {id:planId ,day_of_week:day , date , status , startSurah, endSurah, log_id: logId , planned_pages:pages ,estimated_time_min: minutes , planned_start_page:startPage, planned_end_page:endPage } = plan;
- 
+  isHero = false,
+}: {
+  plan: TodayPlanType;
+  isHero?: boolean;
+}) {
+  const {
+    id: planId,
+    day_of_week: day,
+    date,
+    status,
+    startSurah,
+    endSurah,
+    log_id: logId,
+    planned_pages: pages,
+    estimated_time_min: minutes,
+    planned_start_page: startPage,
+    planned_end_page: endPage,
+  } = plan;
+
   const router = useRouter();
   const today = new Date().toISOString().slice(0, 10);
   if (!planId) return null;
@@ -26,9 +40,9 @@ export default function WeeklyPlanCard({
     });
   };
 
-
-  const containerStyle = isHero
-    ? "bg-primary rounded-[32px] p-6 shadow-xl shadow-primary/30 border border-white/10 mb-6"
+  const containerStyle =
+    isHero ?
+      "bg-primary rounded-[32px] p-6 shadow-xl shadow-primary/30 border border-white/10 mb-6"
     : "bg-white rounded-[24px] p-5 border border-gray-200 mb-4 shadow-xs ";
 
   const textPrimary = isHero ? "text-white" : "text-gray-900";
@@ -41,14 +55,14 @@ export default function WeeklyPlanCard({
       <View className="flex-row justify-between items-start mb-5">
         <View className="flex-1">
           <Text
-            className={`${textSecondary} text-[10px] font-black uppercase tracking-widest mb-1`}
+            className={`${textSecondary} text-[10px]  uppercase tracking-widest mb-1`}
           >
             {isHero ? "Current Session" : day}
           </Text>
-          <Text className={`${textPrimary} text-2xl font-black tracking-tight`}>
-            {startSurah === endSurah
-              ? startSurah
-              : `${startSurah} – ${endSurah}`}
+          <Text className={`${textPrimary} text-2xl  tracking-tight`}>
+            {startSurah === endSurah ?
+              startSurah
+            : `${startSurah} – ${endSurah}`}
           </Text>
         </View>
         <StatusBadge status={status} inverted={isHero} />
@@ -66,11 +80,11 @@ export default function WeeklyPlanCard({
               size={14}
               color={isHero ? "rgba(255,255,255,0.6)" : iconColor}
             />
-            <Text className={`${textPrimary} font-bold text-sm`}>
+            <Text className={`${textPrimary}   text-sm`}>
               Pgs {startPage}-{endPage}
             </Text>
           </View>
-          <Text className={`${textSecondary} text-[9px] font-bold uppercase`}>
+          <Text className={`${textSecondary} text-[9px]   uppercase`}>
             Range
           </Text>
         </View>
@@ -84,11 +98,9 @@ export default function WeeklyPlanCard({
               size={14}
               color={isHero ? "rgba(255,255,255,0.6)" : iconColor}
             />
-            <Text className={`${textPrimary} font-bold text-sm`}>
-              {minutes}m
-            </Text>
+            <Text className={`${textPrimary}   text-sm`}>{minutes}m</Text>
           </View>
-          <Text className={`${textSecondary} text-[9px] font-bold uppercase`}>
+          <Text className={`${textSecondary} text-[9px]   uppercase`}>
             Duration
           </Text>
         </View>
@@ -102,9 +114,9 @@ export default function WeeklyPlanCard({
               size={14}
               color={isHero ? "rgba(255,255,255,0.6)" : iconColor}
             />
-            <Text className={`${textPrimary} font-bold text-sm`}>{pages}</Text>
+            <Text className={`${textPrimary}   text-sm`}>{pages}</Text>
           </View>
-          <Text className={`${textSecondary} text-[9px] font-bold uppercase`}>
+          <Text className={`${textSecondary} text-[9px]   uppercase`}>
             Pages
           </Text>
         </View>
@@ -116,13 +128,18 @@ export default function WeeklyPlanCard({
             isHero ? "bg-white shadow-none" : ""
           }`}
           onPress={handlePress}
-          variant={isHero ? "none" : today === date ? "primary" : "outline"}
+          variant={
+            isHero ? "none"
+            : today === date ?
+              "primary"
+            : "outline"
+          }
         >
-          {today === date
-            ? "Log Today's Muraja'a"
-            : status === "completed"
-            ? "Veiw Log"
-            : "Catch up"}
+          {today === date ?
+            "Log Today's Muraja'a"
+          : status === "completed" ?
+            "Veiw Log"
+          : "Catch up"}
         </Button>
       )}
     </View>

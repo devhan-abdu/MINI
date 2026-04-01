@@ -24,10 +24,10 @@ export const TodayMurajaCard = ({
       <View className="p-6">
         <View className="flex-row justify-between items-center mb-6 ">
           <View>
-            <Text className="text-xl font-medium text-gray-900">
-              {todayPlan.startSurah === todayPlan.endSurah
-                ? todayPlan.startSurah
-                : `${todayPlan.startSurah} – ${todayPlan.endSurah}`}
+            <Text className="text-xl  text-gray-900">
+              {todayPlan.startSurah === todayPlan.endSurah ?
+                todayPlan.startSurah
+              : `${todayPlan.startSurah} – ${todayPlan.endSurah}`}
             </Text>
             <Text className="text-sm uppercase tracking-wide text-gray-700 mt-1">
               Pages {todayPlan.planned_start_page}–{todayPlan.planned_end_page}
@@ -38,7 +38,7 @@ export const TodayMurajaCard = ({
 
         <View className="border-t border-slate-100 pt-6 mt-4">
           <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-[10px] font-black uppercase tracking-[2px] text-slate-400">
+            <Text className="text-[10px]  uppercase tracking-[2px] text-slate-400">
               Session Status
             </Text>
 
@@ -48,9 +48,7 @@ export const TodayMurajaCard = ({
               }
               className="flex-row items-center bg-primary/20 px-3 py-1.5 rounded-full active:bg-slate-100"
             >
-              <Text className="text-primary font-bold text-[11px] mr-1.5">
-                Add Log
-              </Text>
+              <Text className="text-primary   text-[11px] mr-1.5">Add Log</Text>
               <Ionicons name="chevron-forward" size={12} color="#276359" />
             </Pressable>
           </View>
@@ -104,23 +102,22 @@ const ActionButton = ({
         ${isActive ? colorClass : "bg-white border-slate-100"} 
         ${disabled ? "opacity-40" : "active:scale-[0.96] shadow-sm"}`}
     >
-      {loading ? (
+      {loading ?
         <ActivityIndicator size="small" color="#64748b" />
-      ) : (
-        <>
+      : <>
           <Ionicons
             name={icon}
             size={16}
             color={isActive ? "white" : "#64748b"}
           />
           <Text
-            className={`text-[11px] font-black uppercase tracking-wider 
+            className={`text-[11px]  uppercase tracking-wider 
             ${isActive ? "text-white" : "text-slate-500"}`}
           >
             {label}
           </Text>
         </>
-      )}
+      }
     </Pressable>
   );
 };

@@ -74,16 +74,16 @@ export default function RegisterPage() {
               style={{ width: 60, height: 60, marginBottom: 8 }}
               resizeMode="contain"
             />
-            <Text className="text-2xl font-black text-slate-900 tracking-tighter">
+            <Text className="text-2xl  text-slate-900 tracking-tighter">
               Mini
             </Text>
           </View>
 
           <View className="flex-col gap-1 mb-8">
-            <Text className="text-2xl font-bold text-slate-900 text-center">
+            <Text className="text-2xl   text-slate-900 text-center">
               Create Your Account
             </Text>
-            <Text className="text-slate-500 text-center font-medium">
+            <Text className="text-slate-500 text-center ">
               Start tracking your Quran journey today!
             </Text>
           </View>
@@ -152,9 +152,9 @@ export default function RegisterPage() {
             </Button>
 
             <Pressable onPress={() => router.push("/(auth)/login")}>
-              <Text className="text-center font-medium text-slate-500 text-md py-6">
+              <Text className="text-center  text-slate-500 text-md py-6">
                 Already have an account?{" "}
-                <Text className="text-primary font-bold">Login</Text>
+                <Text className="text-primary  ">Login</Text>
               </Text>
             </Pressable>
           </View>

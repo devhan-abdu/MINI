@@ -60,15 +60,15 @@ export default function LoginPage() {
               style={{ width: 80, height: 80, marginBottom: 12 }}
               resizeMode="contain"
             />
-            <Text className="text-4xl font-black text-slate-900 tracking-tighter">
+            <Text className="text-4xl  text-slate-900 tracking-tighter">
               Mini
             </Text>
-            <Text className="text-[10px] font-bold text-primary uppercase tracking-[3px] mt-1">
+            <Text className="text-[10px]   text-primary uppercase tracking-[3px] mt-1">
               Hifz & Muraja
             </Text>
           </View>
 
-          <Text className="text-xl font-bold text-slate-800 mb-6 text-center">
+          <Text className="text-xl   text-slate-800 mb-6 text-center">
             Welcome Back
           </Text>
 
@@ -105,9 +105,9 @@ export default function LoginPage() {
             </Button>
 
             <Pressable onPress={() => router.push("/(auth)/register")}>
-              <Text className="text-center font-medium text-slate-500 text-md py-6">
+              <Text className="text-center  text-slate-500 text-md py-6">
                 Don't have an account yet?{" "}
-                <Text className="text-primary font-bold">Register</Text>
+                <Text className="text-primary  ">Register</Text>
               </Text>
             </Pressable>
           </View>

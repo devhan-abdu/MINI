@@ -9,7 +9,7 @@ interface IinputProps {
   style?: string;
   rightIcon?: React.ReactNode;
   onRightIconPress?: () => void;
-  leftIcon?: React.ReactNode; 
+  leftIcon?: React.ReactNode;
   [key: string]: any;
 }
 
@@ -29,7 +29,7 @@ export default function Input({
   return (
     <View className={`mb-4 ${style}`}>
       {label && (
-        <Text className="text-slate-400 text-[10px] font-black uppercase tracking-[2px] mb-2 ml-1">
+        <Text className="text-slate-400 text-[10px]  uppercase tracking-[2px] mb-2 ml-1">
           {label}
         </Text>
       )}
@@ -55,7 +55,7 @@ export default function Input({
           placeholderTextColor="#94a3b8"
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-          className="flex-1 py-3.5 text-slate-900 font-semibold text-[15px]"
+          className="flex-1 py-3.5 text-slate-900  text-[15px]"
           {...rest}
         />
 

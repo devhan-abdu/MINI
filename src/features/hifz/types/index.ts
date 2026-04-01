@@ -1,3 +1,5 @@
+import * as Yup from "yup";
+
 export interface IHifzLog {
     id?: number;
     hifz_plan_id: number;
@@ -28,8 +30,12 @@ export interface IHifzPlan {
   hifz_daily_logs?: IHifzLog[]
     
 }
-
-import * as Yup from "yup";
+export interface HifzQuestion {
+ type: 'SEQUENCE' | 'BOUNDARY';
+  question: string;
+  answer: any;
+  hint?: string;
+}
 
 export const HifzPlanSchema = Yup.object({
   start_date: Yup.string().required("Start date is required"),
@@ -48,5 +54,6 @@ export const HifzPlanSchema = Yup.object({
     .typeError("Must be a number"),
       
 });
+
 
 export type HifzPlanSchemaFormType = Yup.InferType<typeof HifzPlanSchema>;

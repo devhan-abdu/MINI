@@ -1,7 +1,7 @@
 import { ISurah } from "@/src/types";
 import { IHifzPlan, IHifzLog } from "../types";
-import { calculateFinishedDate, countPlannedDaysElapsed, getLastLog } from "./plan-calculations";
-import { getNextTask } from "./quran-logic";
+import { calculateFinishedDate, countPlannedDaysElapsed } from "./plan-calculations";
+import { getNextTask, getPagesFromLog } from "./quran-logic";
 import { getSurahNameByNumber } from "../../muraja/utils/quranMapping";
 
 const dayNames = [ "Mon", "Tue", "Wed", "Thu", "Fri", "Sat","Sun",];
@@ -149,7 +149,8 @@ function calculateMissedDays(
   return Math.max(0, effectivePlannedDays - successDays);
 }
 
-export const getWeeklyStatus = (plan: IHifzPlan) => {
+export const getWeeklyStatus = (plan: IHifzPlan | null, surahData?: ISurah[]) => {
+  if(!plan) return
   const logs = plan.hifz_daily_logs || [];
 
   const today = new Date();
@@ -160,6 +161,8 @@ export const getWeeklyStatus = (plan: IHifzPlan) => {
 
   const todayNumber = today.getDay();
   const todayIndex = (todayNumber + 6) % 7
+
+  let pageCompleted = [] as number[]
 
   const week = dayNames.map((name, index) => {
     const dayDate = new Date(today);
@@ -183,8 +186,12 @@ export const getWeeklyStatus = (plan: IHifzPlan) => {
     if (isWithinCurrentWeek(logDate)) {
       const logDayIndex = (logDate.getDay() + 6 ) % 7;
       week[logDayIndex].log = log;
+      if (surahData) {
+           const pagesFromLog = getPagesFromLog(log, plan.direction, surahData);
+         pageCompleted.push(...pagesFromLog);      }
     }
   });
 
-  return week;
+  pageCompleted = Array.from(new Set(pageCompleted));
+  return { week , pageCompleted};
 };

@@ -1,10 +1,11 @@
 import { Ionicons } from "@expo/vector-icons";
-import { ActivityIndicator, Pressable, Text } from "react-native";
+import { ActivityIndicator, Pressable } from "react-native";
+import { Text } from "@/src/components/common/ui/Text";
 
 export const StatusButton = ({
   label,
   icon,
-  activeColor, 
+  activeColor,
   isActive,
   isDisabled,
   onPress,
@@ -14,16 +15,14 @@ export const StatusButton = ({
 
   const containerStyle =
     isActive ?
-      isSkip ?
-        "bg-red-50 border-red-100 shadow-sm" 
-      : `${activeColor} border-transparent shadow-md shadow-slate-200` 
+      isSkip ? "bg-red-50 border-red-100 shadow-sm"
+      : `${activeColor} border-transparent shadow-md shadow-slate-200`
     : "bg-white border-slate-100";
 
   const contentColor =
     isActive ?
-      isSkip ?
-        "#ef4444" 
-      : "#ffffff" 
+      isSkip ? "#ef4444"
+      : "#ffffff"
     : "#94a3b8";
 
   return (
@@ -38,7 +37,7 @@ export const StatusButton = ({
           <Ionicons name={icon as any} size={16} color={contentColor} />
           <Text
             style={{ color: contentColor }}
-            className="ml-2 text-[10px] font-black uppercase tracking-widest"
+            className="ml-2 text-[10px]  uppercase tracking-widest"
           >
             {label}
           </Text>

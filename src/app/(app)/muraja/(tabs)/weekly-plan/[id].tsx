@@ -111,7 +111,7 @@ export default function LogPage() {
           </Pressable>
 
           <View className="flex-1 ml-2">
-            <Text className="text-2xl font-black text-gray-900 tracking-tight">
+            <Text className="text-2xl  text-gray-900 tracking-tight">
               {formattedDate}
             </Text>
           </View>
@@ -121,9 +121,7 @@ export default function LogPage() {
             <View className="bg-orange-50 border border-orange-100 p-4 rounded-2xl mb-6 flex-row items-center gap-3">
               <Ionicons name="refresh-circle" size={24} color="#f97316" />
               <View className="flex-1">
-                <Text className="text-orange-900 font-bold text-sm">
-                  Catch-Up Mode
-                </Text>
+                <Text className="text-orange-900   text-sm">Catch-Up Mode</Text>
                 <Text className="text-orange-700/70 text-xs">
                   Logging for {formattedDate}
                 </Text>
@@ -131,11 +129,11 @@ export default function LogPage() {
             </View>
           )}
           <View className="bg-primary p-6 rounded-[32px] mb-8 shadow-xl shadow-green-900/20">
-            <Text className="text-white/60 font-bold text-[10px] uppercase tracking-widest mb-2">
+            <Text className="text-white/60   text-[10px] uppercase tracking-widest mb-2">
               Today's Task
             </Text>
 
-            <Text className="text-white text-3xl font-black mb-6">
+            <Text className="text-white text-3xl  mb-6">
               {plan.startSurah === plan.endSurah ?
                 plan.startSurah
               : `${plan.startSurah} – ${plan.endSurah}`}
@@ -144,7 +142,7 @@ export default function LogPage() {
             <View className="flex-row items-center justify-between border-t border-white/10 pt-5">
               <View className="flex-row items-center gap-2 mb-1">
                 <Ionicons name="book-outline" size={16} color="#fff" />
-                <Text className="text-sm text-white font-medium">
+                <Text className="text-sm text-white ">
                   page {plan.planned_start_page} - {plan.planned_end_page}
                 </Text>
               </View>
@@ -153,7 +151,7 @@ export default function LogPage() {
 
               <View className="flex-row items-center gap-2 mb-1">
                 <Ionicons name="time-outline" size={16} color="#fff" />
-                <Text className="text-sm text-white font-medium">
+                <Text className="text-sm text-white ">
                   {weeklyPlan?.estimated_time_min} min
                 </Text>
               </View>
@@ -162,16 +160,14 @@ export default function LogPage() {
 
               <View className="flex-row items-center gap-2 mb-1">
                 <Ionicons name="layers-outline" size={16} color="#fff" />
-                <Text className="text-sm text-white font-medium">
+                <Text className="text-sm text-white ">
                   {weeklyPlan?.planned_pages} pages
                 </Text>
               </View>
             </View>
           </View>
 
-          <Text className="text-xl font-black text-gray-900 mb-4">
-            How did it go?
-          </Text>
+          <Text className="text-xl  text-gray-900 mb-4">How did it go?</Text>
           <View className="flex-row justify-between mb-8">
             <StatusTab
               label="Completed"
@@ -202,10 +198,10 @@ export default function LogPage() {
             <View className=" mb-12 gap-2">
               <View className="bg-gray-50 p-6 rounded-[28px] border border-gray-100 flex-row items-center justify-between mb-8">
                 <View>
-                  <Text className="font-black text-gray-900 text-lg">
+                  <Text className=" text-gray-900 text-lg">
                     Pages Memorized
                   </Text>
-                  <Text className="text-gray-400 text-xs font-medium">
+                  <Text className="text-gray-400 text-xs ">
                     Actual progress today
                   </Text>
                 </View>
@@ -216,9 +212,7 @@ export default function LogPage() {
                   >
                     <Ionicons name="remove" size={20} color="#276359" />
                   </Pressable>
-                  <Text className="text-2xl font-black text-gray-900 px-4">
-                    {pages}
-                  </Text>
+                  <Text className="text-2xl  text-gray-900 px-4">{pages}</Text>
                   <Pressable
                     onPress={() => setPages((prev) => prev + 1)}
                     className="w-10 h-10 items-center justify-center active:bg-gray-50 rounded-xl"
@@ -228,7 +222,7 @@ export default function LogPage() {
                 </View>
               </View>
               <View className="mb-2">
-                <Text className="text-gray-400 font-bold uppercase text-[10px] mb-2 ml-1 tracking-widest">
+                <Text className="text-gray-400   uppercase text-[10px] mb-2 ml-1 tracking-widest">
                   Time Spent (minutes)
                 </Text>
                 <Input
@@ -239,7 +233,7 @@ export default function LogPage() {
                 />
               </View>
               <View className="mb-2">
-                <Text className="text-gray-400 font-bold uppercase text-[10px] mb-2 ml-1 tracking-widest">
+                <Text className="text-gray-400   uppercase text-[10px] mb-2 ml-1 tracking-widest">
                   Place
                 </Text>
                 <Input
@@ -251,7 +245,7 @@ export default function LogPage() {
               </View>
 
               <View className="">
-                <Text className="text-gray-400 font-bold uppercase text-[10px] mb-2 ml-1 tracking-widest">
+                <Text className="text-gray-400   uppercase text-[10px] mb-2 ml-1 tracking-widest">
                   Reflection or Notes
                 </Text>
                 <TextInput
@@ -260,7 +254,7 @@ export default function LogPage() {
                   placeholderTextColor="#9ca3af"
                   value={note}
                   onChangeText={setNote}
-                  className="bg-gray-50 p-5 rounded-[28px] border border-gray-100 h-32 text-gray-900 font-medium"
+                  className="bg-gray-50 p-5 rounded-[28px] border border-gray-100 h-32 text-gray-900 "
                   textAlignVertical="top"
                 />
               </View>
@@ -275,9 +269,7 @@ export default function LogPage() {
             className="bg-primary h-14  shadow-lg shadow-primary/30"
           >
             <View className="flex-row items-center justify-center">
-              <Text className="text-white font-black text-lg mr-2">
-                Save Progress
-              </Text>
+              <Text className="text-white  text-lg mr-2">Save Progress</Text>
               <Ionicons name="arrow-forward" size={20} color="white" />
             </View>
           </Button>

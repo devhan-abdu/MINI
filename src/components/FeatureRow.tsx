@@ -1,5 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
-import { View,Text } from "react-native";
+import { View } from "react-native";
+import { Text } from "@/src/components/common/ui/Text";
 
 export function FeatureRow({
   icon,
@@ -16,7 +17,7 @@ export function FeatureRow({
         <Ionicons name={icon} size={22} color="#276359" />
       </View>
       <View className="flex-1">
-        <Text className="font-bold text-gray-900 text-lg">{title}</Text>
+        <Text className="  text-gray-900 text-lg">{title}</Text>
         <Text className="text-gray-500 text-sm leading-5">{desc}</Text>
       </View>
     </View>

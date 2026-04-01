@@ -19,9 +19,7 @@ export default function SurahIndex() {
     return (
       <View className="flex-1 justify-center items-center bg-white">
         <ActivityIndicator size="large" color="#276359" />
-        <Text className="mt-4 text-slate-400 font-medium">
-          Loading Quran...
-        </Text>
+        <Text className="mt-4 text-slate-400 ">Loading Quran...</Text>
       </View>
     );
   }
@@ -30,9 +28,8 @@ export default function SurahIndex() {
     return (
       <View className="flex-1 justify-center items-center p-6 bg-white">
         <Ionicons name="alert-circle" size={48} color="#ef4444" />
-        <Text className="text-lg font-bold text-slate-900 mt-2">Oops!</Text>
+        <Text className="text-lg   text-slate-900 mt-2">Oops!</Text>
         <Text className="text-slate-500 text-center mt-1">{error}</Text>
-  
       </View>
     );
   }

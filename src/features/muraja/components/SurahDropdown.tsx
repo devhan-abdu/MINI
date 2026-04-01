@@ -1,5 +1,7 @@
 import React, { useMemo } from "react";
-import { View, Text } from "react-native";
+import { Text } from "@/src/components/common/ui/Text"; 
+import { View } from "react-native";
+
 import { Dropdown } from "react-native-element-dropdown";
 import { Ionicons } from "@expo/vector-icons";
 import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
@@ -16,6 +18,11 @@ interface ISurahDropDownProps {
 
 interface ISurahPageDropDown {
   surah: number | null;
+  page: number | null;
+  setPage: (value: number) => void;
+}
+
+interface ICustomDropDown {
   page: number | null;
   setPage: (value: number) => void;
 }
@@ -70,7 +77,7 @@ const SurahDropdown = ({ surah, setSurah }: ISurahDropDownProps) => {
         <View className="flex-row justify-between items-center p-4">
           <Text
             className={`text-base ${
-              item.number === surah ? "text-primary font-bold" : "text-gray-700"
+              item.number === surah ? "text-primary  " : "text-gray-700"
             }`}
           >
             {item.englishName}
@@ -101,7 +108,7 @@ export const SurahPageDropdown = ({
       (_, i) => {
         const pageNum = foundSurah.startingPage + i;
         return { number: pageNum, label: `Page ${pageNum}` };
-      }
+      },
     );
   }, [surah, items]);
 
@@ -144,7 +151,7 @@ export const SurahPageDropdown = ({
         <View className="flex-row justify-between items-center p-4">
           <Text
             className={`text-base ${
-              item.number === page ? "text-primary font-bold" : "text-gray-700"
+              item.number === page ? "text-primary  " : "text-gray-700"
             }`}
           >
             {item.label}
@@ -157,5 +164,69 @@ export const SurahPageDropdown = ({
     />
   );
 };
+
+export const CustomDropdown = ({ page, setPage }: ICustomDropDown) => {
+const pages = Array.from({ length: 604 }, (_, i) => ({
+  label: `Page ${i + 1}`,
+  number: i + 1,
+}));
+  return (
+    <Dropdown
+      style={{
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderWidth: 1,
+        borderColor: "#E5E7EB",
+        borderRadius: 16,
+        backgroundColor: "white",
+      }}
+      placeholderStyle={{
+        fontSize: 16,
+        color: "#9CA3AF",
+        fontFamily: "Rosemary",
+      }}
+      selectedTextStyle={{
+        fontSize: 16,
+        color: "#111827",
+        fontFamily: "Rosemary",
+      }}
+      data={pages}
+      search
+      maxHeight={300}
+      labelField="label"
+      valueField="number"
+      placeholder="select"
+      value={page}
+      onChange={(item) => setPage(item.number)}
+      renderLeftIcon={() => (
+        <Ionicons
+          name="document-text"
+          size={18}
+          color="#276359"
+          style={{ marginRight: 10 }}
+        />
+      )}
+      renderItem={(item) => (
+        <View className="flex-row justify-between items-center p-4">
+          <Text
+            className={`text-sm ${
+              item.number === page ? "text-primary  " : "text-gray-700"
+            }`}
+            style={{
+              fontFamily: "Rosmery",
+            }}
+          >
+            {item.label}
+          </Text>
+          {item.number === page && (
+            <Ionicons name="checkmark-circle" size={20} color="#276359" />
+          )}
+        </View>
+      )}
+    />
+  );
+};
+
+
 
 export default SurahDropdown;

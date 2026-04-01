@@ -141,7 +141,7 @@ export default function CreateWeeklyPlan() {
     return (
       <View className="flex-row items-center mt-1 ml-1 gap-x-1">
         <Ionicons name="alert-circle-outline" size={12} color="#ef4444" />
-        <Text className="text-red-500 text-[10px] font-bold uppercase tracking-tight">
+        <Text className="text-red-500 text-[10px]   uppercase tracking-tight">
           {error.message}
         </Text>
       </View>
@@ -159,7 +159,7 @@ export default function CreateWeeklyPlan() {
         </Pressable>
 
         <View className="flex-1 ml-2">
-          <Text className="text-lg font-black text-primary leading-tight">
+          <Text className="text-lg  text-primary leading-tight">
             Create Muraja Plan
           </Text>
         </View>
@@ -185,11 +185,11 @@ export default function CreateWeeklyPlan() {
                         <Ionicons name="calendar" size={22} color="#276359" />
                       </View>
                       <View>
-                        <Text className="text-slate-400 text-[9px] font-black uppercase tracking-widest mb-0.5">
+                        <Text className="text-slate-400 text-[9px]  uppercase tracking-widest mb-0.5">
                           Start Date
                         </Text>
                         <Text
-                          className={`text-base font-black ${
+                          className={`text-base  ${
                             formattedWeekStart ? "text-slate-900" : (
                               "text-slate-300"
                             )
@@ -225,7 +225,7 @@ export default function CreateWeeklyPlan() {
               control={control}
               render={({ field: { value, onChange } }) => (
                 <View>
-                  <Text className="text-slate-400 text-[9px] font-black uppercase tracking-widest mb-4 ml-1">
+                  <Text className="text-slate-400 text-[9px]  uppercase tracking-widest mb-4 ml-1">
                     Weekly Routine
                   </Text>
                   <SelectDays value={value ?? []} onChange={onChange} />
@@ -302,7 +302,7 @@ export default function CreateWeeklyPlan() {
                       <Ionicons name="time-outline" size={18} color="#94a3b8" />
                     }
                     rightIcon={
-                      <Text className="text-slate-400 font-bold text-[10px] uppercase">
+                      <Text className="text-slate-400   text-[10px] uppercase">
                         min
                       </Text>
                     }
@@ -334,7 +334,7 @@ export default function CreateWeeklyPlan() {
               )}
             />
             <View>
-              <Text className="text-slate-400 text-[9px] font-black uppercase tracking-widest mb-2 ml-1">
+              <Text className="text-slate-400 text-[9px]  uppercase tracking-widest mb-2 ml-1">
                 Personal Notes
               </Text>
               <Controller
@@ -343,7 +343,7 @@ export default function CreateWeeklyPlan() {
                 render={({ field: { value, onChange } }) => (
                   <View>
                     <TextInput
-                      className={`bg-slate-50 rounded-2xl p-4 min-h-[100px] text-slate-900 font-medium border ${
+                      className={`bg-slate-50 rounded-2xl p-4 min-h-[100px] text-slate-900  border ${
                         errors.note ? "border-red-500" : "border-slate-100"
                       } focus:border-primary/40 focus:bg-white`}
                       onChangeText={onChange}
@@ -367,7 +367,7 @@ export default function CreateWeeklyPlan() {
               className="flex-1 h-14 border-slate-200"
               onPress={() => router.back()}
             >
-              <Text className="text-slate-500 font-black uppercase text-[11px] tracking-widest">
+              <Text className="text-slate-500  uppercase text-[11px] tracking-widest">
                 Cancel
               </Text>
             </Button>
@@ -380,7 +380,7 @@ export default function CreateWeeklyPlan() {
                 <ActivityIndicator color="white" size="small" />
               : <View className="flex-row items-center justify-center gap-2">
                   <Ionicons name="rocket-outline" size={18} color="#fff" />
-                  <Text className="text-white font-black uppercase text-[11px] tracking-widest">
+                  <Text className="text-white  uppercase text-[11px] tracking-widest">
                     Launch Plan
                   </Text>
                 </View>

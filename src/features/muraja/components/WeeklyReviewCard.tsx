@@ -4,9 +4,11 @@ import { Pressable, Text, View } from "react-native";
 import { IWeeklyMuraja } from "@/src/types";
 import { formatWeekRange } from "../utils/dateHelpers";
 
-
-
-export default function WeeklyReviewCard({ weekHistory }: { weekHistory: IWeeklyMuraja[] }) {
+export default function WeeklyReviewCard({
+  weekHistory,
+}: {
+  weekHistory: IWeeklyMuraja[];
+}) {
   const router = useRouter();
 
   const handlePress = (id: number) => {
@@ -24,7 +26,7 @@ export default function WeeklyReviewCard({ weekHistory }: { weekHistory: IWeekly
         const id = week.id;
         const weekRange = formatWeekRange(
           week.week_start_date,
-          week.week_end_date
+          week.week_end_date,
         );
 
         return (
@@ -42,14 +44,12 @@ export default function WeeklyReviewCard({ weekHistory }: { weekHistory: IWeekly
               />
 
               <View className="flex-1">
-                <Text className="font-bold text-gray-800 text-lg">
-                  {weekRange}
-                </Text>
+                <Text className="  text-gray-800 text-lg">{weekRange}</Text>
                 <View className="flex-col items-start gap-2 mt-1 ">
                   <Text className="text-gray-900 mr-2">
-                    {week.start_surah === week.end_surah
-                      ? week.start_surah
-                      : `${week.start_surah} – ${week.end_surah}`}
+                    {week.start_surah === week.end_surah ?
+                      week.start_surah
+                    : `${week.start_surah} – ${week.end_surah}`}
                   </Text>
                   <View className="flex-row items-center gap-4 flex-1 mt-4">
                     <View className="flex-row items-center gap-1">
@@ -64,7 +64,7 @@ export default function WeeklyReviewCard({ weekHistory }: { weekHistory: IWeekly
                         size={16}
                         color="#4b5563"
                       />
-                      <Text className="text-sm text-gray-700 font-medium">
+                      <Text className="text-sm text-gray-700 ">
                         {week.planned_pages} pages
                       </Text>
                     </View>

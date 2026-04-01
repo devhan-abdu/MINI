@@ -5,7 +5,7 @@ type Status = "completed" | "pending" | "missed" | "partial";
 
 interface StatusBadgeProps {
   status: Status;
-  inverted?: boolean; 
+  inverted?: boolean;
 }
 
 export default function StatusBadge({
@@ -15,8 +15,8 @@ export default function StatusBadge({
   const getStatusStyle = (status: Status) => {
     if (inverted) {
       return {
-        bg: "bg-white/20", 
-        text: "text-white", 
+        bg: "bg-white/20",
+        text: "text-white",
         border: "border-white/20",
         iconColor: "#ffffff",
       };
@@ -73,9 +73,7 @@ export default function StatusBadge({
         color={style.iconColor}
         style={{ marginRight: 4 }}
       />
-      <Text
-        className={`font-black text-[10px] uppercase tracking-wider ${style.text}`}
-      >
+      <Text className={` text-[10px] uppercase tracking-wider ${style.text}`}>
         {status}
       </Text>
     </View>

@@ -1,5 +1,7 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { Text } from "@/src/components/common/ui/Text";
+import { View } from "react-native";
+
 import { useRouter } from "expo-router";
 import { format } from "date-fns";
 
@@ -23,14 +25,30 @@ import { WeeklyMurajaSkeleton } from "@/src/features/muraja/components/skeletons
 import MurajaEmptyState from "@/src/features/muraja/components/MurajaEmptyState";
 
 export default function MurajaIndex() {
-const router = useRouter();
-  const { weeklyPlan, plans, todayPlan, upcomingSessions, loading, error, refetch } = useWeeklyMuraja();
-  const { analytics, plan: reviewPlan, isLoading: loadingReview } = useWeeklyReview();
+  const router = useRouter();
+  const {
+    weeklyPlan,
+    plans,
+    todayPlan,
+    upcomingSessions,
+    loading,
+    error,
+    refetch,
+  } = useWeeklyMuraja();
+  const {
+    analytics,
+    plan: reviewPlan,
+    isLoading: loadingReview,
+  } = useWeeklyReview();
   const { updateLog, isUpdating } = useMurajaOperation();
 
+  if (loading || loadingReview)
+    return (
+      <Screen>
+        <WeeklyMurajaSkeleton />
+      </Screen>
+    );
 
-  if (loading || loadingReview) return <Screen><WeeklyMurajaSkeleton /></Screen>;
-  
   if (error) {
     return (
       <Screen>
@@ -42,11 +60,10 @@ const router = useRouter();
     );
   }
 
-
   if (weeklyPlan) {
     const dateRange = `${format(
       new Date(weeklyPlan.week_start_date),
-      "MMM dd"
+      "MMM dd",
     )} - ${format(new Date(weeklyPlan.week_end_date), "MMM dd")}`;
 
     return (
@@ -60,7 +77,7 @@ const router = useRouter();
 
           <View className="mt-6 mb-4">
             <SectionHeader title="Today's Muraja'a" />
-            {todayPlan ? (
+            {todayPlan ?
               <TodayMurajaCard
                 todayPlan={todayPlan}
                 onStatusUpdate={(status) =>
@@ -68,13 +85,12 @@ const router = useRouter();
                 }
                 isUpdating={isUpdating}
               />
-            ) : (
-              <View className="p-8 bg-slate-50 rounded-[32px] border border-dashed border-slate-200">
-                <Text className="text-center text-slate-400 font-medium">
+            : <View className="p-8 bg-slate-50 rounded-[32px] border border-dashed border-slate-200">
+                <Text className="text-center text-slate-400 ">
                   No session scheduled for today.
                 </Text>
               </View>
-            )}
+            }
           </View>
 
           {upcomingSessions.length > 0 && (
@@ -99,13 +115,13 @@ const router = useRouter();
     );
   }
 
-if (analytics && reviewPlan) {
-  return <MurajaReviewPage plan={reviewPlan} analytics={analytics} />;
-}
+  if (analytics && reviewPlan) {
+    return <MurajaReviewPage plan={reviewPlan} analytics={analytics} />;
+  }
 
- return (
-   <Screen>
-     <MurajaEmptyState />
-   </Screen>
- );
+  return (
+    <Screen>
+      <MurajaEmptyState />
+    </Screen>
+  );
 }

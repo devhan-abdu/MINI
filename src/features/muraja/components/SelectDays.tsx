@@ -34,16 +34,16 @@ export default function SelectDays({ value, onChange }: Props) {
             onPress={handlePress}
             className={` flex-1 min-w-[64px] h-10 rounded-full border 
                      ${
-                       isSelected
-                         ? "border-green-100 bg-primary"
-                         : "border-gray-200 bg-white "
+                       isSelected ?
+                         "border-green-100 bg-primary"
+                       : "border-gray-200 bg-white "
                      }
                    items-center justify-center
                 active:opacity-90
                 `}
           >
             <Text
-              className={`font-semibold text-base ${
+              className={` text-base ${
                 isSelected ? "text-white" : "text-gray-700"
               }`}
             >

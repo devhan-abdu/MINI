@@ -1,4 +1,4 @@
-import {  IWeeklyMurajaDay } from "@/src/types";
+import { IWeeklyMurajaDay } from "@/src/types";
 import { Ionicons } from "@expo/vector-icons";
 import { Text, View } from "react-native";
 import { DAY_MAP } from "../utils/quranMapping";
@@ -33,31 +33,30 @@ export function DayByDay({ days }: { days: IWeeklyMurajaDay[] }) {
                 ${isPartial ? "bg-amber-50 border-amber-200" : ""} 
                 ${isMissed ? "bg-red-50 border-red-100" : ""}
                 ${
-                  !isFull && !isPartial && !isMissed
-                    ? "bg-gray-50 border-transparent"
-                    : ""
+                  !isFull && !isPartial && !isMissed ?
+                    "bg-gray-50 border-transparent"
+                  : ""
                 }
               `}
             >
-              {isFull ? (
+              {isFull ?
                 <Ionicons name="checkmark-sharp" size={16} color="white" />
-              ) : isPartial ? (
+              : isPartial ?
                 <Ionicons name="remove-sharp" size={16} color="#d97706" />
-              ) : isMissed ? (
+              : isMissed ?
                 <Ionicons name="close-outline" size={16} color="#ef4444" />
-              ) : (
-                <Text
-                  className={`text-[10px] font-black ${
+              : <Text
+                  className={`text-[10px]  ${
                     item.isPlanned ? "text-primary" : "text-gray-300"
                   }`}
                 >
                   {item.dayName[0]}
                 </Text>
-              )}
+              }
             </View>
 
             <Text
-              className={`text-[9px] font-black uppercase tracking-tighter ${
+              className={`text-[9px]  uppercase tracking-tighter ${
                 item.isPlanned ? "text-primary" : "text-gray-400"
               }`}
             >

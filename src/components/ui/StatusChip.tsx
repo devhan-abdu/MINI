@@ -33,7 +33,7 @@ export const StatusChip = ({
 
   return (
     <View className={`${s.bg} px-4 py-2  self-start rounded-full`}>
-      <Text className={`font-semibold ${s.text}`}>{s.label}</Text>
+      <Text className={` ${s.text}`}>{s.label}</Text>
     </View>
   );
 };

@@ -15,85 +15,73 @@ export const generateHifzTest = async (db: any, completedPages: number[]) => {
     const getRandomPage = () => completedPages[Math.floor(Math.random() * completedPages.length)];
 
     for (let i = 0; i < questionsPerType; i++) {
-        
         try {
             const page = getRandomPage();
-            
-            const wordRange = await db.getFirstAsync(
-                `SELECT first_word_id, last_word_id FROM pages WHERE page_number = ?`, 
+            const data = await db.getFirstAsync(
+                `SELECT * FROM (
+                    SELECT 
+                        soraid, 
+                        ayaid, 
+                        page,
+                        text,
+                        LAG(text) OVER (ORDER BY soraid, ayaid) as prev_text,
+                        LEAD(text) OVER (ORDER BY soraid, ayaid) as next_text
+                    FROM aya
+                ) 
+                WHERE page = ? 
+                ORDER BY RANDOM() 
+                LIMIT 1`, 
                 [page]
             );
-          console.log(3,"console looo")
 
-            if (!wordRange) continue;
-
-            const randomId = Math.floor(Math.random() * (wordRange.last_word_id - wordRange.first_word_id)) + wordRange.first_word_id;
-
-          console.log(1,"db call")
-            const ayahData = await db.getFirstAsync(`
-                SELECT
-                    (SELECT GROUP_CONCAT(text, ' ') FROM words WHERE surah=current.surah AND ayah = current.ayah - 1) as prev_ayah,
-                    (SELECT GROUP_CONCAT(text, ' ') FROM words WHERE surah = current.surah AND ayah = current.ayah) as current_ayah,
-                    (SELECT GROUP_CONCAT(text, ' ') FROM words WHERE surah = current.surah AND ayah = current.ayah + 1) as next_ayah,
-                    current.surah, current.ayah
-                FROM words current
-                WHERE current.id = ?`, 
-                [randomId]
-            );
-          console.log(2, "db call 2")
-          console.log(ayahData, "is ayaadata exist")
-
-            if (ayahData) {
+            if (data) {
                 queue.push({
                     type: 'SEQUENCE',
-                    question: ayahData.current_ayah,
+                    question: data.text,
                     answer: {
-                        previous: ayahData.prev_ayah || "Start of Surah",
-                        next: ayahData.next_ayah || "End of Surah"
+                        previous: data.prev_text || "Beginning of Quran",
+                        next: data.next_text || "End of Quran"
                     },
-                    hint: `Surah ${ayahData.surah}:${ayahData.ayah}`
+                    hint: `Surah ${data.soraid}:${data.ayaid}` 
                 });
             }
         } catch (innerError) {
-            console.warn("Failed to generate a Sequence question, skipping...", innerError);
+            console.warn("Failed Sequence question:", innerError);
         }
-    }
+    }     
 
     for (let i = 0; i < questionsPerType; i++) {
         try {
             const page = getRandomPage();
-            const boundaryData = await db.getFirstAsync(`
-                SELECT
-                    (SELECT GROUP_CONCAT(text, ' ') FROM words WHERE (surah, ayah) = (SELECT surah, ayah FROM words WHERE id = p.first_word_id)) AS start_ayah,
-                    (SELECT GROUP_CONCAT(text, ' ') FROM words WHERE (surah, ayah) = (SELECT surah, ayah FROM words WHERE id = p.last_word_id)) AS end_ayah,
-                    (SELECT GROUP_CONCAT(text, ' ') FROM words w2 WHERE w2.surah = mid.surah AND w2.ayah = mid.ayah) AS middle_ayah
-                FROM pages p 
-                LEFT JOIN (
-                    SELECT surah, ayah FROM words
-                    WHERE id BETWEEN (SELECT first_word_id FROM pages WHERE page_number = ?) AND (SELECT last_word_id FROM pages WHERE page_number = ?)
-                    AND (surah, ayah) != (SELECT surah, ayah FROM words WHERE id = (SELECT first_word_id FROM pages WHERE page_number = ?)) 
-                    AND (surah, ayah) != (SELECT surah, ayah FROM words WHERE id = (SELECT last_word_id FROM pages WHERE page_number = ?)) 
-                    GROUP BY surah, ayah
-                    ORDER BY RANDOM()
-                    LIMIT 1              
-                ) as mid ON 1=1
-                WHERE p.page_number = ?`, 
-                [page, page, page, page, page]
+            
+            const boundaryData = await db.getFirstAsync(
+                `SELECT 
+                    main.text AS current_text, -- Fixed typo: currunt -> current
+                    main.soraid, 
+                    main.ayaid, 
+                    main.page,
+                    (SELECT text FROM aya WHERE page = main.page ORDER BY soraid ASC, ayaid ASC LIMIT 1) AS page_start,
+                    (SELECT text FROM aya WHERE page = main.page ORDER BY soraid DESC, ayaid DESC LIMIT 1) AS page_end
+                FROM aya AS main
+                WHERE main.page = ? 
+                ORDER BY RANDOM() 
+                LIMIT 1`, 
+                [page]
             );
 
-            if (boundaryData && boundaryData.middle_ayah) {
+            if (boundaryData) {
                 queue.push({
                     type: 'BOUNDARY',
-                    question: boundaryData.middle_ayah,
+                    question: boundaryData.current_text,
                     answer: {
-                        start: boundaryData.start_ayah,
-                        end: boundaryData.end_ayah
+                        start: boundaryData.page_start,
+                        end: boundaryData.page_end
                     },
-                    hint: `Page ${page}`
+                    hint: `This Ayah is on page ${boundaryData.page}`
                 });
             }
         } catch (innerError) {
-            console.warn("Failed to generate a Boundary question, skipping...", innerError);
+            console.warn("Failed Boundary question:", innerError);
         }
     }
 

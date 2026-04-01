@@ -1,5 +1,7 @@
 import React from "react";
-import { View, Text } from "react-native";
+import { Text } from "@/src/components/common/ui/Text";
+import { View } from "react-native";
+
 import { Ionicons } from "@expo/vector-icons";
 import { SectionHeader } from "@/src/components/SectionHeader";
 import { WeeklyReportCard } from "../../hifz/components/WeeklyReportCard";
@@ -12,12 +14,7 @@ interface ReviewProps {
   weekRange: string;
 }
 
-export function WeeklyReviewView({
-  plan,
-  analytics,
-  weekRange,
-}: ReviewProps) {
-    
+export function WeeklyReviewView({ plan, analytics, weekRange }: ReviewProps) {
   const metrics = [
     {
       label: "Total Time",
@@ -62,12 +59,10 @@ export function WeeklyReviewView({
               <Ionicons name={m.icon as any} size={18} color="#276359" />
             </View>
             <View>
-              <Text className="text-slate-400 font-black text-[9px] uppercase tracking-widest">
+              <Text className="text-slate-400  text-[9px] uppercase tracking-widest">
                 {m.label}
               </Text>
-              <Text className="text-sm font-bold text-slate-900">
-                {m.value}
-              </Text>
+              <Text className="text-sm   text-slate-900">{m.value}</Text>
             </View>
           </View>
         ))}

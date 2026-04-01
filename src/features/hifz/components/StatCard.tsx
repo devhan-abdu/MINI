@@ -1,4 +1,6 @@
-import { View, Text } from "react-native";
+import { Text } from "@/src/components/common/ui/Text";
+import { View } from "react-native";
+
 import { Ionicons } from "@expo/vector-icons";
 
 interface StatCardProps {
@@ -7,7 +9,7 @@ interface StatCardProps {
   unit: string;
   type?: "success" | "danger" | "info" | "warning" | "hifz" | "muraja"; // Added new types
   icon: keyof typeof Ionicons.glyphMap;
-  category?: string; 
+  category?: string;
 }
 
 export default function StatCard({
@@ -33,7 +35,7 @@ export default function StatCard({
     <View className="w-[48%] bg-white rounded-xl px-4 py-5 mb-4 border border-slate-100 shadow-sm relative">
       {category && (
         <Text
-          className={`absolute top-3 right-3 text-[7px] font-black uppercase tracking-[1px] ${theme.text}`}
+          className={`absolute top-3 right-3 text-[7px]  uppercase tracking-[1px] ${theme.text}`}
         >
           {category}
         </Text>
@@ -47,16 +49,16 @@ export default function StatCard({
         </View>
 
         <View className="flex-1">
-          <Text className="text-slate-400 text-xs font-black uppercase tracking-widest mb-0.5">
+          <Text className="text-slate-400 text-xs  uppercase tracking-widest mb-0.5">
             {title}
           </Text>
 
           <View className="flex-row items-baseline">
-            <Text className="text-slate-900 text-xl font-black tracking-tight">
+            <Text className="text-slate-900 text-xl  tracking-tight">
               {value}
             </Text>
             {unit && (
-              <Text className="text-slate-400 text-[9px] font-bold ml-1 uppercase">
+              <Text className="text-slate-400 text-[9px]   ml-1 uppercase">
                 {unit}
               </Text>
             )}

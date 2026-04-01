@@ -4,7 +4,8 @@ import { ISurah } from "@/src/types";
 import { Ionicons } from "@expo/vector-icons";
 import { format } from "date-fns";
 import { useMemo } from "react";
-import { View, Text } from "react-native";
+import { Text } from "@/src/components/common/ui/Text";
+import { View } from "react-native";
 
 type Cardprops = {
   hifzAnalytics: any;
@@ -13,9 +14,8 @@ type Cardprops = {
 };
 
 export default function Card({ hifzAnalytics, murajaPlan, surah }: Cardprops) {
-  if ( !murajaPlan) return null;
+  if (!murajaPlan) return null;
 
- 
   if (!hifzAnalytics) return null;
 
   const dateRange = `${format(new Date(murajaPlan.week_start_date), "MMM dd")} - ${format(new Date(murajaPlan.week_end_date), "MMM dd")}`;
@@ -26,19 +26,19 @@ export default function Card({ hifzAnalytics, murajaPlan, surah }: Cardprops) {
 
       <View className="flex-row justify-between items-end mb-6">
         <View>
-          <Text className="text-white/60 font-black uppercase tracking-[2px] text-[10px] mb-1">
+          <Text className="text-white/60  uppercase tracking-[2px] text-[10px] mb-1">
             {format(new Date(), "EEEE, MMM dd")}
           </Text>
-          <Text className="text-white text-3xl font-black tracking-tighter">
+          <Text className="text-white text-3xl  tracking-tighter">
             Hifz <Text className="text-white/50">&</Text> Muraja
           </Text>
         </View>
         <View className="items-end">
-          <Text className="text-white/60 font-black uppercase text-[8px] mb-1 tracking-widest">
+          <Text className="text-white/60  uppercase text-[8px] mb-1 tracking-widest">
             Hifz Progress
           </Text>
           <View className="bg-white/10 px-3 py-1.5 rounded-xl border border-white/10">
-            <Text className="text-white font-black text-[11px]">
+            <Text className="text-white  text-[11px]">
               {hifzAnalytics.progress}%
             </Text>
           </View>
@@ -60,37 +60,37 @@ export default function Card({ hifzAnalytics, murajaPlan, surah }: Cardprops) {
               size={13}
               color="rgba(255,255,255,0.7)"
             />
-            <Text className="text-white/50 text-[9px] font-black uppercase tracking-widest ml-2">
+            <Text className="text-white/50 text-[9px]  uppercase tracking-widest ml-2">
               Current Hifz
             </Text>
           </View>
 
           <Text
-            className="text-white text-2xl font-black tracking-tight leading-7"
+            className="text-white text-2xl  tracking-tight leading-7"
             numberOfLines={1}
           >
             {hifzAnalytics.currentSurah}
           </Text>
-          <Text className="text-white/80 font-bold text-[11px] mt-1">
+          <Text className="text-white/80   text-[11px] mt-1">
             Page {hifzAnalytics.currentPage}
             <Text className="text-white/40"> of {hifzAnalytics.endPage}</Text>
           </Text>
 
           <View className="mt-7 flex-row justify-between items-center">
             <View>
-              <Text className="text-white/40 text-[8px] font-black uppercase mb-0.5">
+              <Text className="text-white/40 text-[8px]  uppercase mb-0.5">
                 Target End
               </Text>
-              <Text className="text-white font-bold text-[11px]">
+              <Text className="text-white   text-[11px]">
                 {hifzAnalytics.targetEndDate}
               </Text>
             </View>
             <View className="h-6 w-[1px] bg-white/5" />
             <View>
-              <Text className="text-white/40 text-[8px] font-black uppercase mb-0.5">
+              <Text className="text-white/40 text-[8px]  uppercase mb-0.5">
                 Rate
               </Text>
-              <Text className="text-white font-bold text-[11px]">
+              <Text className="text-white   text-[11px]">
                 {hifzAnalytics.todayTarget} p/d
               </Text>
             </View>
@@ -104,33 +104,33 @@ export default function Card({ hifzAnalytics, murajaPlan, surah }: Cardprops) {
               size={15}
               color="rgba(255,255,255,0.7)"
             />
-            <Text className="text-white/50 text-[9px] font-black uppercase tracking-widest ml-2">
+            <Text className="text-white/50 text-[9px]  uppercase tracking-widest ml-2">
               Weekly Muraja
             </Text>
           </View>
 
-          <Text className="text-white text-2xl font-black tracking-tight leading-7">
+          <Text className="text-white text-2xl  tracking-tight leading-7">
             Juz {murajaPlan.start_juz}—{murajaPlan.end_juz}
           </Text>
-          <Text className="text-white/70 font-bold text-[10px] mt-1 italic italic">
+          <Text className="text-white/70   text-[10px] mt-1 italic italic">
             {dateRange}
           </Text>
 
           <View className="mt-7 flex-row justify-between items-center">
             <View>
-              <Text className="text-white/40 text-[8px] font-black uppercase mb-0.5">
+              <Text className="text-white/40 text-[8px]  uppercase mb-0.5">
                 Daily Goal
               </Text>
-              <Text className="text-white font-bold text-[11px]">
+              <Text className="text-white   text-[11px]">
                 {murajaPlan.planned_pages} pgs
               </Text>
             </View>
             <View className="h-6 w-[1px] bg-white/5" />
             <View>
-              <Text className="text-white/40 text-[8px] font-black uppercase mb-0.5">
+              <Text className="text-white/40 text-[8px]  uppercase mb-0.5">
                 Est. Time
               </Text>
-              <Text className="text-white font-bold text-[11px]">
+              <Text className="text-white   text-[11px]">
                 {murajaPlan.estimated_time_min}m
               </Text>
             </View>

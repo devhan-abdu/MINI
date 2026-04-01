@@ -36,7 +36,8 @@ export default function AppLayout() {
         },
         tabBarLabelStyle: {
           fontSize: 11,
-          fontWeight: "800",
+          fontFamily: "Rosemary",
+          color: "#000",
           textTransform: "uppercase",
           letterSpacing: 0.5,
         },
@@ -72,20 +73,6 @@ export default function AppLayout() {
       />
 
       <Tabs.Screen
-        name="quran"
-        options={{
-          title: "Quran",
-          tabBarIcon: ({ focused, color }) => (
-            <Ionicons
-              name={focused ? "book" : "book-outline"}
-              size={22}
-              color={color}
-            />
-          ),
-        }}
-      />
-
-      <Tabs.Screen
         name="hifz"
         options={{
           title: "Hifz",
@@ -99,7 +86,27 @@ export default function AppLayout() {
         }}
       />
       <Tabs.Screen
+        name="test"
+        options={{
+          title: "Exam",
+          tabBarIcon: ({ focused, color }) => (
+            <Ionicons
+              name={focused ? "help-circle" : "help-circle-outline"}
+              size={22}
+              color={color}
+            />
+          ),
+        }}
+      />
+      <Tabs.Screen
         name="onboarding"
+        options={{
+          href: null,
+          headerShown: false,
+        }}
+      />
+      <Tabs.Screen
+        name="quran"
         options={{
           href: null,
           headerShown: false,

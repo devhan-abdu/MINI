@@ -1,6 +1,6 @@
 import { ISurah } from "@/src/types";
 import { getJuzByPage, getSurah } from "../../muraja/utils/quranMapping";
-import { IHifzPlan } from "../types";
+import { IHifzLog, IHifzPlan } from "../types";
 
 export const getNextTask = (
   direction: "backward" | "forward",
@@ -96,3 +96,35 @@ export const getTodayTask = (
     historicalLogs.length === 0,
   );
 }
+
+
+export const getPagesFromLog = (log: IHifzLog, direction: 'forward' | 'backward' , surahData: ISurah[]): number[] => {
+  const pages: number[] = [];
+  const start = log.actual_start_page;
+  const end = log.actual_end_page;
+  let page = start
+
+  if (direction === 'forward') {
+    for (let i = start; i <= end; i++) {
+      pages.push(i);
+    }
+  } else {
+    while (page !== end) {
+      pages.push(start)
+     const currentSurah = getSurah(page, surahData);
+      if (!currentSurah) break;
+      
+      if (page >= currentSurah.endingPage) {
+        const prevSurah = surahData.find(s => s.number === currentSurah.number - 1);
+        if (!prevSurah) break;
+        page = prevSurah.startingPage;
+      } else {
+        page++
+      }
+    }
+
+    pages.push(page)
+ 
+  }
+  return pages;
+};

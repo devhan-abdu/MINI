@@ -14,7 +14,7 @@ export default function MurajaEmptyState() {
           <View className="w-24 h-24 bg-primary/10 rounded-full items-center justify-center mb-6 border border-blue-100">
             <Ionicons name="repeat-outline" size={48} color="#276359" />
           </View>
-          <Text className="text-3xl font-black text-gray-900 text-center px-4">
+          <Text className="text-3xl  text-gray-900 text-center px-4">
             Strengthen Your Quran
           </Text>
           <Text className="text-gray-500 text-center mt-3 text-base leading-6 px-6">
@@ -45,17 +45,14 @@ export default function MurajaEmptyState() {
           onPress={() => router.push("/(app)/muraja/create-muraja-plan")}
           className="bg-primary h-16 rounded-2xl flex-row items-center justify-center shadow-lg shadow-blue-900/20 active:scale-[0.98]"
         >
-          <Text className="text-white font-black text-lg mr-2">
-            Create Weekly Plan
-          </Text>
+          <Text className="text-white  text-lg mr-2">Create Weekly Plan</Text>
           <Ionicons name="add-circle-outline" size={22} color="white" />
         </Pressable>
 
-        <Text className="text-center text-gray-400 text-[10px] mt-6 uppercase tracking-[2px] font-bold">
+        <Text className="text-center text-gray-400 text-[10px] mt-6 uppercase tracking-[2px]  ">
           Establish Your Routine
         </Text>
       </View>
     </Screen>
   );
 }
-

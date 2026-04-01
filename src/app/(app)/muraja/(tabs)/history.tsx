@@ -9,7 +9,6 @@ import WeeklyReviewCard from "@/src/features/muraja/components/WeeklyReviewCard"
 import { useHistory } from "@/src/features/muraja/hooks/useHistory";
 import { SectionHeader } from "@/src/components/SectionHeader";
 
-
 const StatCard = ({
   label,
   value,
@@ -25,21 +24,17 @@ const StatCard = ({
 }) => (
   <View className="bg-white border border-slate-100 rounded-[28px] p-4 shadow-sm w-[48%] mb-1">
     <View className="flex-row justify-between items-center mb-3">
-      <Text className="text-[9px] uppercase tracking-[2px] text-gray-400 font-black">
+      <Text className="text-[9px] uppercase tracking-[2px] text-gray-400 ">
         {label}
       </Text>
       <View className="bg-gray-50 p-1.5 rounded-lg">
         <Ionicons name={icon} size={12} color="#94a3b8" />
       </View>
     </View>
-    <Text className={`text-2xl font-black tracking-tight ${color}`}>
-      {value}
-    </Text>
-    <Text className="text-[10px] text-gray-400 font-medium mt-1">{sub}</Text>
+    <Text className={`text-2xl  tracking-tight ${color}`}>{value}</Text>
+    <Text className="text-[10px] text-gray-400  mt-1">{sub}</Text>
   </View>
 );
-
-
 
 export default function History() {
   const [viewDate, setViewDate] = useState(() => new Date());
@@ -49,7 +44,7 @@ export default function History() {
 
   const { userHistory, weekHistory, isLoading, analytics } = useHistory(
     year,
-    month
+    month,
   );
 
   const hasData =
@@ -83,9 +78,9 @@ export default function History() {
                 sub="Current Flow"
                 icon="flame"
                 color={
-                  analytics.longestStreak > 0
-                    ? "text-orange-500"
-                    : "text-gray-400"
+                  analytics.longestStreak > 0 ?
+                    "text-orange-500"
+                  : "text-gray-400"
                 }
               />
               <StatCard
@@ -103,27 +98,24 @@ export default function History() {
             badge={`${weekHistory?.length || 0} Sessions`}
           />
 
-          {isLoading ? (
+          {isLoading ?
             <View className="py-20 items-center">
-              <Text className="text-gray-400 font-medium italic">
-                Loading history...
-              </Text>
+              <Text className="text-gray-400  italic">Loading history...</Text>
             </View>
-          ) : weekHistory?.length > 0 ? (
+          : weekHistory?.length > 0 ?
             <WeeklyReviewCard weekHistory={weekHistory} />
-          ) : (
-            <View className="p-12 bg-gray-50 rounded-[40px] border border-dashed border-gray-200 items-center">
+          : <View className="p-12 bg-gray-50 rounded-[40px] border border-dashed border-gray-200 items-center">
               <View className="bg-white p-4 rounded-full shadow-sm mb-4">
                 <Ionicons name="file-tray-outline" size={32} color="#cbd5e1" />
               </View>
-              <Text className="text-center text-gray-900 font-bold text-lg">
+              <Text className="text-center text-gray-900   text-lg">
                 No history found
               </Text>
               <Text className="text-center text-gray-400 text-sm mt-1 px-6">
                 Complete your weekly plans to see your progress reports here.
               </Text>
             </View>
-          )}
+          }
         </View>
       </ScreenContent>
     </Screen>

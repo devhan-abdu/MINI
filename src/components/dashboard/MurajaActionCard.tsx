@@ -35,12 +35,12 @@ export const MurajaActionCard = ({ todayPlan }: { todayPlan: any }) => {
     <View className="bg-white rounded-[32px] p-6 border border-slate-200 shadow-md shadow-slate-200">
       <View className="flex-row justify-between items-start mb-6">
         <View className="flex-1">
-          <Text className="text-slate-900 font-black text-xl tracking-tight">
+          <Text className="text-slate-900  text-xl tracking-tight">
             {todayPlan.startSurah}
             {todayPlan.startSurah !== todayPlan.endSurah &&
               ` – ${todayPlan.endSurah}`}
           </Text>
-          <Text className="text-slate-400 text-[10px] font-black uppercase tracking-[1.5px] mt-1">
+          <Text className="text-slate-400 text-[10px]  uppercase tracking-[1.5px] mt-1">
             Muraja: page {todayPlan.planned_start_page}–
             {todayPlan.planned_end_page}
           </Text>

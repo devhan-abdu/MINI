@@ -41,7 +41,7 @@ export default function LogProgress() {
 
   const analytics = useMemo(() => {
     if (!plan || !surahData) return null;
-    return hifzStatus(plan, surahData); 
+    return hifzStatus(plan, surahData);
   }, [plan, surahData]);
 
   const logContext = useMemo(() => {
@@ -68,34 +68,32 @@ export default function LogProgress() {
   }, [plan, surahData, analytics]);
 
   useEffect(() => {
-    if(!logContext) return 
-     setPages(logContext.totalTarget)
+    if (!logContext) return;
+    setPages(logContext.totalTarget);
   }, [logContext]);
 
   useEffect(() => {
-    if(!logContext) return
+    if (!logContext) return;
     if (pages >= logContext?.totalTarget) {
-       setStatus("completed")
+      setStatus("completed");
     } else if (pages === 0) {
-      setStatus("missed")
+      setStatus("missed");
     } else {
-      setStatus("partial")
-     }
-  }, [pages, logContext?.target])
+      setStatus("partial");
+    }
+  }, [pages, logContext?.target]);
 
-
-   const handleStatusSelection = (
-     selectedStatus: "completed" | "partial" | "missed",
-   ) => {
-     if ( selectedStatus === "completed") {
-       setPages(logContext?.totalTarget || 0);
-     } else if (pages === 0 || selectedStatus === "missed") {
-       setPages(0);
-     } else {
-       setPages(Math.max(1, Math.floor(logContext?.totalTarget || 1) / 2))
-     }
-   };
-  
+  const handleStatusSelection = (
+    selectedStatus: "completed" | "partial" | "missed",
+  ) => {
+    if (selectedStatus === "completed") {
+      setPages(logContext?.totalTarget || 0);
+    } else if (pages === 0 || selectedStatus === "missed") {
+      setPages(0);
+    } else {
+      setPages(Math.max(1, Math.floor(logContext?.totalTarget || 1) / 2));
+    }
+  };
 
   if (planLoading || quranLoading) {
     return <LogProgressSkeleton />;
@@ -105,7 +103,7 @@ export default function LogProgress() {
     return (
       <Screen>
         <View className="flex-1 items-center justify-center p-6">
-          <Text className="text-xl font-black text-slate-900 text-center">
+          <Text className="text-xl  text-slate-900 text-center">
             No Active Plan Found
           </Text>
           <Button className="mt-4" onPress={() => router.back()}>
@@ -121,9 +119,7 @@ export default function LogProgress() {
       <Screen>
         <View className="flex-1 items-center justify-center p-6">
           <Ionicons name="cafe-outline" size={48} color="#276359" />
-          <Text className="text-xl font-black text-slate-900 mt-4">
-            Rest Day
-          </Text>
+          <Text className="text-xl  text-slate-900 mt-4">Rest Day</Text>
           <Text className="text-slate-500 text-center mt-2">
             No task scheduled for today. Take a moment to revise!
           </Text>
@@ -136,12 +132,13 @@ export default function LogProgress() {
   }
 
   const handleSave = async () => {
-    if (!plan || !logContext || isCreating || !plan.id || !logContext.startPage) return;
+    if (!plan || !logContext || isCreating || !plan.id || !logContext.startPage)
+      return;
 
     try {
-     const today = new Date();
-     const logDay = (today.getDay() + 6) % 7;
-     const actualTask = getTodayTask(plan, surahData, pages);
+      const today = new Date();
+      const logDay = (today.getDay() + 6) % 7;
+      const actualTask = getTodayTask(plan, surahData, pages);
 
       const payload: IHifzLog = {
         hifz_plan_id: plan.id,
@@ -157,9 +154,7 @@ export default function LogProgress() {
       await addLog({ todayLog: payload, userId: user?.id });
       router.back();
     } catch (err: any) {
-      setErrorMessage(
-        err.message,
-      );
+      setErrorMessage(err.message);
       setErrorVisible(true);
     }
   };
@@ -174,7 +169,7 @@ export default function LogProgress() {
           >
             <Ionicons name="arrow-back" size={24} color="#0f172a" />
           </Pressable>
-          <Text className="text-lg font-black text-primary leading-tight ml-2">
+          <Text className="text-lg  text-primary leading-tight ml-2">
             Log Progress
           </Text>
         </View>
@@ -184,42 +179,39 @@ export default function LogProgress() {
           <View className="bg-primary p-6 rounded-[40px] mb-8 shadow-xl shadow-green-900/20">
             <View className="flex-row justify-between items-center mb-4">
               <View className="flex-row items-center">
-                <Text className="text-white/70 font-bold text-[10px] uppercase tracking-[2px]">
+                <Text className="text-white/70   text-[10px] uppercase tracking-[2px]">
                   {logContext.isPlannedDay ?
                     "Scheduled Session"
                   : "Recovery Session"}
                 </Text>
               </View>
               <View className="bg-white/10 px-3 py-1 rounded-full border border-white/10">
-                <Text className="text-white text-[9px] font-black uppercase tracking-widest">
+                <Text className="text-white text-[9px]  uppercase tracking-widest">
                   {plan.direction}
                 </Text>
               </View>
             </View>
 
-            <Text className="text-white text-4xl font-black mb-6 tracking-tight">
+            <Text className="text-white text-4xl  mb-6 tracking-tight">
               {logContext.displaySurah}
             </Text>
 
             <View className="bg-black/10 rounded-3xl p-5 border border-white/5">
               <View className="flex-row justify-between items-end mb-1">
                 <View>
-                  <Text className="text-white text-4xl font-black">
+                  <Text className="text-white text-4xl ">
                     {logContext.totalTarget}
-                    <Text className="text-white/50 text-xl font-medium">
-                      {" "}
-                      Pages
-                    </Text>
+                    <Text className="text-white/50 text-xl "> Pages</Text>
                   </Text>
-                  <Text className="text-white/40 text-[9px] font-bold uppercase tracking-widest mt-1">
+                  <Text className="text-white/40 text-[9px]   uppercase tracking-widest mt-1">
                     Goal for today
                   </Text>
                 </View>
                 <View className="items-end">
-                  <Text className="text-white font-bold text-sm">
+                  <Text className="text-white   text-sm">
                     {logContext.startPage} — {logContext.endPage}
                   </Text>
-                  <Text className="text-white/40 text-[9px] font-bold uppercase tracking-widest mt-1">
+                  <Text className="text-white/40 text-[9px]   uppercase tracking-widest mt-1">
                     Range (Juz {logContext.juz})
                   </Text>
                 </View>
@@ -229,7 +221,7 @@ export default function LogProgress() {
                 {logContext.baseTarget > 0 && (
                   <View className="flex-row items-center">
                     <View className="w-2 h-2 rounded-full bg-emerald-400 mr-2" />
-                    <Text className="text-white/60 text-[9px] font-bold uppercase">
+                    <Text className="text-white/60 text-[9px]   uppercase">
                       Daily: {logContext.baseTarget}
                     </Text>
                   </View>
@@ -237,7 +229,7 @@ export default function LogProgress() {
                 {logContext.catchUpAmount > 0 && (
                   <View className="flex-row items-center">
                     <View className="w-2 h-2 rounded-full bg-amber-400 mr-2" />
-                    <Text className="text-white/60 text-[9px] font-bold uppercase">
+                    <Text className="text-white/60 text-[9px]   uppercase">
                       Extra: {logContext.catchUpAmount}
                     </Text>
                   </View>
@@ -255,9 +247,7 @@ export default function LogProgress() {
                   color="#276359"
                   className="mr-2"
                 />
-                <Text className="text-[#0f172a] text-lg font-black ml-2">
-                  Revision
-                </Text>
+                <Text className="text-[#0f172a] text-lg  ml-2">Revision</Text>
               </View>
               <Text className="text-slate-500 text-xs">
                 Revise last 5 pages before memorizing
@@ -266,9 +256,7 @@ export default function LogProgress() {
             <Switch value={reviewed} onValueChange={setReviewed} />
           </View>
 
-          <Text className="text-xl font-black text-gray-900 mb-4">
-            How did it go?
-          </Text>
+          <Text className="text-xl  text-gray-900 mb-4">How did it go?</Text>
           <View className="flex-row justify-between mb-8">
             <StatusTab
               label="Completed"
@@ -292,10 +280,8 @@ export default function LogProgress() {
 
           <View className="bg-gray-50 p-6 rounded-[28px] border border-gray-100 flex-row items-center justify-between mb-8">
             <View>
-              <Text className="font-black text-gray-900 text-lg">
-                Pages Memorized
-              </Text>
-              <Text className="text-gray-400 text-xs font-medium">
+              <Text className=" text-gray-900 text-lg">Pages Memorized</Text>
+              <Text className="text-gray-400 text-xs ">
                 Actual progress today
               </Text>
             </View>
@@ -306,9 +292,7 @@ export default function LogProgress() {
               >
                 <Ionicons name="remove" size={20} color="#276359" />
               </Pressable>
-              <Text className="text-2xl font-black text-gray-900 px-4">
-                {pages}
-              </Text>
+              <Text className="text-2xl  text-gray-900 px-4">{pages}</Text>
               <Pressable
                 onPress={() => setPages((prev) => prev + 1)}
                 className="w-10 h-10 items-center justify-center active:bg-gray-50 rounded-xl"
@@ -319,7 +303,7 @@ export default function LogProgress() {
           </View>
 
           <View className="mb-8">
-            <Text className="text-gray-400 font-bold uppercase text-[10px] mb-2 ml-1 tracking-widest">
+            <Text className="text-gray-400   uppercase text-[10px] mb-2 ml-1 tracking-widest">
               Reflection or Notes
             </Text>
             <TextInput
@@ -328,7 +312,7 @@ export default function LogProgress() {
               placeholderTextColor="#9ca3af"
               value={notes}
               onChangeText={setNotes}
-              className="bg-gray-50 p-5 rounded-[28px] border border-gray-100 h-32 text-gray-900 font-medium"
+              className="bg-gray-50 p-5 rounded-[28px] border border-gray-100 h-32 text-gray-900 "
               textAlignVertical="top"
             />
           </View>
@@ -340,9 +324,7 @@ export default function LogProgress() {
             className="bg-primary h-14  shadow-lg shadow-primary/30"
           >
             <View className="flex-row items-center justify-center">
-              <Text className="text-white font-black text-lg mr-2">
-                Save Progress
-              </Text>
+              <Text className="text-white  text-lg mr-2">Save Progress</Text>
               <Ionicons name="arrow-forward" size={20} color="white" />
             </View>
           </Button>

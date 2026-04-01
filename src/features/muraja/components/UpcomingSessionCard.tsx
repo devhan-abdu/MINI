@@ -26,25 +26,22 @@ export default function UpcomingSessionCard({
 
             <View className="flex-1">
               <View className="flex-row justify-between items-center mb-1">
-                <Text className="font-black text-slate-900 text-base uppercase tracking-tight">
+                <Text className=" text-slate-900 text-base uppercase tracking-tight">
                   {upcoming.day_of_week}
                 </Text>
                 <Ionicons name="chevron-forward" size={16} color="#cbd5e1" />
               </View>
 
-              <Text
-                className="text-slate-700 font-bold text-sm mb-2"
-                numberOfLines={1}
-              >
-                {upcoming.startSurah === upcoming.endSurah
-                  ? `Surah ${upcoming.startSurah}`
-                  : `${upcoming.startSurah} – ${upcoming.endSurah}`}
+              <Text className="text-slate-700   text-sm mb-2" numberOfLines={1}>
+                {upcoming.startSurah === upcoming.endSurah ?
+                  `Surah ${upcoming.startSurah}`
+                : `${upcoming.startSurah} – ${upcoming.endSurah}`}
               </Text>
 
               <View className="flex-row items-center gap-3">
                 <View className="flex-row items-center gap-1">
                   <Ionicons name="time-outline" size={14} color="#64748b" />
-                  <Text className="text-slate-500 text-[12px] font-medium">
+                  <Text className="text-slate-500 text-[12px] ">
                     {upcoming.estimated_time_min}m
                   </Text>
                 </View>
@@ -53,7 +50,7 @@ export default function UpcomingSessionCard({
 
                 <View className="flex-row items-center gap-1">
                   <Ionicons name="book-outline" size={14} color="#64748b" />
-                  <Text className="text-slate-500 text-[12px] font-medium">
+                  <Text className="text-slate-500 text-[12px] ">
                     Pages {upcoming.planned_start_page}–
                     {upcoming.planned_end_page}
                   </Text>

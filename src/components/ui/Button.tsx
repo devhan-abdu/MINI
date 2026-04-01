@@ -25,7 +25,7 @@ export function Button({
     primary: "bg-primary",
     outline: "border border-primary bg-transparent",
     ghost: "bg-transparent",
-    none: ""
+    none: "",
   };
 
   return (
@@ -39,14 +39,14 @@ export function Button({
         variants[variant],
         pressed && "opacity-80",
         disabled && "opacity-50",
-        className
+        className,
       )}
       {...rest}
     >
       <Text
         className={cn(
-          "font-semibold",
-          variant === "primary" ? "text-white" : "text-primary"
+          "",
+          variant === "primary" ? "text-white" : "text-primary",
         )}
       >
         {children}

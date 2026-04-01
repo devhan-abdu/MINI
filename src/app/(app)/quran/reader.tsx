@@ -58,29 +58,34 @@ const AVAILABLE_HEIGHT = height;
   }
 
   return (
-    <FlatList
-      className="bg-white"
-        data={ALL_PAGES}
-        ref={listRef}
-        horizontal
-        inverted
-        pagingEnabled
-        showsHorizontalScrollIndicator={false}
-        initialScrollIndex={initialIndex}
-        getItemLayout={(_, index) => ({
-          length: width,
-          offset: width * index,
-          index,
-        })}
-        keyExtractor={(item) => item.toString()}
-        renderItem={({ item }) => (
-          <QuranPage
-            pageNumber={item}
-            pageWidth={width}
-            pageHeight={AVAILABLE_HEIGHT}
-          />
-        )}
-      />
+    // <FlatList
+    //   className="bg-white"
+    //     data={ALL_PAGES}
+    //     ref={listRef}
+    //     horizontal
+    //     inverted
+    //     pagingEnabled
+    //     showsHorizontalScrollIndicator={false}
+    //     initialScrollIndex={initialIndex}
+    //     getItemLayout={(_, index) => ({
+    //       length: width,
+    //       offset: width * index,
+    //       index,
+    //     })}
+    //     keyExtractor={(item) => item.toString()}
+    //     renderItem={({ item }) => (
+    //       <QuranPage
+    //         pageNumber={item}
+    //         pageWidth={width}
+    //         pageHeight={AVAILABLE_HEIGHT}
+    //       />
+    //     )}
+    //   />
+    <View>
+      <Text>
+         Quran reader app
+      </Text>
+    </View>
   );
 
 }

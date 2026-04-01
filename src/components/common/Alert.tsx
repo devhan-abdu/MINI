@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { View, Text, Modal, Pressable } from "react-native";
+import { View, Modal } from "react-native";
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
@@ -9,6 +9,11 @@ import Animated, {
   FadeOut,
 } from "react-native-reanimated";
 import { Ionicons } from "@expo/vector-icons";
+import {
+  Button,
+  NormalText,
+  HeaderText,
+} from "@/src/components/common/ui/Text";
 
 interface AlertProps {
   visible: boolean;
@@ -101,7 +106,7 @@ export const Alert = ({
             />
           </View>
 
-          <Text className="text-2xl font-black text-slate-900 text-center mb-2 tracking-tight">
+          <Text className="text-2xl  text-slate-900 text-center mb-2 tracking-tight">
             {title}
           </Text>
 
@@ -110,23 +115,19 @@ export const Alert = ({
           </Text>
 
           <View className="flex-row w-full gap-3">
-            <Pressable
+            <Button
               onPress={onCancel}
               className="flex-1 h-12 bg-slate-100 rounded-xl justify-center items-center active:bg-slate-200"
             >
-              <Text className="text-slate-600 font-bold text-lg">
-                {cancelText}
-              </Text>
-            </Pressable>
+              <Text className="text-slate-600   text-lg">{cancelText}</Text>
+            </Button>
 
-            <Pressable
+            <Button
               onPress={onConfirm}
               className={`flex-1 h-12 ${theme.btn} rounded-xl justify-center items-center shadow-lg shadow-emerald-900/20 active:opacity-90`}
             >
-              <Text className="text-white font-black text-lg">
-                {confirmText}
-              </Text>
-            </Pressable>
+              <Text className="text-white  text-lg">{confirmText}</Text>
+            </Button>
           </View>
         </Animated.View>
       </Animated.View>

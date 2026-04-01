@@ -14,7 +14,7 @@ export default function HifzEmptyState() {
           <View className="w-24 h-24 bg-primary/10 rounded-full items-center justify-center mb-6">
             <Ionicons name="book-outline" size={48} color="#276359" />
           </View>
-          <Text className="text-3xl font-black text-gray-900 text-center px-4">
+          <Text className="text-3xl  text-gray-900 text-center px-4">
             Start Your Hifz Journey
           </Text>
           <Text className="text-gray-500 text-center mt-3 text-base leading-6 px-6">
@@ -44,9 +44,7 @@ export default function HifzEmptyState() {
           onPress={() => router.push("/(app)/hifz/create-hifz-plan")}
           className="bg-primary h-16 rounded-2xl flex-row items-center justify-center shadow-lg shadow-primary/30 active:scale-[0.98]"
         >
-          <Text className="text-white font-black text-lg mr-2">
-            Create My Plan
-          </Text>
+          <Text className="text-white  text-lg mr-2">Create My Plan</Text>
           <Ionicons name="arrow-forward" size={20} color="white" />
         </Pressable>
 
@@ -57,5 +55,3 @@ export default function HifzEmptyState() {
     </Screen>
   );
 }
-
-

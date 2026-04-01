@@ -65,7 +65,7 @@ export default function Home() {
           <View className="mt-8 pt-6 border-t border-slate-50 flex-row justify-between items-center">
             <Text className=" text-sm">Total Pages:</Text>
             <View className="bg-slate-900 px-3 py-1 rounded-full">
-              <Text className="text-white font-bold text-xs">
+              <Text className="text-white  text-xs">
                 {toPage - fromPage + 1} Pages
               </Text>
             </View>

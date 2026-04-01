@@ -1,4 +1,5 @@
-import { View, Text } from "react-native";
+import { Text } from "@/src/components/common/ui/Text";
+import { View } from "react-native";
 
 export default function Progress({
   completionRate,
@@ -9,14 +10,14 @@ export default function Progress({
     <View className="mb-6 bg-primary/5 p-4 rounded-[24px] border border-primary/10">
       <View className="flex-row items-center justify-between mb-3">
         <View>
-          <Text className="text-primary-900 font-black text-sm uppercase tracking-tighter">
+          <Text className="text-primary-900  text-sm uppercase tracking-tighter">
             Week Completion
           </Text>
-          <Text className="text-primary/50 text-[10px] font-bold">
+          <Text className="text-primary/50 text-[10px]  ">
             Your weekly goal progress
           </Text>
         </View>
-        <Text className="text-primary font-black text-xl">
+        <Text className="text-primary  text-xl">
           {Math.round(completionRate)}%
         </Text>
       </View>
