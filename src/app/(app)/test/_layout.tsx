@@ -5,7 +5,7 @@ import { View } from "react-native";
 export default function HifzLayout() {
   return (
     <View className="flex-1 bg-white">
-        <Header title="Hifz Al-Quran" />
+      <Header title="Hifz Al-Quran" />
 
       <Stack
         screenOptions={{
@@ -19,14 +19,12 @@ export default function HifzLayout() {
             animation: "fade",
           }}
         />
-        {/* <Stack.Screen name="log" options={{ animation: "slide_from_right" }} />
         <Stack.Screen
-          name="create-hifz-plan"
+          name="exam"
           options={{
-           animation: "slide_from_right",
-            presentation: "modal",
+            animation: "fade",
           }}
-        /> */}
+        />
       </Stack>
     </View>
   );
