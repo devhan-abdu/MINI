@@ -1,4 +1,5 @@
 import { IMonthHistory } from "@/src/types";
+import { IWeeklyMUrajaStatus } from "../types";
 
 
 export const computeWeeklyReview = (plan: IMonthHistory) => {
@@ -72,3 +73,74 @@ export const computeWeeklyReview = (plan: IMonthHistory) => {
     completionRate: Math.round((summary.completed / totalPlannedDays) * 100)
   };
 };
+
+export function calculateExpectedPages(
+        startDateStr: string,
+        endDateStr: string,
+        targetDate: Date,
+        activeDays: number[],
+        rate: number
+): number {
+
+   let expectedDaysPassed = 0;
+        const start = new Date(startDateStr);
+        const end = new Date(endDateStr);
+        const tempDate = new Date(start);
+
+       
+        while (tempDate < targetDate && tempDate <= end) {
+            if (activeDays.includes((tempDate.getDay() + 6 ) % 7)) {
+                expectedDaysPassed++;
+            }
+            tempDate.setDate(tempDate.getDate() + 1);
+        }
+
+        return expectedDaysPassed * rate;
+}
+    
+
+export function getPerformanceStatus(diff: number): 'ahead' | 'behind' | 'on-track' {
+        if (diff < 0) return 'behind';
+        if (diff > 0) return 'ahead';
+        return 'on-track';
+}
+    
+export function generateWeeklyProgress(
+        startDateStr: string, 
+        todayStr: string, 
+        activeDays: number[], 
+        logs: any[]
+): IWeeklyMUrajaStatus[]{
+  
+       const progress: IWeeklyMUrajaStatus[] = [];
+        let calendarDate = new Date(startDateStr);
+
+        for (let i = 0; i < 7; i++) {
+            const dateStr = calendarDate.toISOString().slice(0, 10);
+            const log = logs.find(l => l.date === dateStr);
+          const isSelected = activeDays.includes(calendarDate.getDay());
+          
+
+        let status: IWeeklyMUrajaStatus['status'] = 'pending';
+
+        if (log) {
+          status = log.status as IWeeklyMUrajaStatus['status']; 
+        } else if (!isSelected) {
+            status = 'rest'; 
+        } else if (dateStr < todayStr) {
+            status = 'missed';
+        }
+          
+          
+            progress.push({
+                date: dateStr,
+                dayName: calendarDate.toLocaleDateString('en-US', { weekday: "short" }),
+                isToday: dateStr === todayStr,
+                isSelected,
+                status: status,
+                completed: log?.completed_pages ?? 0
+            });
+            calendarDate.setDate(calendarDate.getDate() + 1);
+        }
+        return progress;
+    }

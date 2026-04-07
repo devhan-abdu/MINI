@@ -1,66 +1,49 @@
-import { IWeeklyMurajaDay } from "@/src/types";
 import { Ionicons } from "@expo/vector-icons";
-import { Text, View } from "react-native";
-import { DAY_MAP } from "../utils/quranMapping";
+import { Text } from "@/src/components/common/ui/Text";
+import { View } from "react-native";
+import { IWeeklyMUrajaStatus } from "../types";
 
-const SHORT_DAYS = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+export function DayByDay({ progress }: { progress: IWeeklyMUrajaStatus[] | null}) {
 
-export function DayByDay({ days }: { days: IWeeklyMurajaDay[] }) {
-  const fullWeek = SHORT_DAYS.map((short) => {
-    const dbDay = days.find((day) => DAY_MAP[day.day_of_week] === short);
-    const log = dbDay?.daily_muraja_logs?.[0];
-    const status = log?.status || (dbDay ? "missed" : "rest");
-
-    return {
-      dayName: short,
-      status: status,
-      isPlanned: !!dbDay,
-    };
-  });
+  if (!progress) return;
 
   return (
-    <View className="flex-row justify-between bg-white p-5 rounded-[32px] border border-gray-100 shadow-sm shadow-black/5">
-      {fullWeek.map((item) => {
-        const isFull = item.status === "completed";
-        const isPartial = item.status === "partial";
-        const isMissed = item.status === "missed";
+    <View className="flex-row justify-between bg-white p-5 rounded-[32px] border border-gray-100">
+      {progress.map((day) => {
+
+        const isCompleted = day.status === "completed";
+        const isMissed = day.status === "missed";
+        const isRest = day.status === "rest";
+        const isPending = day.status === "pending";
 
         return (
-          <View key={item.dayName} className="items-center">
+          <View key={day.dayName} className="items-center">
             <View
-              className={`w-8 h-8 rounded-full items-center justify-center mb-2 border
-                ${isFull ? "bg-primary border-primary" : ""} 
-                ${isPartial ? "bg-amber-50 border-amber-200" : ""} 
-                ${isMissed ? "bg-red-50 border-red-100" : ""}
-                ${
-                  !isFull && !isPartial && !isMissed ?
-                    "bg-gray-50 border-transparent"
-                  : ""
-                }
+              className={`w-9 h-9 rounded-full items-center justify-center mb-2 
+                ${isCompleted ? "bg-primary" : ""}
+                ${isMissed ? "bg-red-50 border border-red-100" : ""}
+                ${isRest ? "bg-gray-50  border border-gray-200" : "bg-gray-100"}
+                ${isPending ? "border-2 border-primary border-dashed bg-white" : ""}
               `}
             >
-              {isFull ?
-                <Ionicons name="checkmark-sharp" size={16} color="white" />
-              : isPartial ?
-                <Ionicons name="remove-sharp" size={16} color="#d97706" />
+              {isCompleted ?
+                <Ionicons name="checkmark" size={16} color="white" />
               : isMissed ?
-                <Ionicons name="close-outline" size={16} color="#ef4444" />
+                <Ionicons name="close" size={14} color="#f87171" />
+              : isRest ?
+                <Ionicons name="cafe-outline" size={14} color="#9ca3af" />
               : <Text
-                  className={`text-[10px]  ${
-                    item.isPlanned ? "text-primary" : "text-gray-300"
-                  }`}
+                  className={`text-[10px] ${day.isToday ? "text-primary font-bold" : "text-gray-400"}`}
                 >
-                  {item.dayName[0]}
+                  {day.dayName[0]}
                 </Text>
               }
             </View>
 
             <Text
-              className={`text-[9px]  uppercase tracking-tighter ${
-                item.isPlanned ? "text-primary" : "text-gray-400"
-              }`}
+              className={`text-[10px] ${day.isToday ? "text-primary font-bold" : "text-gray-400"}`}
             >
-              {item.dayName}
+              {day.dayName}
             </Text>
           </View>
         );

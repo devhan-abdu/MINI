@@ -32,8 +32,9 @@ export default function MurajaMainLayout() {
         },
         tabBarLabelStyle: {
           fontSize: 13,
-          fontWeight: "700",
+          fontFamily:"Rosemary",
           textTransform: "capitalize",
+          color: "black"
         },
         tabBarStyle: {
           backgroundColor: "#fff",
@@ -50,7 +51,6 @@ export default function MurajaMainLayout() {
       }}
     >
       <MaterialTopTabs.Screen name="index" options={{ title: "Muraja" }} />
-      <MaterialTopTabs.Screen name="weekly-plan" options={{ title: "Plan" }} />
       <MaterialTopTabs.Screen name="[review]" options={{ title: "Review" }} />
       <MaterialTopTabs.Screen name="history" options={{ title: "History" }} />
     </MaterialTopTabs>

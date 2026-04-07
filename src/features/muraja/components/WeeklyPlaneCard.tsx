@@ -31,13 +31,10 @@ export default function WeeklyPlanCard({
   if (!planId) return null;
 
   const handlePress = () => {
-    router.push({
-      pathname: "/muraja/weekly-plane/[id]",
-      params: {
-        id: planId!,
-        logId: logId,
-      },
-    });
+
+   router.push({
+     pathname: "/muraja/log",
+   });
   };
 
   const containerStyle =

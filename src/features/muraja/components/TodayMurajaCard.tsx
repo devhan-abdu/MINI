@@ -1,12 +1,12 @@
 import { Button } from "@/src/components/ui/Button";
-import { TodayPlanType } from "@/src/types";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { View, Text, Pressable, ActivityIndicator } from "react-native";
+import { View, Pressable, ActivityIndicator } from "react-native";
+import { Text } from "@/src/components/common/ui/Text";
 
 interface TodayMurajaCardProps {
-  todayPlan: TodayPlanType;
-  onStatusUpdate: (status: "completed" | "partial" | "missed") => void;
+  todayPlan: any;
+  onStatusUpdate: (status: "completed" | "pending" ) => void;
   isUpdating: boolean;
 }
 
@@ -30,7 +30,7 @@ export const TodayMurajaCard = ({
               : `${todayPlan.startSurah} – ${todayPlan.endSurah}`}
             </Text>
             <Text className="text-sm uppercase tracking-wide text-gray-700 mt-1">
-              Pages {todayPlan.planned_start_page}–{todayPlan.planned_end_page}
+              Pages {todayPlan.startPage}–{todayPlan.endPage}
             </Text>
           </View>
           <Ionicons name="book-outline" size={24} color="#276359" />
@@ -39,13 +39,10 @@ export const TodayMurajaCard = ({
         <View className="border-t border-slate-100 pt-6 mt-4">
           <View className="flex-row justify-between items-center mb-4">
             <Text className="text-[10px]  uppercase tracking-[2px] text-slate-400">
-              Session Status
+              Status
             </Text>
-
             <Pressable
-              onPress={() =>
-                router.push(`/muraja/weekly-plane/${todayPlan.id}`)
-              }
+              onPress={() => router.push(`/(app)/muraja/(tabs)/log`)}
               className="flex-row items-center bg-primary/20 px-3 py-1.5 rounded-full active:bg-slate-100"
             >
               <Text className="text-primary   text-[11px] mr-1.5">Add Log</Text>
@@ -61,22 +58,7 @@ export const TodayMurajaCard = ({
               onPress={() => onStatusUpdate("completed")}
               isActive={todayPlan.status === "completed"}
               loading={isUpdating}
-            />
-            <ActionButton
-              label="Partial"
-              icon="pie-chart"
-              colorClass="bg-primary border-primary"
-              onPress={() => onStatusUpdate("partial")}
-              isActive={todayPlan.status === "partial"}
-              loading={isUpdating}
-            />
-            <ActionButton
-              label="Missed"
-              icon="close-circle"
-              colorClass="bg-red-500 border-red-500"
-              onPress={() => onStatusUpdate("missed")}
-              isActive={todayPlan.status === "missed"}
-              loading={isUpdating}
+              disabled={isDisabled}
             />
           </View>
         </View>

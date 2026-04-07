@@ -1,19 +1,37 @@
 import { useSession } from "@/src/hooks/useSession";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { localMurajaService } from "../services/localMurajaService";
+import { useSQLiteContext } from "expo-sqlite";
+import { IDailyMurajaLog } from "../types";
 import { murajaServices } from "../services/murajaServices";
-import { IDayLogAdd } from "@/src/types";
 
 export function useMurajaOperation() {
     const { user } = useSession()
     const queryClient = useQueryClient()
+    const db = useSQLiteContext()
 
     const mutation = useMutation({
-        mutationFn: (vars: Partial<IDayLogAdd>) => 
-            murajaServices.upsertLog({
-                userId: user?.id,
-                dayId: vars.dayId,
-                ...vars
-            }),
+        mutationFn: async (log: IDailyMurajaLog) => {
+            if (!user?.id) throw new Error("User not found");
+            
+          const localId = await localMurajaService.upsertLog(db, user.id, log);             
+           
+            try {
+          const remoteResponse = await murajaServices.upsertLog(log ,user.id);
+        
+        if (remoteResponse?.id) {
+            await db.runAsync(
+                "UPDATE daily_muraja_logs SET remote_id = ?, sync_status = 1 WHERE id = ?",
+                [remoteResponse.id, localId]
+            );
+        }
+      } catch (e: any) {
+            console.warn("Sync failed - staying in offline mode:", e.message);        // We don't throw here because the local save was successful!
+            }
+            
+            return localId
+
+        },     
         onSuccess: () => {
             queryClient.invalidateQueries({queryKey: ["muraja-dashboard", user?.id]})
         }
@@ -25,3 +43,4 @@ export function useMurajaOperation() {
         error: mutation.error
     }
 }
+

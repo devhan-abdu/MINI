@@ -1,5 +1,6 @@
 import { supabase } from "@/src/lib/supabase";
 import { IDayLogAdd, IMonthHistory, IWeeklyMurajaDayInsert, WeeklyMurajaType } from "@/src/types";
+import { IDailyMurajaLog, IWeeklyMurajaPLan } from "../types";
 
 const FULL_PLAN_SELECT = `
 *,
@@ -45,17 +46,17 @@ const FULL_HISTORY_SELECT = `
 
 export const murajaServices = {
     
-  async createCompletePlan({ planData, days }: { planData: WeeklyMurajaType, days: IWeeklyMurajaDayInsert[] }) {
+  async createCompletePlan(planData: Omit<IWeeklyMurajaPLan, "id">) {
 
     const { error: updateError } = await supabase
       .from("weekly_muraja_plan")
-      .update({ status: "paused" })
+      .update({ is_active: 1 })
       .eq("user_id", planData.user_id)
-      .eq("status", "active")
+      .eq("is_active", 0)
     
     if (updateError) throw new Error("Failed to Archive the plan")
     
-     const { data: newPlan, error: planError } = await supabase
+     const { data, error: planError } = await supabase
       .from("weekly_muraja_plan")
       .insert(planData)
       .select()
@@ -64,21 +65,11 @@ export const murajaServices = {
     
     if (planError) throw new Error(`${planError.message}`)
         
-      const linkedDays = days.map(day => ({ ...day, weekly_plan_id: newPlan.id }))
-       
-       const { error: daysError } = await supabase
-            .from("weekly_plan_days")
-            .insert(linkedDays);
+     return data.id
         
-        if (daysError) {
-            await supabase.from("weekly_muraja_plan").delete().eq("id", newPlan.id);
-            throw new Error(`Plan creation failed`);     
-        }
-        
-        return newPlan
-    },
-
-      async getDashboardState(userId: string): Promise<IMonthHistory | null> {
+  },
+  
+   async getDashboardState(userId: string): Promise<IMonthHistory | null> {
         const { data, error } = await supabase
             .from("weekly_muraja_plan")
             .select(FULL_PLAN_SELECT)      
@@ -93,26 +84,25 @@ export const murajaServices = {
         
     },
 
-    async upsertLog(logData: Partial<IDayLogAdd>) {
-       if (!logData.userId || !logData.dayId) throw new Error("Missing foreign keys");
+    async upsertLog(logData: IDailyMurajaLog , userId: string) {
 
-      const { userId, dayId, ...rest } = logData
       
-      const targetDate = logData.date || new Date().toISOString().slice(0, 10);  
+      const targetDate = logData.date || new Date().toISOString().slice(0, 10);
       
        const { data, error } = await supabase
       .from("daily_muraja_logs")
       .upsert({
          user_id: userId,
-        weekly_plan_day_id: dayId,
+        // weekly_plan_day_id: dayId,
         date: targetDate,
-         ...rest
+        //  ...rest
       }, { onConflict: "user_id,weekly_plan_day_id,date" })
       .select()
       .single();
 
     if (error) throw new Error(`[murajaService.upsertLog]: ${error.message}`);
-      return data;
+        return data;
+     
 
     },
 

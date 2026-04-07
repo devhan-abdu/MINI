@@ -1,7 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
-import { Pressable, Text, View } from "react-native";
+import { Pressable, View } from "react-native";
 import { TodayPlanType } from "../../../types";
+import { Text } from "@/src/components/common/ui/Text";
 
 export default function UpcomingSessionCard({
   upcomingSessions,
@@ -15,7 +16,7 @@ export default function UpcomingSessionCard({
       {upcomingSessions.map((upcoming) => (
         <Pressable
           key={upcoming.id}
-          onPress={() => router.push("/(app)/muraja/weekly-plane")}
+          onPress={() => router.push("/(app)/muraja/(tabs)/log")}
           style={({ pressed }) => [{ opacity: pressed ? 0.8 : 1 }]}
           className="bg-white rounded-xl p-4 border border-gray-300 bg-white shadow-sm"
         >

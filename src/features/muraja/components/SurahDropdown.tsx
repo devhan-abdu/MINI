@@ -54,8 +54,16 @@ const SurahDropdown = ({ surah, setSurah }: ISurahDropDownProps) => {
         borderRadius: 16,
         backgroundColor: "white",
       }}
-      placeholderStyle={{ fontSize: 16, color: "#9CA3AF" }}
-      selectedTextStyle={{ fontSize: 16, color: "#111827", fontWeight: "600" }}
+      placeholderStyle={{
+        fontSize: 16,
+        color: "#9CA3AF",
+        fontFamily: "Rosemary",
+      }}
+      selectedTextStyle={{
+        fontSize: 16,
+        color: "#111827",
+        fontFamily: "Rosemary",
+      }}
       inputSearchStyle={{ borderRadius: 12 }}
       data={items}
       search
@@ -129,8 +137,12 @@ export const SurahPageDropdown = ({
         borderRadius: 16,
         backgroundColor: "white",
       }}
-      placeholderStyle={{ fontSize: 16, color: "#9CA3AF" }}
-      selectedTextStyle={{ fontSize: 16, color: "#111827", fontWeight: "600" }}
+      placeholderStyle={{ fontSize: 16, color: "#9CA3AF", fontFamily: "Rosemary", }}
+      selectedTextStyle={{
+        fontSize: 16,
+        color: "#111827",
+        fontFamily: "Rosemary",
+      }}
       data={surahPages}
       search
       maxHeight={300}

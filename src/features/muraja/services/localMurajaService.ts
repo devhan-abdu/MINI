@@ -1,13 +1,12 @@
 import { SQLiteDatabase } from "expo-sqlite";
-import { IWeeklyMurajaPLan } from "../types";
+import { IDailyMurajaLog, IMurajaDashboardData, IWeeklyMurajaPLan } from "../types";
 
-// type for all tables , user_status , logs 
 
 export const localMurajaService = {
     async createPlan(db: SQLiteDatabase, planData: Omit<IWeeklyMurajaPLan, "id">) {
 
         let lastId: number = 0
-        return await db.withTransactionAsync( async() => {
+         await db.withTransactionAsync( async() => {
             
             await db.runAsync(
                 "UPDATE weekly_muraja_plan SET is_active = 0 WHERE user_id = ? AND is_active = 1",
@@ -50,49 +49,34 @@ export const localMurajaService = {
             ]
          );
             lastId = result.lastInsertRowId;
-            
-           await db.runAsync(
-            "UPDATE user_stats SET muraja_last_page = ? WHERE user_id = ?",
-            [planData.start_page - 1, planData.user_id]
-           );
-            
+                        
             await db.runAsync(
                 `
                 INSERT INTO user_stats (user_id , muraja_last_page)
                 VALUES (?, ?)
                 ON CONFLICT(user_id) DO UPDATE SET
                   muraja_last_page = excluded.muraja_last_page
-                `[planData.user_id, planData.start_page -1]
+                `,[planData.user_id, planData.start_page -1]
             )
            
         })
+
+        return lastId
     },
 
-    async getPlan(db: SQLiteDatabase, userId: string): Promise<IWeeklyMurajaPLan | null> {
-   
-        const query = `
-         SELECT * FROM weekly_muraja_plan
-         WHERE user_id = ? AND is_active = 1
-         LIMIT 1
-        `
-
-        return await db.getFirstAsync<IWeeklyMurajaPLan>(query, [userId])
-    
-    }, 
     async getDahsboardState(db: SQLiteDatabase, userId: string) {
         const query = `
          SELECT
          p.*,
          s.muraja_last_page,
          s.muraja_current_streak
-
          FROM weekly_muraja_plan p
-         LEFT JOIN user_status s ON p.user_id = s.user_id
+         LEFT JOIN user_stats s ON p.user_id = s.user_id
          WHERE p.user_id = ? AND p.is_active = 1
          LIMIT 1
         `
 
-        const plan = await db.getFirstAsync<IWeeklyMurajaPLan>(query, [userId])
+        const plan = await db.getFirstAsync<IMurajaDashboardData>(query, [userId])
         if (!plan) return 
         
         const logQuery = `
@@ -107,7 +91,52 @@ export const localMurajaService = {
             ...plan,
             daily_logs: logs
         }
-    }
+    },
+
+    async upsertLog(db:SQLiteDatabase, userId: string,log: IDailyMurajaLog) {
+         
+            let localLogId = null
+            await db.withTransactionAsync( async() => {     
+        
+            const result = await db.runAsync(
+            `INSERT INTO daily_muraja_logs (
+                date, plan_id, start_page, end_page, completed_pages, 
+                sync_status, is_catchup, actual_time_min, status
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
+                ON CONFLICT(date, plan_id) DO UPDATE SET
+                completed_pages = excluded.completed_pages,
+                status = excluded.status,
+                actual_time_min = excluded.actual_time_min
+            `,
+            [
+                log.date,
+                log.plan_id,
+                log.start_page,
+                log.end_page,
+                log.completed_pages,
+                0,
+                log.is_catchup,
+                log.actual_time_min,
+                log.status,
+            ]
+            );
+
+            localLogId = result.lastInsertRowId;
+                        
+           await db.runAsync(
+            `INSERT INTO user_stats (user_id, muraja_last_page)
+            VALUES (?, ?)
+            ON CONFLICT(user_id) DO UPDATE SET
+                muraja_last_page = user_stats.muraja_last_page
+            `,
+            [userId, log.end_page]
+            );
+           
+        })
+
+        return localLogId
+    },
+    
 
 }
 

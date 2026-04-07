@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import {
   Pressable,
-  Text,
   TextInput,
   View,
   ActivityIndicator,
 } from "react-native";
+import { Text } from "@/src/components/common/ui/Text";
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -27,14 +27,11 @@ import SurahDropdown, {
 import { useSession } from "@/src/hooks/useSession";
 import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
 import { useCreatePlan } from "@/src/features/muraja/hooks/useCreatePlan";
-import { getPlannedDates } from "@/src/features/muraja/utils/dateHelpers";
-import { getWeeklyPlanData } from "@/src/features/muraja/utils/quranMapping";
 import {
-  WeeklyMurajaSchema,
+  IWeeklyMurajaPLan,
   WeeklyMurajaFormType,
-  IWeeklyMurajaDayInsert,
-  WeeklyMurajaType,
-} from "@/src/types";
+  WeeklyMurajaSchema,
+} from "@/src/features/muraja/types/index";
 import { SectionHeader } from "@/src/components/SectionHeader";
 import { useAlert } from "@/src/hooks/useAlert";
 import { Alert } from "@/src/components/common/Alert";
@@ -55,7 +52,7 @@ export default function CreateWeeklyPlan() {
     resolver: yupResolver(WeeklyMurajaSchema),
     defaultValues: {
       week_start_date: "",
-      planned_pages: 20,
+      planned_pages_per_day: 20,
       start_surah: 1,
       start_page: 1,
       estimated_time_min: 20,
@@ -70,52 +67,34 @@ export default function CreateWeeklyPlan() {
 
   const onSubmit = async (data: WeeklyMurajaFormType) => {
     if (!user?.id) return;
+    console.log("we are here esti")
     try {
-      const { selectedDays, ...rest } = data;
-      const calculatedDays = getPlannedDates(
-        weekStart,
-        selectedDays as number[],
-        rest.planned_pages,
-        rest.start_page,
-      );
-      const endDate = calculatedDays[calculatedDays.length - 1].date;
-      const quranData = getWeeklyPlanData(
-        rest.start_page,
-        rest.planned_pages,
-        selectedDays.length,
-        items,
-      );
+   
+      const startDate = new Date(data.week_start_date)
+      const endDate = new Date(startDate);
+      endDate.setDate(startDate.getDate() + 6);
 
-      if (!quranData.startSurah || !quranData.endSurah) {
-        showError("Calculation Error", "Could not calculate Quranic range.");
-        return;
-      }
-
-      const planPayload: WeeklyMurajaType = {
-        ...rest,
+      const totalPagesToRead = data.planned_pages_per_day * data.selectedDays.length;
+      const calculatedEndPage = data.start_page + totalPagesToRead - 1;   
+    
+      const planPayload: Omit<IWeeklyMurajaPLan, "id"> = {
         user_id: user.id,
-        end_surah: quranData.endSurah,
-        start_surah: quranData.startSurah,
-        end_page: quranData.endPage,
-        start_juz: quranData.startJuz!,
-        end_juz: quranData.endJuz!,
-        total_days: selectedDays.length,
-        week_end_date: endDate,
-        status: "active",
+        remote_id: null,
+        week_start_date: data.week_start_date,
+        week_end_date: endDate.toISOString().slice(0, 10),
+        planned_pages_per_day: data.planned_pages_per_day,
+        start_page: data.start_page,
+        end_page: calculatedEndPage,
+        is_active: 1,
+        selected_days: JSON.stringify(data.selectedDays),
+        sync_status: 0,
+        estimated_time_min: data.estimated_time_min,
+        place: data.place || null,
+        note: data.note || null,
       };
 
-      const daysPayload: IWeeklyMurajaDayInsert[] = calculatedDays.map(
-        (day) => ({
-          day_of_week: day.day_of_week,
-          date: day.date,
-          planned_start_page: day.planned_start_page!,
-          planned_end_page: day.planned_end_page!,
-          planned_pages: rest.planned_pages!,
-          estimated_time_min: rest.estimated_time_min!,
-        }),
-      );
-
-      await createPlan({ planData: planPayload, days: daysPayload });
+     
+      await createPlan(planPayload);
 
       showSuccess(
         "Plan Launched!",
@@ -123,7 +102,8 @@ export default function CreateWeeklyPlan() {
         () => router.back(),
       );
     } catch (error: any) {
-      showError("Ups!", error.message);
+      showError("Oops!", "We couldn't create your plan right now. Please  try again.");
+      console.log(error.message , "when i create table ")
     }
   };
 
@@ -166,7 +146,7 @@ export default function CreateWeeklyPlan() {
       </View>
       <Screen>
         <ScreenContent>
-          <View className="bg-white border border-slate-100 rounded-[32px] p-5 mb-8 shadow-sm shadow-slate-200/50">
+          <View className=" p-5 mb-8 ">
             <Controller
               control={control}
               name="week_start_date"
@@ -181,17 +161,14 @@ export default function CreateWeeklyPlan() {
                     }`}
                   >
                     <View className="flex-row items-center gap-4">
-                      <View className="w-12 h-12 rounded-2xl bg-primary/10 items-center justify-center">
-                        <Ionicons name="calendar" size={22} color="#276359" />
+                      <View className="w-12 h-12 rounded-full bg-primary/10 items-center justify-center">
+                        <Ionicons name="calendar" size={20} color="#276359" />
                       </View>
                       <View>
-                        <Text className="text-slate-400 text-[9px]  uppercase tracking-widest mb-0.5">
-                          Start Date
-                        </Text>
                         <Text
                           className={`text-base  ${
                             formattedWeekStart ? "text-slate-900" : (
-                              "text-slate-300"
+                              "text-slate-600"
                             )
                           }`}
                         >
@@ -199,11 +176,7 @@ export default function CreateWeeklyPlan() {
                         </Text>
                       </View>
                     </View>
-                    <Ionicons
-                      name="chevron-forward"
-                      size={18}
-                      color="#cbd5e1"
-                    />
+                    <Ionicons name="chevron-forward" size={18} color="#000" />
                   </Pressable>
                   <ErrorMessage error={errors.week_start_date} />
                   {showDatePicker && (
@@ -219,13 +192,13 @@ export default function CreateWeeklyPlan() {
                 </View>
               )}
             />
-            <View className="h-[1px] bg-slate-50 my-5" />
+            <View className="h-[1px] bg-slate-100 my-5" />
             <Controller
               name="selectedDays"
               control={control}
               render={({ field: { value, onChange } }) => (
                 <View>
-                  <Text className="text-slate-400 text-[9px]  uppercase tracking-widest mb-4 ml-1">
+                  <Text className="text-black text-[9px]  uppercase tracking-widest mb-4 ml-1">
                     Weekly Routine
                   </Text>
                   <SelectDays value={value ?? []} onChange={onChange} />
@@ -236,7 +209,7 @@ export default function CreateWeeklyPlan() {
           </View>
 
           <SectionHeader title="Reading Target" />
-          <View className="bg-white border border-slate-100 rounded-[32px] p-5 mb-8 shadow-sm shadow-slate-200/50 gap-y-4">
+          <View className=" p-5 mb-8 gap-y-4">
             <Controller
               control={control}
               name="start_surah"
@@ -263,14 +236,14 @@ export default function CreateWeeklyPlan() {
             />
             <Controller
               control={control}
-              name="planned_pages"
+              name="planned_pages_per_day"
               render={({ field: { value, onChange } }) => (
-                <View>
+                <View className="mt-2">
                   <Input
                     label="Daily Page Goal"
                     placeholder="20"
-                    value={String(value)}
-                    setValue={(v) => onChange(Number(v))}
+                    value={value ? String(value) : " "}
+                    setValue={(v) => onChange(v)}
                     keyboardType="numeric"
                     leftIcon={
                       <Ionicons
@@ -280,14 +253,14 @@ export default function CreateWeeklyPlan() {
                       />
                     }
                   />
-                  <ErrorMessage error={errors.planned_pages} />
+                  <ErrorMessage error={errors.planned_pages_per_day} />
                 </View>
               )}
             />
           </View>
 
           <SectionHeader title="Details" />
-          <View className="bg-white border border-slate-100 rounded-[32px] p-5 mb-10 shadow-sm shadow-slate-200/50 gap-y-5">
+          <View className=" p-5 mb-10 gap-y-5">
             <Controller
               control={control}
               name="estimated_time_min"
@@ -334,7 +307,7 @@ export default function CreateWeeklyPlan() {
               )}
             />
             <View>
-              <Text className="text-slate-400 text-[9px]  uppercase tracking-widest mb-2 ml-1">
+              <Text className="text-black text-[9px]  uppercase tracking-widest mb-2 ml-1">
                 Personal Notes
               </Text>
               <Controller
@@ -343,9 +316,13 @@ export default function CreateWeeklyPlan() {
                 render={({ field: { value, onChange } }) => (
                   <View>
                     <TextInput
-                      className={`bg-slate-50 rounded-2xl p-4 min-h-[100px] text-slate-900  border ${
+                      style={{
+                        fontFamily: "Rosemary",
+                      }}
+                      className={`bg-slate-50 rounded-2xl p-4 min-h-[100px] placeholder:text-slate-400 text-slate-900  border ${
                         errors.note ? "border-red-500" : "border-slate-100"
-                      } focus:border-primary/40 focus:bg-white`}
+                      } 
+                      focus:border-primary/40 focus:bg-white`}
                       onChangeText={onChange}
                       value={value ?? ""}
                       placeholder="Set an intention or reminder..."
