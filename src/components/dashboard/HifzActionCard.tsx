@@ -10,6 +10,7 @@ import { useSession } from "@/src/hooks/useSession";
 import { StatusButton } from "./StatusButton";
 import { Alert } from "../common/Alert";
 import { getTargetPage } from "@/src/features/hifz/utils/getTargetPage";
+import { ActionTaskCard } from "../common/ActionCard";
 
 export const HifzActionCard = ({
   hifz,
@@ -86,87 +87,23 @@ export const HifzActionCard = ({
     }
   };
 
-  const onStatusPress = (status: "completed" | "missed") => {
-    if (status === "missed" && todaysLog?.status === "completed") {
-      setWarningVisible(true);
-    } else {
-      handleStatusChange(status);
-    }
+  const onToggleStatus = () => {
+    const nextStatus = currentStatus === "completed" ? "pending" : "completed";
+    handleStatusChange(nextStatus as any);
   };
 
   return (
-    <View
-      className={`rounded-[32px] p-6 border ${!targetInfo.isPlannedDay ? "bg-amber-50/50 border-amber-100" : "bg-white border-slate-200"} shadow-md shadow-slate-200`}
-    >
-      <View className="flex-row justify-between items-start mb-4">
-        <View className="flex-1">
-          <View className="flex-row items-center mb-1">
-            <Text className="text-slate-900  text-xl tracking-tight">
-              {todayTask.displaySurah}
-            </Text>
-            {!targetInfo.isPlannedDay && (
-              <View className="bg-amber-100 px-2 py-0.5 rounded-full ml-2">
-                <Text className="text-amber-700 text-[8px]  uppercase">
-                  Rest Day
-                </Text>
-              </View>
-            )}
-          </View>
-
-          <View className="flex-row items-center">
-            <Text className="text-slate-400 text-[10px]  uppercase tracking-[1.5px]">
-              Pages {todayTask.startPage}–{todayTask.endPage}
-            </Text>
-            {targetInfo.catchUpAmount > 0 && (
-              <Text className="text-primary text-[10px]  uppercase tracking-[1.5px] ml-2">
-                (+{targetInfo.catchUpAmount} Catch up)
-              </Text>
-            )}
-          </View>
-        </View>
-
-        <Pressable
-          onPress={() => router.push("/(app)/hifz/log")}
-          className="w-10 h-10 items-center justify-center rounded-full bg-primary"
-        >
-          <Ionicons name="chevron-forward" size={22} color="#fff" />
-        </Pressable>
-      </View>
-
-      {targetInfo.catchUpAmount > 0 && (
-        <View className="bg-slate-50 rounded-2xl p-3 mb-5 flex-row items-center">
-          <Ionicons name="sparkles" size={14} color="#276359" />
-          <Text className="text-slate-500 text-[11px] ml-2 ">
-            {targetInfo.isPlannedDay ?
-              `Included ${targetInfo.catchUpAmount} extra pages to help you stay on track.`
-            : `Focusing on ${targetInfo.catchUpAmount} pages today to clear your backlog.`
-            }
-          </Text>
-        </View>
-      )}
-
-      <View className="flex-row gap-2">
-        <StatusButton
-          label={targetInfo.isPlannedDay ? "Done" : "Catch Up"}
-          icon="checkmark-circle"
-          activeColor="bg-primary"
-          isDisabled={currentStatus === "completed"}
-          isActive={currentStatus === "completed"}
-          onPress={() => onStatusPress("completed")}
-          loading={isCreating}
-        />
-        {targetInfo.isPlannedDay && (
-          <StatusButton
-            label="Skip"
-            icon="close-circle"
-            activeColor="bg-red-600"
-            isDisabled={currentStatus === "missed"}
-            isActive={currentStatus === "missed"}
-            onPress={() => onStatusPress("missed")}
-            loading={isCreating}
-          />
-        )}
-      </View>
+    <>
+      <ActionTaskCard
+        typeLabel="Hifz"
+        title={todayTask.displaySurah ?? ""}
+        subTitle={`Pages ${todayTask.startPage} – ${todayTask.endPage}`}
+        isCatchup={targetInfo.catchUpAmount > 0}
+        isCompleted={currentStatus === "completed"}
+        isLoading={isCreating}
+        onDone={onToggleStatus}
+        logRoute="/hifz/log"
+      />
 
       <Alert
         visible={errorVisible}
@@ -195,6 +132,6 @@ export const HifzActionCard = ({
           setWarningVisible(false);
         }}
       />
-    </View>
+    </>
   );
 };

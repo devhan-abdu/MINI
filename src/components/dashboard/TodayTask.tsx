@@ -8,11 +8,10 @@ import { hifzStatus } from "@/src/features/hifz/utils/plan-status";
 import { HifzActionCard } from "./HifzActionCard";
 import { MurajaActionCard } from "./MurajaActionCard";
 import { CardSkeleton } from "./Skeleton";
-import { useLoadSurahData } from "@/src/hooks/useFetchQuran";
 import { ISurah } from "@/src/types";
 
 export const TodayTasksSection = ({ surahData }: { surahData: ISurah[] }) => {
-  const { todayPlan, loading: murajaLoading } = useWeeklyMuraja();
+  const { todayTask:todayPlan, loading: murajaLoading, weeklyPlan } = useWeeklyMuraja();
   const { hifz, isLoading: hifzLoading } = useGetHifzPlan();
 
   const hifzAnalytics = useMemo(() => {
@@ -35,7 +34,7 @@ export const TodayTasksSection = ({ surahData }: { surahData: ISurah[] }) => {
       : <EmptyTask message="No Hifz Plan for Today" />}
 
       {todayPlan ?
-        <MurajaActionCard todayPlan={todayPlan} />
+        <MurajaActionCard todayPlan={todayPlan} weeklyPlan={weeklyPlan} />
       : <EmptyTask message="Rest Day (No Muraja)" />}
     </View>
   );
