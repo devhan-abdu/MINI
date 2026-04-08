@@ -118,18 +118,28 @@ export function generateWeeklyProgress(
         for (let i = 0; i < 7; i++) {
             const dateStr = calendarDate.toISOString().slice(0, 10);
             const log = logs.find(l => l.date === dateStr);
-          const isSelected = activeDays.includes(calendarDate.getDay());
-          
+            const isSelected = activeDays.includes((calendarDate.getDay()+ 6) % 7);
+            const isPast = dateStr < todayStr;
 
-        let status: IWeeklyMUrajaStatus['status'] = 'pending';
+              let status: IWeeklyMUrajaStatus['status'] = 'pending';
 
-        if (log) {
-          status = log.status as IWeeklyMUrajaStatus['status']; 
-        } else if (!isSelected) {
-            status = 'rest'; 
-        } else if (dateStr < todayStr) {
-            status = 'missed';
-        }
+              if (!isSelected) {
+                status = 'rest';
+
+              } else if (log) {
+                if (isPast && log.status === 'pending') {
+                  status = 'missed'; 
+                } else {
+                  status = log.status as IWeeklyMUrajaStatus['status'];
+                }
+
+              } else {
+                if (isPast) {
+                  status = 'missed';
+                } else {
+                  status = 'pending';
+                }
+              }
           
           
             progress.push({

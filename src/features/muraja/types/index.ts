@@ -39,7 +39,7 @@ export interface IDailyMurajaLog {
     date: string; 
     
     start_page: number;
-    end_page: number;
+    end_page?: number;
     completed_pages: number;
     actual_time_min: number;
     

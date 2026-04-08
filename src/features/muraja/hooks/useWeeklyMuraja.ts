@@ -51,18 +51,23 @@ export const useWeeklyMuraja = () => {
         let todayTask = null;
         if (isPlanActiveNow && (isScheduledToday || pageDiff < 0)) {
             const targetToStart =muraja_last_page + 1;
-            const pagesToRead = isScheduledToday ? planned_pages_per_day : Math.min(planned_pages_per_day,Math.abs(pageDiff));
-            const targetEnd = Math.min(targetToStart + pagesToRead - 1, end_page);
+            const start = todayLog ? todayLog.start_page : targetToStart;
+            const completed = todayLog?.completed_pages ?? 0;
+            const end = todayLog
+                    ? completed > 0 
+                        ? start + completed - 1
+                        : start : start + data.planned_pages_per_day -1;   
 
-            todayTask = {
-                isCompleted: !!todayLog,
-                isCatchup: !isScheduledToday && pageDiff < 0,
-                startPage: todayLog ? todayLog.start_page : targetToStart,
-                endPage: todayLog ? todayLog.end_page : targetEnd,
-                completedPages: todayLog?.completed_pages ?? 0,
-                startSurah: getSurahByPage(todayLog ? todayLog.start_page : targetToStart, surah),
-                endSurah: getSurahByPage(todayLog ? todayLog.end_page : targetEnd, surah),
-            };
+           todayTask = {
+            isCompleted: todayLog?.status === "completed",
+            isCatchup: !isScheduledToday && pageDiff < 0,
+            status: todayLog ? todayLog.status : "pending",
+            startPage: start,
+            endPage: end,
+            completedPages: completed,
+            startSurah: getSurahByPage(start, surah),
+            endSurah: getSurahByPage(end, surah),
+        };
         }
 
         const startJuz = getJuzByPage(start_page) ?? 0; 

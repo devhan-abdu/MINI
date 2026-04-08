@@ -26,7 +26,7 @@ export function useMurajaOperation() {
             );
         }
       } catch (e: any) {
-            console.warn("Sync failed - staying in offline mode:", e.message);        // We don't throw here because the local save was successful!
+            console.warn("Sync failed - staying in offline mode:", e.message);        
             }
             
             return localId

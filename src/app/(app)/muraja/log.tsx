@@ -4,7 +4,9 @@ import Input from "@/src/components/ui/Input";
 import { Ionicons } from "@expo/vector-icons";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useMemo, useState } from "react";
-import { Pressable, Text, TextInput, View } from "react-native";
+import { Pressable, TextInput, View } from "react-native";
+import { Text } from "@/src/components/common/ui/Text";
+
 import { useMurajaOperation } from "@/src/features/muraja/hooks/useMurajaOperation";
 import { useWeeklyMuraja } from "@/src/features/muraja/hooks/useWeeklyMuraja";
 import {
@@ -38,7 +40,7 @@ export default function LogPage() {
      setPages(
        todayTask.completedPages 
      );
-     setStatus(todayTask.isCompleted ? "completed" : "pending");
+     setStatus(todayTask.status);
      setMin(weeklyPlan?.estimated_time_min?.toString() || "");
    }
  }, [todayTask, weeklyPlan]);
@@ -80,7 +82,6 @@ export default function LogPage() {
         plan_id: weeklyPlan?.id, 
         date: todayStr,
         start_page: todayTask.startPage,
-        end_page: todayTask.startPage + pages - 1,
         completed_pages: Number(pages),
         actual_time_min: Number(min) || 0,
         status: status,
@@ -122,12 +123,10 @@ export default function LogPage() {
 
        <ScreenContent>
          {todayTask.isCatchup && (
-           <View className="bg-orange-50 border border-orange-100 p-4 rounded-2xl mb-6 flex-row items-center gap-3">
+           <View className="bg-orange-50 border border-orange-100 p-4 rounded-2xl mb-8 flex-row items-center gap-3">
              <Ionicons name="refresh-circle" size={24} color="#f97316" />
              <View className="flex-1">
-               <Text className="text-orange-900 font-bold text-sm">
-                 Catch-Up Mode
-               </Text>
+               <Text className="text-orange-900  text-sm">Catch-Up Mode</Text>
                <Text className="text-orange-700/70 text-xs">
                  Completing missed pages to stay on track
                </Text>
@@ -136,11 +135,11 @@ export default function LogPage() {
          )}
 
          <View className="bg-primary p-6 rounded-[32px] mb-8 shadow-xl shadow-primary/20">
-           <Text className="text-white/60 text-[10px] uppercase tracking-widest mb-2 font-bold">
-             {todayTask.isCatchup ? "Debt to Clear" : "Today's Target"}
+           <Text className="text-white/60 text-xs uppercase tracking-widest mb-2 ">
+             Today's Target
            </Text>
 
-           <Text className="text-white text-3xl mb-6 font-bold">
+           <Text className="text-white text-3xl mb-8 ">
              {todayTask.startSurah === todayTask.endSurah ?
                todayTask.startSurah
              : `${todayTask.startSurah} – ${todayTask.endSurah}`}
@@ -163,9 +162,7 @@ export default function LogPage() {
            </View>
          </View>
 
-         <Text className="text-xl text-gray-900 mb-4 font-bold">
-           How did it go?
-         </Text>
+         <Text className="text-xl text-gray-900 mb-4 ">How did it go?</Text>
          <View className="flex-row justify-between mb-8">
            <StatusTab
              label="Completed"
@@ -180,7 +177,12 @@ export default function LogPage() {
              label="Partial"
              icon="contrast"
              active={status === "partial"}
-             onPress={() => setStatus("partial")}
+             onPress={() => {
+               setStatus("partial");
+               setPages(
+                 Math.floor((todayTask.endPage - todayTask.startPage + 1) / 2),
+               );
+             }}
            />
            <StatusTab
              label="Missed"
@@ -193,38 +195,33 @@ export default function LogPage() {
            />
          </View>
 
-         {showDetails && (
-           <View className="mb-12 gap-6">
-             <View className="bg-gray-50 p-6 rounded-[28px] border border-gray-100 flex-row items-center justify-between">
-               <View>
-                 <Text className="text-gray-900 text-lg font-bold">
-                   Pages Done
-                 </Text>
-                 <Text className="text-gray-400 text-xs">
-                   Adjust if you read more/less
-                 </Text>
-               </View>
-               <View className="flex-row items-center bg-white rounded-2xl p-1.5 border border-gray-200">
-                 <Pressable
-                   onPress={() => setPages((p) => Math.max(0, p - 1))}
-                   className="w-10 h-10 items-center justify-center active:bg-gray-50 rounded-xl"
-                 >
-                   <Ionicons name="remove" size={20} color="#276359" />
-                 </Pressable>
-                 <Text className="text-2xl text-gray-900 px-4 font-bold">
-                   {pages}
-                 </Text>
-                 <Pressable
-                   onPress={() => setPages((p) => p + 1)}
-                   className="w-10 h-10 items-center justify-center active:bg-gray-50 rounded-xl"
-                 >
-                   <Ionicons name="add" size={20} color="#276359" />
-                 </Pressable>
-               </View>
-             </View>
-
+         <View className="mb-12 gap-6">
+           <View className="bg-gray-50 p-6 rounded-[28px] border border-gray-100 flex-row items-center justify-between">
              <View>
-               <Text className="text-gray-400 uppercase text-[10px] mb-2 ml-1 tracking-widest font-bold">
+               <Text className="text-gray-900 text-lg ">Pages Done</Text>
+               <Text className="text-gray-400 text-xs">
+                 Adjust if you read more/less
+               </Text>
+             </View>
+             <View className="flex-row items-center bg-white rounded-2xl p-1.5 border border-gray-200">
+               <Pressable
+                 onPress={() => setPages((p) => Math.max(0, p - 1))}
+                 className="w-10 h-10 items-center justify-center active:bg-gray-50 rounded-xl"
+               >
+                 <Ionicons name="remove" size={20} color="#276359" />
+               </Pressable>
+               <Text className="text-2xl text-gray-900 px-4 ">{pages}</Text>
+               <Pressable
+                 onPress={() => setPages((p) => p + 1)}
+                 className="w-10 h-10 items-center justify-center active:bg-gray-50 rounded-xl"
+               >
+                 <Ionicons name="add" size={20} color="#276359" />
+               </Pressable>
+             </View>
+           </View>
+           {showDetails && (
+             <View>
+               <Text className="text-gray-400 uppercase text-[10px] mb-2 ml-1 tracking-widest ">
                  Time Spent (min)
                </Text>
                <Input
@@ -234,22 +231,22 @@ export default function LogPage() {
                  type="numeric"
                />
              </View>
+           )}
 
-             <View>
-               <Text className="text-gray-400 uppercase text-[10px] mb-2 ml-1 tracking-widest font-bold">
-                 Notes
-               </Text>
-               <TextInput
-                 multiline
-                 placeholder="Any difficult ayahs?"
-                 value={note}
-                 onChangeText={setNote}
-                 className="bg-gray-50 p-5 rounded-[28px] border border-gray-100 h-24 text-gray-900"
-                 textAlignVertical="top"
-               />
-             </View>
+           <View>
+             <Text className="text-gray-400 uppercase text-[10px] mb-2 ml-1 tracking-widest ">
+               Notes
+             </Text>
+             <TextInput
+               multiline
+               placeholder="Any difficult ayahs?"
+               value={note}
+               onChangeText={setNote}
+               className="bg-gray-50 p-5 rounded-[28px] border border-gray-100 h-24 text-gray-900 "
+               textAlignVertical="top"
+             />
            </View>
-         )}
+         </View>
          {error && (
            <Text className="text-red-500 mb-4 text-center">{error}</Text>
          )}
@@ -262,9 +259,7 @@ export default function LogPage() {
            className="bg-primary h-14 shadow-lg shadow-primary/30"
          >
            <View className="flex-row items-center justify-center">
-             <Text className="text-white text-lg mr-2 font-bold">
-               Save Progress
-             </Text>
+             <Text className="text-white text-lg mr-2 ">Save Progress</Text>
              <Ionicons name="arrow-forward" size={20} color="white" />
            </View>
          </Button>

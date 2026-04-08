@@ -100,19 +100,21 @@ export const localMurajaService = {
         
             const result = await db.runAsync(
             `INSERT INTO daily_muraja_logs (
-                date, plan_id, start_page, end_page, completed_pages, 
+                date, plan_id, start_page, completed_pages, 
                 sync_status, is_catchup, actual_time_min, status
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
-                ON CONFLICT(date, plan_id) DO UPDATE SET
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+               ON CONFLICT(date, plan_id) DO UPDATE SET
                 completed_pages = excluded.completed_pages,
                 status = excluded.status,
-                actual_time_min = excluded.actual_time_min
+                actual_time_min = excluded.actual_time_min,
+                is_catchup = excluded.is_catchup,
+                start_page = excluded.start_page,
+                sync_status = excluded.sync_status
             `,
             [
                 log.date,
                 log.plan_id,
                 log.start_page,
-                log.end_page,
                 log.completed_pages,
                 0,
                 log.is_catchup,
@@ -127,9 +129,9 @@ export const localMurajaService = {
             `INSERT INTO user_stats (user_id, muraja_last_page)
             VALUES (?, ?)
             ON CONFLICT(user_id) DO UPDATE SET
-                muraja_last_page = user_stats.muraja_last_page
+                muraja_last_page =  excluded.muraja_last_page
             `,
-            [userId, log.end_page]
+            [userId, log.start_page + log.completed_pages -1]
             );
            
         })
