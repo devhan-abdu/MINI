@@ -41,6 +41,8 @@ export default function MurajaIndex() {
   } = useWeeklyReview();
   const { updateLog, isUpdating } = useMurajaOperation();
 
+  //this one must know what is stored in database
+  // why not you store pending as state , i was thing missed if log is not exist but need to make for all past day which status if it exist not completed or partial make as missed 
   const handleUpdate = async (status: "completed" | "pending") => {
     const todayStr = new Date().toISOString().slice(0, 10);
     const isCompleted = status === "completed" ? true : false;
@@ -94,18 +96,19 @@ export default function MurajaIndex() {
               {todayTask ?
                 <ActionTaskCard
                   typeLabel="Muraja'a"
-                  title={
-                    todayTask.startSurah === todayTask.endSurah ?
-                      (todayTask.startSurah ?? "")
-                    : `${todayTask.startSurah ?? ""} – ${todayTask.endSurah ?? ""}`
-                  }
+                  title={`${todayTask.startSurah ?? ""} – ${todayTask.endSurah ?? ""}`}
                   subTitle={`Pages ${todayTask.startPage} – ${todayTask.endPage}`}
+                  status={todayTask.status} // completed | partial | pending | missed
                   isCatchup={todayTask.isCatchup}
-                  isCompleted={todayTask.isCompleted}
                   isLoading={isUpdating}
                   onDone={() =>
                     handleUpdate(
-                      todayTask.isCompleted ? "pending" : "completed",
+                      (
+                        todayTask.status === "completed" ||
+                          todayTask.status === "partial"
+                      ) ?
+                        "pending"
+                      : "completed",
                     )
                   }
                   logRoute="/muraja/log"

@@ -99,7 +99,7 @@ export const HifzActionCard = ({
         title={todayTask.displaySurah ?? ""}
         subTitle={`Pages ${todayTask.startPage} – ${todayTask.endPage}`}
         isCatchup={targetInfo.catchUpAmount > 0}
-        isCompleted={currentStatus === "completed"}
+        status={currentStatus}
         isLoading={isCreating}
         onDone={onToggleStatus}
         logRoute="/hifz/log"
