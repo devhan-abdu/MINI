@@ -1,91 +1,116 @@
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, FlatList, useWindowDimensions, View } from "react-native";
+import { getPageImage, prefetchPages } from "@/src/features/quran/services";
 import { QuranPage } from "@/src/features/quran/components/QuranPage";
-import { useLocalSearchParams, useNavigation } from "expo-router";
-import { useEffect, useRef, useState } from "react";
-import {
-  ActivityIndicator,
-  FlatList,
-  Text,
-  useWindowDimensions,
-  View,
-} from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useLocalSearchParams } from "expo-router";
 
 
 const ALL_PAGES = Array.from({ length: 604 }, (_, i) => i + 1);
 
 export default function QuranScreen() {
-  const { page } = useLocalSearchParams<{ page?: string }>();
-  const navigation = useNavigation();
-  const listRef = useRef<FlatList>(null);
   const { width, height } = useWindowDimensions();
-  const insets = useSafeAreaInsets()
+  const { page } = useLocalSearchParams<{ page?: string }>();
+  const listRef = useRef<FlatList>(null);
 
+  const [currentPage, setCurrentPage] = useState(Number(page) || 1);
+  const [images, setImages] = useState<Record<number, string>>({});
+  const cache = useRef<Map<number, string>>(new Map());
 
-
-const AVAILABLE_HEIGHT = height;
-  const initialIndex = Number(page || 1) + 1;
-
-
+const RANGE = 4;
 
   useEffect(() => {
-    navigation.getParent()?.setOptions({
-      tabBarStyle: { display: "none" },
-    });
+    const load = async () => {
+      const updates: Record<number, string> = {};
 
-    return () => {
-      navigation.getParent()?.setOptions({
-        tabBarStyle: {
-          backgroundColor: "#fff",
-          borderTopWidth: 1,
-          borderTopColor: "#f1f5f9",
-          height: 60 + insets.bottom,
-          paddingBottom: insets.bottom > 0 ? insets.bottom : 10,
-          paddingTop: 10,
-          elevation: 0,
-          shadowOpacity: 0,
-        },
-      });
+      const start = Math.max(1, currentPage - RANGE);
+      const end = Math.min(604, currentPage + RANGE);
+
+      await Promise.all(
+        Array.from({ length: end - start + 1 }, (_, i) => start + i).map(
+          async (p) => {
+            if (cache.current.has(p)) {
+              updates[p] = cache.current.get(p)!;
+            } else {
+              const uri = await getPageImage(p);
+              if (uri) {
+                cache.current.set(p, uri);
+                updates[p] = uri;
+              }
+            }
+          },
+        ),
+      );
+
+      setImages((prev) => ({ ...prev, ...updates }));
+      prefetchPages(currentPage + 1);
+      prefetchPages(currentPage + 2);;
     };
-  }, []);
 
-  if (initialIndex === -1) {
+    load();
+  }, [currentPage]);
+
+  const onScrollEnd = (e: any) => {
+    const index = Math.round(e.nativeEvent.contentOffset.x / width);
+    const page = ALL_PAGES[index];
+
+    if (page && page !== currentPage) {
+      setCurrentPage(page);
+    }
+  };
+
+  const renderItem = useCallback(
+    ({ item }: { item: number }) => {
+      const uri = images[item];
+
+      return (
+        <QuranPage
+          pageNumber={item}
+          uri={uri}
+          pageWidth={width}
+          pageHeight={height}
+        />
+      );
+    },
+    [images, width, height],
+  );
+
+  if (!images[currentPage]) {
     return (
-      <View className="flex-1 items-center justify-center bg-white">
-        <ActivityIndicator size="large" color="#276359" />
-        <Text className="mt-3 text-slate-400">Loading Quran…</Text>
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <ActivityIndicator />
       </View>
     );
   }
 
   return (
-    // <FlatList
-    //   className="bg-white"
-    //     data={ALL_PAGES}
-    //     ref={listRef}
-    //     horizontal
-    //     inverted
-    //     pagingEnabled
-    //     showsHorizontalScrollIndicator={false}
-    //     initialScrollIndex={initialIndex}
-    //     getItemLayout={(_, index) => ({
-    //       length: width,
-    //       offset: width * index,
-    //       index,
-    //     })}
-    //     keyExtractor={(item) => item.toString()}
-    //     renderItem={({ item }) => (
-    //       <QuranPage
-    //         pageNumber={item}
-    //         pageWidth={width}
-    //         pageHeight={AVAILABLE_HEIGHT}
-    //       />
-    //     )}
-    //   />
-    <View>
-      <Text>
-         Quran reader app
-      </Text>
-    </View>
+    <FlatList
+      ref={listRef}
+      data={ALL_PAGES}
+      horizontal
+      pagingEnabled
+      inverted
+      showsHorizontalScrollIndicator={false}
+      initialScrollIndex={currentPage - 1}
+      getItemLayout={(_, index) => ({
+        length: width,
+        offset: width * index,
+        index,
+      })}
+      windowSize={5}
+      initialNumToRender={3}
+      maxToRenderPerBatch={3}
+      removeClippedSubviews={true}
+      onMomentumScrollEnd={onScrollEnd}
+      onScrollToIndexFailed={(info) => {
+        setTimeout(() => {
+          listRef.current?.scrollToIndex({
+            index: info.index,
+            animated: false,
+          });
+        }, 100);
+      }}
+      keyExtractor={(item) => item.toString()}
+      renderItem={renderItem}
+    />
   );
-
 }
