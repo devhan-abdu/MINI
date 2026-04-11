@@ -1,6 +1,6 @@
 import React from "react";
-import { View, Image, ActivityIndicator, Text } from "react-native";
-import FastImage from "react-native-fast-image";
+import { View,  ActivityIndicator, Text } from "react-native";
+import { Image } from "expo-image";
 
 interface Props {
   pageNumber: number;
@@ -14,10 +14,10 @@ export const QuranPage = React.memo(
   return (
     <View style={{ width: pageWidth, height: pageHeight }}>
       {uri ?
-        <FastImage
+        <Image
           source={{ uri }}
           style={{ width: "100%", height: "100%" }}
-          resizeMode={FastImage.resizeMode.contain}
+          contentFit="contain"
         />
       : null}
     </View>
